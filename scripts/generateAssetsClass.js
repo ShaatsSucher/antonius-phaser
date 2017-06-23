@@ -142,10 +142,10 @@ if (!Object.keys(loaderTypes.image).length) {
 } else {
     for (var i in loaderTypes.image) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static getName(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
 
         for (var t in loaderTypes.image[i]) {
-            shell.ShellString('\n        static get' + loaderTypes.image[i][t].toUpperCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.image[i][t] + '\'); }').toEnd(assetsClassFile);
+            shell.ShellString('\n        static get ' + loaderTypes.image[i][t].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.image[i][t] + '\'); }').toEnd(assetsClassFile);
         }
 
         shell.ShellString('\n    }').toEnd(assetsClassFile);
@@ -159,20 +159,20 @@ if (!Object.keys(loaderTypes.spritesheet).length) {
 } else {
     for (var i in loaderTypes.spritesheet) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static getName(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
 
-        shell.ShellString('\n        static get' + loaderTypes.spritesheet[i][1].toUpperCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.spritesheet[i][0] + '.' + loaderTypes.spritesheet[i][1] + '\'); }').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get ' + loaderTypes.spritesheet[i][1].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.spritesheet[i][0] + '.' + loaderTypes.spritesheet[i][1] + '\'); }').toEnd(assetsClassFile);
 
         var spritesheetProperties = loaderTypes.spritesheet[i][0].replace('[', '').replace(']', '').split(',');
         if (spritesheetProperties.length < 2 || spritesheetProperties.length > 5) {
             console.log('Invalid number of Spritesheet properties provided for \'' + i + '\'. Must have between 2 and 5; [frameWidth, frameHeight, frameMax, margin, spacing] frameWidth and frameHeight are required');
         }
 
-        shell.ShellString('\n        static getFrameWidth(): number { return ' + parseInt(spritesheetProperties[0] ? spritesheetProperties[0] : -1) + '; }').toEnd(assetsClassFile);
-        shell.ShellString('\n        static getFrameHeight(): number { return ' + parseInt(spritesheetProperties[1] ? spritesheetProperties[1] : -1) + '; }').toEnd(assetsClassFile);
-        shell.ShellString('\n        static getFrameMax(): number { return ' + parseInt(spritesheetProperties[2] ? spritesheetProperties[2] : -1) + '; }').toEnd(assetsClassFile);
-        shell.ShellString('\n        static getMargin(): number { return ' + parseInt(spritesheetProperties[3] ? spritesheetProperties[3] : 0) + '; }').toEnd(assetsClassFile);
-        shell.ShellString('\n        static getSpacing(): number { return ' + parseInt(spritesheetProperties[4] ? spritesheetProperties[4] : 0) + '; }').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get frameWidth(): number { return ' + parseInt(spritesheetProperties[0] ? spritesheetProperties[0] : -1) + '; }').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get frameHeight(): number { return ' + parseInt(spritesheetProperties[1] ? spritesheetProperties[1] : -1) + '; }').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get frameMax(): number { return ' + parseInt(spritesheetProperties[2] ? spritesheetProperties[2] : -1) + '; }').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get margin(): number { return ' + parseInt(spritesheetProperties[3] ? spritesheetProperties[3] : 0) + '; }').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get spacing(): number { return ' + parseInt(spritesheetProperties[4] ? spritesheetProperties[4] : 0) + '; }').toEnd(assetsClassFile);
 
         shell.ShellString('\n    }').toEnd(assetsClassFile);
     }
@@ -269,9 +269,9 @@ if (!Object.keys(loaderTypes.atlas).length) {
         }
 
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static getName(): string { return \'' + i.split('/').pop() + '\'; }').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }').toEnd(assetsClassFile);
         for (var e in dataExtensions) {
-            shell.ShellString('\n\n        static get' + dataExtensions[e].toUpperCase() + dataTypes[e] + '(): string { return require(\'assets/' + i + '.' + dataExtensions[e] + '\'); }').toEnd(assetsClassFile);
+            shell.ShellString('\n\n        static get ' + dataExtensions[e].toLowerCase() + dataTypes[e] + '(): string { return require(\'assets/' + i + '.' + dataExtensions[e] + '\'); }').toEnd(assetsClassFile);
         }
         shell.ShellString('\n\n        static Frames = ' + toPascalCase(i) + 'Frames;').toEnd(assetsClassFile);
         shell.ShellString('\n    }').toEnd(assetsClassFile);
@@ -285,10 +285,10 @@ if (!Object.keys(loaderTypes.audio).length) {
 } else {
     for (var i in loaderTypes.audio) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static getName(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
 
         for (var t in loaderTypes.audio[i]) {
-            shell.ShellString('\n        static get' + loaderTypes.audio[i][t].toUpperCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.audio[i][t] + '\'); }').toEnd(assetsClassFile);
+            shell.ShellString('\n        static get ' + loaderTypes.audio[i][t].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.audio[i][t] + '\'); }').toEnd(assetsClassFile);
         }
 
         shell.ShellString('\n    }').toEnd(assetsClassFile);
@@ -327,9 +327,9 @@ if (!Object.keys(loaderTypes.audiosprite).length) {
         }
 
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static getName(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
         for (var t in loaderTypes.audiosprite[i]) {
-            shell.ShellString('\n        static get' + loaderTypes.audiosprite[i][t].toUpperCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.audiosprite[i][t] + '\'); }').toEnd(assetsClassFile);
+            shell.ShellString('\n        static get ' + loaderTypes.audiosprite[i][t].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.audiosprite[i][t] + '\'); }').toEnd(assetsClassFile);
         }
         shell.ShellString('\n\n        static Sprites = ' + toPascalCase(i) + 'Sprites;').toEnd(assetsClassFile);
         shell.ShellString('\n    }').toEnd(assetsClassFile);
@@ -355,14 +355,14 @@ if (!Object.keys(loaderTypes.font).length) {
 } else {
     for (var i in loaderTypes.font) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static getName(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
 
         var cssFileData = fs.readFileSync(('assets/' + i + '.css'), 'ascii');
         var family = /font-family:(\s)*('|")(\w*\W*)('|")/g.exec(cssFileData)[3];
-        shell.ShellString('\n        static getFamily(): string { return \'' + family + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get family(): string { return \'' + family + '\'; }\n').toEnd(assetsClassFile);
 
         for (var t in loaderTypes.font[i]) {
-            shell.ShellString('\n        static get' + loaderTypes.font[i][t].toUpperCase() + '(): string { return require(\'!file-loader?name=assets/fonts/[name].[ext]!assets/' + i + '.' + loaderTypes.font[i][t] + '\'); }').toEnd(assetsClassFile);
+            shell.ShellString('\n        static get ' + loaderTypes.font[i][t].toLowerCase() + '(): string { return require(\'!file-loader?name=assets/fonts/[name].[ext]!assets/' + i + '.' + loaderTypes.font[i][t] + '\'); }').toEnd(assetsClassFile);
         }
 
         shell.ShellString('\n    }').toEnd(assetsClassFile);
@@ -376,10 +376,10 @@ if (!Object.keys(loaderTypes.bitmap_font).length) {
 } else {
     for (var i in loaderTypes.bitmap_font) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static getName(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
 
         for (var t in loaderTypes.bitmap_font[i]) {
-            shell.ShellString('\n        static get' + loaderTypes.bitmap_font[i][t].toUpperCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.bitmap_font[i][t] + '\'); }').toEnd(assetsClassFile);
+            shell.ShellString('\n        static get ' + loaderTypes.bitmap_font[i][t].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.bitmap_font[i][t] + '\'); }').toEnd(assetsClassFile);
         }
 
         shell.ShellString('\n    }').toEnd(assetsClassFile);
@@ -393,10 +393,10 @@ if (!Object.keys(loaderTypes.json).length) {
 } else {
     for (var i in loaderTypes.json) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static getName(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
 
         for (var t in loaderTypes.json[i]) {
-            shell.ShellString('\n        static get' + loaderTypes.json[i][t].toUpperCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.json[i][t] + '\'); }').toEnd(assetsClassFile);
+            shell.ShellString('\n        static get ' + loaderTypes.json[i][t].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.json[i][t] + '\'); }').toEnd(assetsClassFile);
         }
 
         shell.ShellString('\n    }').toEnd(assetsClassFile);
@@ -410,10 +410,10 @@ if (!Object.keys(loaderTypes.xml).length) {
 } else {
     for (var i in loaderTypes.xml) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static getName(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
 
         for (var t in loaderTypes.xml[i]) {
-            shell.ShellString('\n        static get' + loaderTypes.xml[i][t].toUpperCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.xml[i][t] + '\'); }').toEnd(assetsClassFile);
+            shell.ShellString('\n        static get ' + loaderTypes.xml[i][t].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.xml[i][t] + '\'); }').toEnd(assetsClassFile);
         }
 
         shell.ShellString('\n    }').toEnd(assetsClassFile);
@@ -427,10 +427,10 @@ if (!Object.keys(loaderTypes.text).length) {
 } else {
     for (var i in loaderTypes.text) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static getName(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
 
         for (var t in loaderTypes.text[i]) {
-            shell.ShellString('\n        static get' + loaderTypes.text[i][t].toUpperCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.text[i][t] + '\'); }').toEnd(assetsClassFile);
+            shell.ShellString('\n        static get ' + loaderTypes.text[i][t].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.text[i][t] + '\'); }').toEnd(assetsClassFile);
         }
 
         shell.ShellString('\n    }').toEnd(assetsClassFile);
@@ -444,10 +444,10 @@ if (!Object.keys(loaderTypes.script).length) {
 } else {
     for (var i in loaderTypes.script) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static getName(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
 
         for (var t in loaderTypes.script[i]) {
-            shell.ShellString('\n        static get' + loaderTypes.script[i][t].toUpperCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.script[i][t] + '\'); }').toEnd(assetsClassFile);
+            shell.ShellString('\n        static get ' + loaderTypes.script[i][t].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.script[i][t] + '\'); }').toEnd(assetsClassFile);
         }
 
         shell.ShellString('\n    }').toEnd(assetsClassFile);
@@ -461,10 +461,10 @@ if (!Object.keys(loaderTypes.shader).length) {
 } else {
     for (var i in loaderTypes.shader) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static getName(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
 
         for (var t in loaderTypes.shader[i]) {
-            shell.ShellString('\n        static get' + loaderTypes.shader[i][t].toUpperCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.shader[i][t] + '\'); }').toEnd(assetsClassFile);
+            shell.ShellString('\n        static get ' + loaderTypes.shader[i][t].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.shader[i][t] + '\'); }').toEnd(assetsClassFile);
         }
 
         shell.ShellString('\n    }').toEnd(assetsClassFile);
@@ -478,10 +478,10 @@ if (!Object.keys(loaderTypes.misc).length) {
 } else {
     for (var i in loaderTypes.misc) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static getName(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
 
         for (var t in loaderTypes.misc[i]) {
-            shell.ShellString('\n        static get' + loaderTypes.misc[i][t].toUpperCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.misc[i][t] + '\'); }').toEnd(assetsClassFile);
+            shell.ShellString('\n        static get ' + loaderTypes.misc[i][t].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.misc[i][t] + '\'); }').toEnd(assetsClassFile);
         }
 
         shell.ShellString('\n    }').toEnd(assetsClassFile);
