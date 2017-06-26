@@ -1,0 +1,10 @@
+{
+  "frames": {
+    "preload-bar.png": {
+      "frame": { "x": 0, "y": 12, "w": 150, "h": 12 }
+    },
+    "preload-frame.png": {
+      "frame": { "x": 0, "y": 0, "w": 150, "h": 12 }
+    }
+  }
+}
