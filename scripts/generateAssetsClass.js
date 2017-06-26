@@ -17,7 +17,7 @@ if (commander.dev) {
 
 function toCamelCase(string) {
     return string.replace(/[^A-Za-z0-9]/g, ' ').replace(/^\w|[A-Z]|\b\w|\s+/g, function (match, index) {
-        if (+match === 0 || match === '-' || match === '.') {
+        if ((+match === 0 && match !== '0') || match === '-' || match === '.') {
             return "";
         }
         return index === 0 ? match.toLowerCase() : match.toUpperCase();
@@ -142,7 +142,7 @@ if (!Object.keys(loaderTypes.image).length) {
 } else {
     for (var i in loaderTypes.image) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + toCamelCase(i) + '\'; }\n').toEnd(assetsClassFile);
 
         for (var t in loaderTypes.image[i]) {
             shell.ShellString('\n        static get ' + loaderTypes.image[i][t].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.image[i][t] + '\'); }').toEnd(assetsClassFile);
@@ -159,7 +159,7 @@ if (!Object.keys(loaderTypes.spritesheet).length) {
 } else {
     for (var i in loaderTypes.spritesheet) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + toCamelCase(i) + '\'; }\n').toEnd(assetsClassFile);
 
         shell.ShellString('\n        static get ' + loaderTypes.spritesheet[i][1].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.spritesheet[i][0] + '.' + loaderTypes.spritesheet[i][1] + '\'); }').toEnd(assetsClassFile);
 
@@ -269,7 +269,7 @@ if (!Object.keys(loaderTypes.atlas).length) {
         }
 
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + toCamelCase(i) + '\'; }').toEnd(assetsClassFile);
         for (var e in dataExtensions) {
             shell.ShellString('\n\n        static get ' + dataExtensions[e].toLowerCase() + dataTypes[e] + '(): string { return require(\'assets/' + i + '.' + dataExtensions[e] + '\'); }').toEnd(assetsClassFile);
         }
@@ -285,7 +285,7 @@ if (!Object.keys(loaderTypes.audio).length) {
 } else {
     for (var i in loaderTypes.audio) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + toCamelCase(i) + '\'; }\n').toEnd(assetsClassFile);
 
         for (var t in loaderTypes.audio[i]) {
             shell.ShellString('\n        static get ' + loaderTypes.audio[i][t].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.audio[i][t] + '\'); }').toEnd(assetsClassFile);
@@ -327,7 +327,7 @@ if (!Object.keys(loaderTypes.audiosprite).length) {
         }
 
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + toCamelCase(i) + '\'; }\n').toEnd(assetsClassFile);
         for (var t in loaderTypes.audiosprite[i]) {
             shell.ShellString('\n        static get ' + loaderTypes.audiosprite[i][t].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.audiosprite[i][t] + '\'); }').toEnd(assetsClassFile);
         }
@@ -355,7 +355,7 @@ if (!Object.keys(loaderTypes.font).length) {
 } else {
     for (var i in loaderTypes.font) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + toCamelCase(i) + '\'; }\n').toEnd(assetsClassFile);
 
         var cssFileData = fs.readFileSync(('assets/' + i + '.css'), 'ascii');
         var family = /font-family:(\s)*('|")(\w*\W*)('|")/g.exec(cssFileData)[3];
@@ -376,7 +376,7 @@ if (!Object.keys(loaderTypes.bitmap_font).length) {
 } else {
     for (var i in loaderTypes.bitmap_font) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + toCamelCase(i) + '\'; }\n').toEnd(assetsClassFile);
 
         for (var t in loaderTypes.bitmap_font[i]) {
             shell.ShellString('\n        static get ' + loaderTypes.bitmap_font[i][t].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.bitmap_font[i][t] + '\'); }').toEnd(assetsClassFile);
@@ -393,7 +393,7 @@ if (!Object.keys(loaderTypes.json).length) {
 } else {
     for (var i in loaderTypes.json) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + toCamelCase(i) + '\'; }\n').toEnd(assetsClassFile);
 
         for (var t in loaderTypes.json[i]) {
             shell.ShellString('\n        static get ' + loaderTypes.json[i][t].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.json[i][t] + '\'); }').toEnd(assetsClassFile);
@@ -410,7 +410,7 @@ if (!Object.keys(loaderTypes.xml).length) {
 } else {
     for (var i in loaderTypes.xml) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + toCamelCase(i) + '\'; }\n').toEnd(assetsClassFile);
 
         for (var t in loaderTypes.xml[i]) {
             shell.ShellString('\n        static get ' + loaderTypes.xml[i][t].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.xml[i][t] + '\'); }').toEnd(assetsClassFile);
@@ -427,7 +427,7 @@ if (!Object.keys(loaderTypes.text).length) {
 } else {
     for (var i in loaderTypes.text) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + toCamelCase(i) + '\'; }\n').toEnd(assetsClassFile);
 
         for (var t in loaderTypes.text[i]) {
             shell.ShellString('\n        static get ' + loaderTypes.text[i][t].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.text[i][t] + '\'); }').toEnd(assetsClassFile);
@@ -444,7 +444,7 @@ if (!Object.keys(loaderTypes.script).length) {
 } else {
     for (var i in loaderTypes.script) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + toCamelCase(i) + '\'; }\n').toEnd(assetsClassFile);
 
         for (var t in loaderTypes.script[i]) {
             shell.ShellString('\n        static get ' + loaderTypes.script[i][t].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.script[i][t] + '\'); }').toEnd(assetsClassFile);
@@ -461,7 +461,7 @@ if (!Object.keys(loaderTypes.shader).length) {
 } else {
     for (var i in loaderTypes.shader) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + toCamelCase(i) + '\'; }\n').toEnd(assetsClassFile);
 
         for (var t in loaderTypes.shader[i]) {
             shell.ShellString('\n        static get ' + loaderTypes.shader[i][t].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.shader[i][t] + '\'); }').toEnd(assetsClassFile);
@@ -478,7 +478,7 @@ if (!Object.keys(loaderTypes.misc).length) {
 } else {
     for (var i in loaderTypes.misc) {
         shell.ShellString('\n    export class ' + toPascalCase(i) + ' {').toEnd(assetsClassFile);
-        shell.ShellString('\n        static get key(): string { return \'' + i.split('/').pop() + '\'; }\n').toEnd(assetsClassFile);
+        shell.ShellString('\n        static get key(): string { return \'' + toCamelCase(i) + '\'; }\n').toEnd(assetsClassFile);
 
         for (var t in loaderTypes.misc[i]) {
             shell.ShellString('\n        static get ' + loaderTypes.misc[i][t].toLowerCase() + '(): string { return require(\'assets/' + i + '.' + loaderTypes.misc[i][t] + '\'); }').toEnd(assetsClassFile);

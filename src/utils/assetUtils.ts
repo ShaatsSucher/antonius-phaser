@@ -1,5 +1,17 @@
 import * as Assets from '../assets'
 
+function listGetters(thing) {
+  const properties = Object.getOwnPropertyNames(thing)
+  let getters = []
+  for (let property of properties) {
+    const descriptor = Object.getOwnPropertyDescriptor(thing, property)
+    if (typeof descriptor.get === 'function') {
+      getters.push(property)
+    }
+  }
+  return getters
+}
+
 export class Loader {
   private static game: Phaser.Game = null
   private static soundKeys: string[] = []
@@ -7,10 +19,13 @@ export class Loader {
 
   private static loadImages() {
     for (let image in Assets.Images) {
-      if (!this.game.cache.checkImageKey(Assets.Images[image].getName())) {
-        for (let option in Assets.Images[image]) {
-          if (option !== 'getName') {
-            this.game.load.image(Assets.Images[image].getName(), Assets.Images[image][option]())
+      if (!this.game.cache.checkImageKey(Assets.Images[image].key)) {
+        for (let option of listGetters(Assets.Images[image])) {
+          if (option !== 'key') {
+            this.game.load.image(
+              Assets.Images[image].key,
+              Assets.Images[image][option]
+            )
           }
         }
       }
@@ -19,70 +34,87 @@ export class Loader {
 
   private static loadSpritesheets() {
     for (let spritesheet in Assets.Spritesheets) {
-      if (!this.game.cache.checkImageKey(Assets.Spritesheets[spritesheet].getName())) {
+      if (!this.game.cache.checkImageKey(Assets.Spritesheets[spritesheet].key)) {
         let imageOption = null
 
-        for (let option in Assets.Spritesheets[spritesheet]) {
-          if (option !== 'getName' && option !== 'getFrameWidth' && option !== 'getFrameHeight' && option !== 'getFrameMax' && option !== 'getMargin' && option !== 'getSpacing') {
+        for (let option of listGetters(Assets.Spritesheets[spritesheet])) {
+          if (option !== 'key' && option !== 'frameWidth'
+              && option !== 'frameHeight' && option !== 'frameMax'
+              && option !== 'margin' && option !== 'spacing') {
             imageOption = option
           }
         }
 
-        this.game.load.spritesheet(Assets.Spritesheets[spritesheet].getName(), Assets.Spritesheets[spritesheet][imageOption](), Assets.Spritesheets[spritesheet].getFrameWidth(), Assets.Spritesheets[spritesheet].getFrameHeight(), Assets.Spritesheets[spritesheet].getFrameMax(), Assets.Spritesheets[spritesheet].getMargin(), Assets.Spritesheets[spritesheet].getSpacing())
+        this.game.load.spritesheet(
+          Assets.Spritesheets[spritesheet].key,
+          Assets.Spritesheets[spritesheet][imageOption],
+          Assets.Spritesheets[spritesheet].frameWidth,
+          Assets.Spritesheets[spritesheet].frameHeight,
+          Assets.Spritesheets[spritesheet].frameMax,
+          Assets.Spritesheets[spritesheet].margin,
+          Assets.Spritesheets[spritesheet].spacing
+        )
       }
     }
   }
 
   private static loadAtlases() {
     for (let atlas in Assets.Atlases) {
-      if (!this.game.cache.checkImageKey(Assets.Atlases[atlas].getName())) {
+      if (!this.game.cache.checkImageKey(Assets.Atlases[atlas].key)) {
         let imageOption = null
         let dataOption = null
 
-        for (let option in Assets.Atlases[atlas]) {
-          if (option === 'getXML' || option === 'getJSONArray' || option === 'getJSONHash') {
+        for (let option of listGetters(Assets.Atlases[atlas])) {
+          if (option === 'xml' || option === 'jsonArray'
+              || option === 'jsonHash') {
             dataOption = option
-          } else if (option !== 'getName' && option !== 'Frames') {
+          } else if (option !== 'key' && option !== 'Frames') {
             imageOption = option
           }
         }
 
-        if (dataOption === 'getXML') {
-          this.game.load.atlasXML(Assets.Atlases[atlas].getName(), Assets.Atlases[atlas][imageOption](), Assets.Atlases[atlas].getXML())
-        } else if (dataOption === 'getJSONArray') {
-          this.game.load.atlasJSONArray(Assets.Atlases[atlas].getName(), Assets.Atlases[atlas][imageOption](), Assets.Atlases[atlas].getJSONArray())
-        } else if (dataOption === 'getJSONHash') {
-          this.game.load.atlasJSONHash(Assets.Atlases[atlas].getName(), Assets.Atlases[atlas][imageOption](), Assets.Atlases[atlas].getJSONHash())
+        if (dataOption === 'xml') {
+          this.game.load.atlasXML(
+            Assets.Atlases[atlas].key,
+            Assets.Atlases[atlas][imageOption],
+            Assets.Atlases[atlas].xml
+          )
+        } else if (dataOption === 'jsonArray') {
+          this.game.load.atlasJSONArray(
+            Assets.Atlases[atlas].key,
+            Assets.Atlases[atlas][imageOption],
+            Assets.Atlases[atlas].jsonArray
+          )
+        } else if (dataOption === 'jsonHash') {
+          this.game.load.atlasJSONHash(
+            Assets.Atlases[atlas].key,
+            Assets.Atlases[atlas][imageOption],
+            Assets.Atlases[atlas].jsonHash
+          )
         }
       }
     }
   }
 
   private static orderAudioSourceArrayBasedOnSoundExtensionPreference(soundSourceArray: string[]): string[] {
-    let orderedSoundSourceArray: string[] = []
-
-    for (let e in this.soundExtensionsPreference) {
-      let sourcesWithExtension: string[] = soundSourceArray.filter((el) => {
-        return (el.substring(el.lastIndexOf('.') + 1, el.length) === this.soundExtensionsPreference[e])
-      })
-
-      orderedSoundSourceArray = orderedSoundSourceArray.concat(sourcesWithExtension)
-    }
-
-    return orderedSoundSourceArray
+    return soundSourceArray.concat().sort((lhs, rhs) => {
+      const orderL = this.soundExtensionsPreference.indexOf(lhs.match(/\.(\w+)$/i)[1])
+      const orderR = this.soundExtensionsPreference.indexOf(lhs.match(/\.(\w+)$/i)[1])
+      return orderR - orderL
+    })
   }
 
   private static loadAudio() {
     for (let audio in Assets.Audio) {
-      let soundName = Assets.Audio[audio].getName()
+      let soundName = Assets.Audio[audio].key
       this.soundKeys.push(soundName)
 
       if (!this.game.cache.checkSoundKey(soundName)) {
         let audioTypeArray = []
 
-        for (let option in Assets.Audio[audio]) {
-          if (option !== 'getName') {
-            audioTypeArray.push(Assets.Audio[audio][option]())
+        for (let option of listGetters(Assets.Audio[audio])) {
+          if (option !== 'key') {
+            audioTypeArray.push(Assets.Audio[audio][option])
           }
         }
 
@@ -95,78 +127,78 @@ export class Loader {
 
   private static loadAudiosprites() {
     for (let audio in Assets.Audiosprites) {
-      let soundName = Assets.Audiosprites[audio].getName()
+      let soundName = Assets.Audiosprites[audio].key
       this.soundKeys.push(soundName)
 
       if (!this.game.cache.checkSoundKey(soundName)) {
         let audioTypeArray = []
 
-        for (let option in Assets.Audiosprites[audio]) {
-          if (option !== 'getName' && option !== 'getJSON' && option !== 'Sprites') {
-            audioTypeArray.push(Assets.Audiosprites[audio][option]())
+        for (let option of listGetters(Assets.Audiosprites[audio])) {
+          if (option !== 'key' && option !== 'json' && option !== 'Sprites') {
+            audioTypeArray.push(Assets.Audiosprites[audio][option])
           }
         }
 
         audioTypeArray = this.orderAudioSourceArrayBasedOnSoundExtensionPreference(audioTypeArray)
 
-        this.game.load.audiosprite(soundName, audioTypeArray, Assets.Audiosprites[audio].getJSON(), null, true)
+        this.game.load.audiosprite(soundName, audioTypeArray, Assets.Audiosprites[audio].json, null, true)
       }
     }
   }
 
   private static loadBitmapFonts() {
     for (let font in Assets.BitmapFonts) {
-      if (!this.game.cache.checkBitmapFontKey(Assets.BitmapFonts[font].getName())) {
+      if (!this.game.cache.checkBitmapFontKey(Assets.BitmapFonts[font].key)) {
         let imageOption = null
         let dataOption = null
 
-        for (let option in Assets.BitmapFonts[font]) {
-          if (option === 'getXML' || option === 'getFNT') {
+        for (let option of listGetters(Assets.BitmapFonts[font])) {
+          if (option === 'xml' || option === 'fnt') {
             dataOption = option
-          } else if (option !== 'getName') {
+          } else if (option !== 'key') {
             imageOption = option
           }
         }
 
-        this.game.load.bitmapFont(Assets.BitmapFonts[font].getName(), Assets.BitmapFonts[font][imageOption](), Assets.BitmapFonts[font][dataOption]())
+        this.game.load.bitmapFont(Assets.BitmapFonts[font].key, Assets.BitmapFonts[font][imageOption], Assets.BitmapFonts[font][dataOption])
       }
     }
   }
 
   private static loadJSON() {
     for (let json in Assets.JSON) {
-      if (!this.game.cache.checkJSONKey(Assets.JSON[json].getName())) {
-        this.game.load.json(Assets.JSON[json].getName(), Assets.JSON[json].getJSON(), true)
+      if (!this.game.cache.checkJSONKey(Assets.JSON[json].key)) {
+        this.game.load.json(Assets.JSON[json].key, Assets.JSON[json].json, true)
       }
     }
   }
 
   private static loadXML() {
     for (let xml in Assets.XML) {
-      if (!this.game.cache.checkXMLKey(Assets.XML[xml].getName())) {
-        this.game.load.xml(Assets.XML[xml].getName(), Assets.XML[xml].getXML(), true)
+      if (!this.game.cache.checkXMLKey(Assets.XML[xml].key)) {
+        this.game.load.xml(Assets.XML[xml].key, Assets.XML[xml].xml, true)
       }
     }
   }
 
   private static loadText() {
     for (let text in Assets.Text) {
-      if (!this.game.cache.checkTextKey(Assets.Text[text].getName())) {
-        this.game.load.text(Assets.Text[text].getName(), Assets.Text[text].getTXT(), true)
+      if (!this.game.cache.checkTextKey(Assets.Text[text].key)) {
+        this.game.load.text(Assets.Text[text].key, Assets.Text[text].txt, true)
       }
     }
   }
 
   private static loadScripts() {
     for (let script in Assets.Scripts) {
-      this.game.load.script(Assets.Scripts[script].getName(), Assets.Scripts[script].getJS())
+      this.game.load.script(Assets.Scripts[script].key, Assets.Scripts[script].js)
     }
   }
 
   private static loadShaders() {
     for (let shader in Assets.Shaders) {
-      if (!this.game.cache.checkShaderKey(Assets.Shaders[shader].getName())) {
-        this.game.load.shader(Assets.Shaders[shader].getName(), Assets.Shaders[shader].getFRAG(), true)
+      if (!this.game.cache.checkShaderKey(Assets.Shaders[shader].key)) {
+        this.game.load.shader(Assets.Shaders[shader].key, Assets.Shaders[shader].frag, true)
       }
     }
   }
