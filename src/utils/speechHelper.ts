@@ -87,6 +87,23 @@ export default class SpeechHelper {
         lastGroup = nextGroup
         return Phaser.ArrayUtils.getRandomItem(samples[nextGroup])
       }
+    },
+    pattern: (samples: { [pattern: string]: string[] }, getPattern: () => string) => () => {
+      const pattern: string[] = getPattern().split('')
+      let currentRun = pattern
+      let lastSample = null
+      return () => {
+        if (currentRun.length === 0) {
+          currentRun = pattern
+        }
+        const currentToken = currentRun.shift()
+        const availableSamples = lastSample
+          ? ArrayUtils.removeItem(samples[currentToken], lastSample)
+          : samples[currentToken]
+        const nextSample = Phaser.ArrayUtils.getRandomItem(availableSamples)
+        lastSample = nextSample
+        return nextSample
+      }
     }
   }
 }
