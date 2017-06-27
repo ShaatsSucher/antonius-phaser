@@ -5,7 +5,7 @@ export default class SpeechHelper {
   private anchor: Phaser.Point
 
   constructor(private character: Character, anchorX: number, anchorY: number,
-              private sampleGenerator: () => () => string) {
+              private sampleGenerator: () => () => string | null) {
     this.anchor = new Phaser.Point(anchorX, anchorY)
   }
 
@@ -24,9 +24,6 @@ export default class SpeechHelper {
     if (abort) {
       stopConditions.push(abort)
     }
-    if (stopConditions.length === 0) {
-      throw 'At least one of `timeout` (>0) or `abort` must be given'
-    }
 
     let playbackDone: () => void
     this.displayText(text, new Promise<void>(resolve => { playbackDone = resolve }))
@@ -37,6 +34,9 @@ export default class SpeechHelper {
           await beforePlaying()
         }
         const nextUp = nextSample()
+        if (!nextUp) {
+          break
+        }
         await this.play(nextUp, stopConditions)
       } catch (_) {
         break
@@ -94,7 +94,7 @@ export default class SpeechHelper {
       let lastSample = null
       return () => {
         if (currentRun.length === 0) {
-          currentRun = pattern
+          return null
         }
         const currentToken = currentRun.shift()
         const availableSamples = lastSample
@@ -102,6 +102,7 @@ export default class SpeechHelper {
           : samples[currentToken]
         const nextSample = Phaser.ArrayUtils.getRandomItem(availableSamples)
         lastSample = nextSample
+        console.log(nextSample)
         return nextSample
       }
     }
