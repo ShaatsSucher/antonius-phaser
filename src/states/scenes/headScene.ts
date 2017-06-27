@@ -1,6 +1,7 @@
 import * as Assets from '../../assets'
 
 import HellmouthCharacter from '../../characters/hellmouth'
+import AntoniusCharacter from '../../characters/antonius'
 
 import SheechHelper from '../../utils/speechHelper'
 
@@ -9,6 +10,7 @@ import StringUtils from '../../utils/stringUtils'
 
 export default class HeadScene extends Phaser.State {
   private hellmouth: HellmouthCharacter = null
+  private antonius: AntoniusCharacter = null
 
   public create(): void {
     // Add background
@@ -35,8 +37,31 @@ export default class HeadScene extends Phaser.State {
     makeMouthTalk()
 
     // Add antonius
-    const antonius = this.game.add.sprite(258, 120, Assets.Spritesheets.SpritesheetsAntonius.key)
+    const antonius = this.antonius = new AntoniusCharacter(this.game, 258, 120)
+    this.game.add.existing(antonius)
     antonius.scale = new Phaser.Point(2, 2)
+
+    function makeAntoniusTalk() {
+      antonius.inputEnabled = true
+      antonius.input.useHandCursor = true
+      antonius.speechPattern = Phaser.ArrayUtils.getRandomItem([
+        'slslsl',
+        'sllslsl',
+        'llssll',
+        'sssssssssl'
+      ])
+      console.log(antonius.speechPattern)
+      antonius.events.onInputDown.addOnce(() => {
+        antonius.inputEnabled = false
+        self.game.canvas.style.cursor = 'default'
+        antonius.speech.say('hello', null, null, async () => {
+          antonius.setActiveState('talking')
+        })
+        .then(() => antonius.setActiveState('idle'))
+        .then(makeAntoniusTalk)
+      })
+    }
+    makeAntoniusTalk()
 
     // Fade in from black over one second
     this.game.camera.flash(0x000000, 1000)
