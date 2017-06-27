@@ -50,23 +50,13 @@ export namespace Images {
 }
 
 export namespace Spritesheets {
-    export class SpritesheetsAntoniusTalkcycle {
-        static get key(): string { return 'spritesheetsAntoniusTalkcycle'; }
+    export class SpritesheetsAntonius {
+        static get key(): string { return 'spritesheetsAntonius'; }
 
-        static get png(): string { return require('assets/spritesheets/antonius-talkcycle.[32,32,2,0,0].png'); }
+        static get png(): string { return require('assets/spritesheets/antonius.[32,32,9].png'); }
         static get frameWidth(): number { return 32; }
         static get frameHeight(): number { return 32; }
-        static get frameMax(): number { return 2; }
-        static get margin(): number { return 0; }
-        static get spacing(): number { return 0; }
-    }
-    export class SpritesheetsAntoniusWalkcycle {
-        static get key(): string { return 'spritesheetsAntoniusWalkcycle'; }
-
-        static get png(): string { return require('assets/spritesheets/antonius-walkcycle.[32,32,7,0,0].png'); }
-        static get frameWidth(): number { return 32; }
-        static get frameHeight(): number { return 32; }
-        static get frameMax(): number { return 7; }
+        static get frameMax(): number { return 9; }
         static get margin(): number { return 0; }
         static get spacing(): number { return 0; }
     }

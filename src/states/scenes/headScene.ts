@@ -35,7 +35,7 @@ export default class HeadScene extends Phaser.State {
     makeMouthTalk()
 
     // Add antonius
-    const antonius = this.game.add.sprite(258, 120, Assets.Spritesheets.SpritesheetsAntoniusTalkcycle.key)
+    const antonius = this.game.add.sprite(258, 120, Assets.Spritesheets.SpritesheetsAntonius.key)
     antonius.scale = new Phaser.Point(2, 2)
 
     // Fade in from black over one second
