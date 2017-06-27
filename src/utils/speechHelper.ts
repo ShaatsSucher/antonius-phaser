@@ -75,7 +75,7 @@ export default class SpeechHelper {
         const availableSamples = lastSample
           ? ArrayUtils.removeItem(samples, lastSample)
           : samples
-        const nextSample = Phaser.ArrayUtils.getRandomItem(samples)
+        const nextSample = Phaser.ArrayUtils.getRandomItem(availableSamples)
         lastSample = nextSample
         return nextSample
       }
