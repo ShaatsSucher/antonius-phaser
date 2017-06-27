@@ -7,7 +7,7 @@ import * as WebFontLoader from 'webfontloader'
 import Boot from './states/boot'
 import Preloader from './states/preloader'
 import Title from './states/title'
-import HeadScene from './states/head'
+import HeadScene from './states/scenes/headScene'
 import * as Utils from './utils/utils'
 import * as Assets from './assets'
 

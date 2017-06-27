@@ -1,13 +1,13 @@
-import * as Assets from '../assets'
+import * as Assets from '../../assets'
 
-import HellmouthCharacter from '../characters/hellmouth'
+import HellmouthCharacter from '../../characters/hellmouth'
 
-import SheechHelper from '../utils/speechHelper'
+import SheechHelper from '../../utils/speechHelper'
 
-import ArrayUtils from '../utils/arrayUtils'
-import StringUtils from '../utils/stringUtils'
+import ArrayUtils from '../../utils/arrayUtils'
+import StringUtils from '../../utils/stringUtils'
 
-export default class HeadSceneState extends Phaser.State {
+export default class HeadScene extends Phaser.State {
   private hellmouth: HellmouthCharacter = null
 
   public create(): void {
