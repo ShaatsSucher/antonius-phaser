@@ -1,5 +1,4 @@
 import * as Assets from '../assets'
-import PnCState from './pnc-state'
 
 import HellmouthCharacter from '../characters/hellmouth'
 
@@ -8,7 +7,7 @@ import SheechHelper from '../utils/speechHelper'
 import ArrayUtils from '../utils/arrayUtils'
 import StringUtils from '../utils/stringUtils'
 
-export default class HeadSceneState extends PnCState {
+export default class HeadSceneState extends Phaser.State {
   protected hellmouthSprite: Phaser.Sprite = null
   protected hellmouthSamples: string[] = ArrayUtils.range(1, 38).map(i =>
     Assets.Audio[`AudioHellmouth${StringUtils.intToString(i, 3)}`].key
@@ -26,7 +25,8 @@ export default class HeadSceneState extends PnCState {
   }
 
   public create(): void {
-    super.create()
+    // Add background
+    this.game.add.sprite(0, 0, Assets.Images.ImagesBackgroundHead.key)
 
     const hellmouth = new HellmouthCharacter(this.game, 135, 40)
     this.game.add.existing(hellmouth)
