@@ -1,0 +1,92 @@
+import Character from '../characters/character'
+import ArrayUtils from '../utils/arrayUtils'
+
+export default class SpeechHelper {
+  private anchor: Phaser.Point
+
+  constructor(private character: Character, anchorX: number, anchorY: number,
+              private sampleGenerator: () => () => string) {
+    this.anchor = new Phaser.Point(anchorX, anchorY)
+  }
+
+  public async say(text: string, timeout?: number, abort?: Promise<void>,
+             beforePlaying?: () => (Promise<void> | undefined)): Promise<void> {
+    const nextSample = this.sampleGenerator()
+
+    let stopConditions: Promise<void>[] = []
+    if (timeout) {
+      stopConditions.push(new Promise<void>(resolve => {
+        const timer = this.character.game.time.create()
+        timer.add(Phaser.Timer.SECOND * timeout, resolve)
+        timer.start()
+      }))
+    }
+    if (abort) {
+      stopConditions.push(abort)
+    }
+    if (stopConditions.length === 0) {
+      throw 'At least one of `timeout` (>0) or `abort` must be given'
+    }
+
+    let playbackDone: () => void
+    this.displayText(text, new Promise<void>(resolve => { playbackDone = resolve }))
+
+    while (true) {
+      try {
+        if (beforePlaying) {
+          await beforePlaying()
+        }
+        const nextUp = nextSample()
+        await this.play(nextUp, stopConditions)
+      } catch (_) {
+        break
+      }
+    }
+    playbackDone()
+  }
+
+  private displayText(text: string, until: Promise<void>) {
+    // TODO: display `text` over `character` relative to `anchor`
+    const test = { } // TODO: create text object
+    const removeText = () => { } // TODO: add text removal logic
+    until.then(removeText, removeText)
+  }
+
+  private play(sample: string, abortConditions: Promise<void>[] = []): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      Promise.race(abortConditions).then(() => reject('abort'), reject)
+      const sound = this.character.game.sound.play(sample)
+      sound.onStop.addOnce(resolve)
+    })
+  }
+
+  public static Generators = {
+    sequential: (samples: string[]) => () => {
+      let lastIndex = samples.length - 1
+      return () => {
+        const nextIndex = (lastIndex + 1) % samples.length
+        lastIndex = nextIndex
+        return samples[nextIndex]
+      }
+    },
+    random: (samples: string[]) => () => {
+      let lastSample = null
+      return () => {
+        const availableSamples = lastSample
+          ? ArrayUtils.removeItem(samples, lastSample)
+          : samples
+        const nextSample = Phaser.ArrayUtils.getRandomItem(samples)
+        lastSample = nextSample
+        return nextSample
+      }
+    },
+    alternating: (samples: string[][]) => () => {
+      let lastGroup = samples.length - 1
+      return () => {
+        const nextGroup = (lastGroup + 1) % samples.length
+        lastGroup = nextGroup
+        return Phaser.ArrayUtils.getRandomItem(samples[nextGroup])
+      }
+    }
+  }
+}
