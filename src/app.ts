@@ -20,13 +20,11 @@ class App extends Phaser.Game {
       window['game'] = this
     }
 
-    this.state.add('boot', Boot)
+    this.state.add('boot', Boot, true)
     this.state.add('preloader', Preloader)
     this.state.add('title', Title)
     this.state.add('head', HeadScene)
     this.state.add('bard', BardScene)
-
-    this.state.start('boot')
   }
 }
 
