@@ -13,15 +13,22 @@ export default class BardCharacter extends Character {
       Assets.Audio[`AudioBard${item[0]}${StringUtils.intToString(i, 3)}`].key
     )
   )))
+  public characterHead: Phaser.Sprite
 
   constructor(game: Phaser.Game, x: number, y: number) {
-    super(game, x, y, Assets.Spritesheets.SpritesheetsGoose.key)
+    super(game, x, y, Assets.Spritesheets.SpritesheetsBard.key)
+
+    this.characterHead = new Phaser.Sprite(this.game, 0, 0, Assets.Spritesheets.SpritesheetsBardHead.key)
+    this.characterHead.animations.add('talking', [0, 1], 4, true)
+    this.addChild(this.characterHead)
+    this.characterHead.visible = false
 
     this.animations.add('idle', [0], 0, false)
-    this.animations.add('talking', [0, 1], 8, true)
-    this.animations.add('walking', [0].concat(ArrayUtils.range(2, 7)), 8, true)
+    this.animations.add('playing', ArrayUtils.range(0, 7), 8, true)
+    this.animations.add('walking', ArrayUtils.range(8, 15), 8, true)
 
     this.addCharacterState('idle', new IdleState(this))
+    this.addCharacterState('singing', new SingingState(this))
     this.addCharacterState('talking', new TalkingState(this))
     this.addCharacterState('walking', new WalkingState(this))
 
@@ -34,6 +41,21 @@ class IdleState implements CharacterState<BardCharacter> {
 
   async enter() {
     this.character.play('idle')
+
+    this.character.characterHead.visible = false
+  }
+}
+
+class SingingState implements CharacterState<BardCharacter> {
+  constructor(public character: BardCharacter) { }
+
+  async enter() {
+    this.character.animations.stop()
+    this.character.play('playing')
+
+    this.character.characterHead.animations.stop()
+    this.character.characterHead.visible = true
+    this.character.characterHead.play('talking')
   }
 }
 
@@ -41,8 +63,12 @@ class TalkingState implements CharacterState<BardCharacter> {
   constructor(public character: BardCharacter) { }
 
   async enter() {
-    this.character.animations.stop() // reset animation if necessary
-    const anim = this.character.play('talking')
+    this.character.animations.stop()
+    this.character.play('idle')
+
+    this.character.characterHead.animations.stop()
+    this.character.characterHead.visible = true
+    this.character.characterHead.play('talking')
   }
 }
 
@@ -50,6 +76,9 @@ class WalkingState implements CharacterState<BardCharacter> {
   constructor(public character: BardCharacter) { }
 
   async enter() {
-    const anim = this.character.play('walking')
+    this.character.animations.stop()
+    this.character.play('walking')
+
+    this.character.characterHead.visible = false
   }
 }
