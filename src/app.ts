@@ -15,6 +15,10 @@ class App extends Phaser.Game {
   constructor(config: Phaser.IGameConfig) {
     super (config)
 
+    if (DEBUG) {
+      window['game'] = this
+    }
+
     this.state.add('boot', Boot)
     this.state.add('preloader', Preloader)
     this.state.add('title', Title)
