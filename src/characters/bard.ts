@@ -6,11 +6,11 @@ import StringUtils from '../utils/stringUtils'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class BardCharacter extends Character {
-  public speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.alternating([
+  public speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.alternating((<[string, number][]>[
     ['Do', 6], ['Re', 6], ['Mi', 6], ['Fa', 6], ['So', 5], ['La', 5], ['Ti', 6]
-  ].map((syllable, max) =>
-    ArrayUtils.range(1, max).map(i =>
-      Assets.Audio[`AudioBard${syllable}${StringUtils.intToString(i, 3)}`].key
+  ]).map(item =>
+    ArrayUtils.range(1, item[1]).map(i =>
+      Assets.Audio[`AudioBard${item[0]}${StringUtils.intToString(i, 3)}`].key
     )
   )))
 
