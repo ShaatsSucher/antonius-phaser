@@ -3,7 +3,7 @@ import * as Assets from '../../assets'
 import HellmouthCharacter from '../../characters/hellmouth'
 import AntoniusCharacter from '../../characters/antonius'
 
-import SheechHelper from '../../utils/speechHelper'
+import Arrow from '../../gameObjects/arrow'
 
 import ArrayUtils from '../../utils/arrayUtils'
 import StringUtils from '../../utils/stringUtils'
@@ -15,6 +15,17 @@ export default class HeadScene extends Phaser.State {
   public create(): void {
     // Add background
     this.game.add.sprite(0, 0, Assets.Images.ImagesBackgroundHead.key)
+
+    // Add navigation arrow
+    const arrow = new Arrow(this.game, 300, 95)
+    arrow.events.onInputDown.addOnce(() => {
+      arrow.enabled = false
+      this.game.camera.onFadeComplete.addOnce(() => {
+        this.game.state.start('bard')
+      })
+      this.game.camera.fade(0x000000, 1000)
+    })
+    this.game.add.existing(arrow)
 
     // Add hellmouth
     const hellmouth = this.hellmouth = new HellmouthCharacter(this.game, 135, 40)
