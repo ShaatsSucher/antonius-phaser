@@ -120,23 +120,13 @@ export namespace Spritesheets {
         static get margin(): number { return 0; }
         static get spacing(): number { return 0; }
     }
-    export class SpritesheetsGooseTalkcycle {
-        static get key(): string { return 'spritesheetsGooseTalkcycle'; }
+    export class SpritesheetsGoose {
+        static get key(): string { return 'spritesheetsGoose'; }
 
-        static get png(): string { return require('assets/spritesheets/goose-talkcycle.[64,64,2,0,0].png'); }
+        static get png(): string { return require('assets/spritesheets/goose.[64,64,8].png'); }
         static get frameWidth(): number { return 64; }
         static get frameHeight(): number { return 64; }
-        static get frameMax(): number { return 2; }
-        static get margin(): number { return 0; }
-        static get spacing(): number { return 0; }
-    }
-    export class SpritesheetsGooseWalkcycle {
-        static get key(): string { return 'spritesheetsGooseWalkcycle'; }
-
-        static get png(): string { return require('assets/spritesheets/goose-walkcycle.[64,64,7,0,0].png'); }
-        static get frameWidth(): number { return 64; }
-        static get frameHeight(): number { return 64; }
-        static get frameMax(): number { return 7; }
+        static get frameMax(): number { return 8; }
         static get margin(): number { return 0; }
         static get spacing(): number { return 0; }
     }
