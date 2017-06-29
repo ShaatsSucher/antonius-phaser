@@ -13,7 +13,6 @@
     "setupGameSize": "node ./scripts/setupGameSize.js",
     "assets:dev": "node ./scripts/generateAssetsClass.js --dev",
     "assets": "node ./scripts/generateAssetsClass.js",
-    "fassets": "node ./scripts/functional-asset-gen.js",
     "postinstall": "npm run setupGameSize",
     "electron:dev": "npm run build:dev && electron .",
     "electron:dist": "npm run build:dist && electron .",
