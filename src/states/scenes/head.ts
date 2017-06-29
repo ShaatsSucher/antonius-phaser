@@ -20,7 +20,9 @@ export default class HeadScene extends Scene {
   constructor() {
     super(
       Assets.Images.backgroundHead.key,
-      InitialState
+      TheIntroduction,
+      ThePathIsSet,
+      TheCakeIsALie
     )
   }
 
@@ -28,6 +30,10 @@ export default class HeadScene extends Scene {
     // Add navigation arrow
     const arrow = this.toBardArrow = new Arrow(this.game, 300, 95)
     this.game.add.existing(arrow)
+    arrow.events.onInputDown.addOnce(() => {
+      arrow.enabled = false
+      this.fadeTo('bard')
+    })
 
     // Add hellmouth
     const hellmouth = this.hellmouth = new HellmouthCharacter(this.game, 135, 40)
@@ -40,54 +46,79 @@ export default class HeadScene extends Scene {
   }
 }
 
-class InitialState implements SceneState<HeadScene> {
+class TheIntroduction implements SceneState<HeadScene> {
   constructor (public readonly scene: HeadScene) { }
-  public getStateName() { return 'initial' }
+  public getStateName() { return 'the introduction' }
 
   public async enter(): Promise<void> {
     const scene = this.scene
 
-    // Transition to next scene
-    scene.toBardArrow.events.onInputDown.addOnce(() => {
-      scene.toBardArrow.enabled = false
-      scene.fadeTo('bard')
+    scene.toBardArrow.visible = false
+    await scene.hellmouth.setActiveState('idle')
+
+    scene.hellmouth.interactionEnabled = true
+    scene.hellmouth.events.onInputDown.addOnce(async () => {
+      scene.hellmouth.interactionEnabled = false
+      await scene.hellmouth.setActiveState('talking')
+
+      const resetTalkingAnim = async () => {
+        scene.hellmouth.setActiveState('talking')
+      }
+
+      await scene.hellmouth.speech.say('Um Gottes Willen...', 3, null, resetTalkingAnim)
+      await scene.hellmouth.speech.say('Es toben ganz schön viele\ndieser Dämonen herum!!', 6, null, resetTalkingAnim)
+      await scene.hellmouth.speech.say('Wenn du irgendwelche Fragen hast,\nkannst du dich jederzeit an mich wenden!', 6, null, resetTalkingAnim)
+      await scene.hellmouth.speech.say('Du schaffst das, Antonius!', 3, null, resetTalkingAnim)
+      await scene.hellmouth.speech.say('Wenn nicht du, wer dann?', 3, null, resetTalkingAnim)
+      await scene.hellmouth.speech.say('Nun geh und leg los...', 3, null, resetTalkingAnim)
+
+      scene.setActiveState('the path is set')
+    })
+  }
+}
+
+class ThePathIsSet implements SceneState<HeadScene> {
+  constructor (public readonly scene: HeadScene) { }
+  public getStateName() { return 'the path is set' }
+
+  public async enter(): Promise<void> {
+    const scene = this.scene
+
+    await scene.hellmouth.setActiveState('idle')
+    await scene.antonius.setActiveState('idle')
+
+    scene.toBardArrow.visible = true
+  }
+}
+
+class TheCakeIsALie implements SceneState<HeadScene> {
+  constructor (public readonly scene: HeadScene) { }
+  public getStateName() { return 'the cake is a lie' }
+
+  private inputBinding
+
+  public async enter(): Promise<void> {
+    const scene = this.scene
+
+    await scene.hellmouth.setActiveState('idle')
+    await scene.antonius.setActiveState('idle')
+
+    scene.antonius.interactionEnabled = true
+    scene.antonius.events.onInputDown.add(async () => {
+      scene.antonius.interactionEnabled = false
+
+      const resetTalkingAnim = async () => {
+        scene.hellmouth.setActiveState('talking')
+      }
+
+      await scene.hellmouth.speech.say('Im Moment kannst du dem Minnesänger\nleider noch nicht helfen.', 4, null, resetTalkingAnim)
+      await scene.hellmouth.speech.say('Im weiteren Spielverlauf findest du bestimmt\ngenau den richtigen Gegenstand für diese Situation.', 6, null, resetTalkingAnim)
+      await scene.hellmouth.speech.say('Komme später noch einmal zurück.', 2, null, resetTalkingAnim)
+
+      await scene.hellmouth.setActiveState('idle')
+      scene.hellmouth.interactionEnabled = true
     })
 
-    function makeMouthTalk() {
-      scene.hellmouth.inputEnabled = true
-      scene.hellmouth.input.useHandCursor = true
-      scene.hellmouth.events.onInputDown.addOnce(() => {
-        scene.hellmouth.inputEnabled = false
-        scene.game.canvas.style.cursor = 'default'
-        scene.hellmouth.speech.say('hello', 2, null, async () => {
-          scene.hellmouth.setActiveState('talking')
-        })
-        .then(() => scene.hellmouth.setActiveState('idle'))
-        .then(makeMouthTalk)
-      })
-    }
-    makeMouthTalk()
-
-    function makeAntoniusTalk() {
-      scene.antonius.inputEnabled = true
-      scene.antonius.input.useHandCursor = true
-      scene.antonius.speechPattern = Phaser.ArrayUtils.getRandomItem([
-        'slslsl',
-        'sllslsl',
-        'llssll',
-        'sssssssssl'
-      ])
-      console.log(scene.antonius.speechPattern)
-      scene.antonius.events.onInputDown.addOnce(() => {
-        scene.antonius.inputEnabled = false
-        scene.game.canvas.style.cursor = 'default'
-        scene.antonius.speech.say('hello', null, null, async () => {
-          scene.antonius.setActiveState('talking')
-        })
-        .then(() => scene.antonius.setActiveState('idle'))
-        .then(makeAntoniusTalk)
-      })
-    }
-    makeAntoniusTalk()
+    scene.toBardArrow.visible = true
   }
 }
