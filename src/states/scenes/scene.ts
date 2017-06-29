@@ -1,6 +1,7 @@
 import SceneState from './sceneState'
 
 export default abstract class Scene extends Phaser.State {
+  private showingScene = false
   private states: { [name: string]: SceneState<Scene> }
   private _activeState: SceneState<Scene>
 
@@ -30,7 +31,9 @@ export default abstract class Scene extends Phaser.State {
       await this.activeState.exit()
     }
     this._activeState = this.states[name]
-    await this.activeState.enter()
+    if (this.showingScene) {
+      await this.activeState.enter()
+    }
   }
 
   get activeState(): SceneState<Scene> {
@@ -63,6 +66,11 @@ export default abstract class Scene extends Phaser.State {
 
     this.game.input.enabled = true
 
+    this.showingScene = true
     this.activeState.enter()
+  }
+
+  public exit() {
+    this.showingScene = false
   }
 }
