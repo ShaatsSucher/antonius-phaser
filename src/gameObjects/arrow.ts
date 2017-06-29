@@ -25,17 +25,16 @@ export default class Arrow extends Phaser.Sprite {
   public set enabled(value: boolean) {
     if (value === this.enabled) return
     this._enabled = value
+    this.play('default')
     if (this.enabled) {
       this.inputEnabled = true
       this.input.useHandCursor = true
-      this.play('blinking')
       this.alpha = 1
     } else {
       this.inputEnabled = false
       if (this.hovered) {
         this.game.canvas.style.cursor = 'default'
       }
-      this.play('static')
       this.alpha = 0.6
     }
     this.updateTexture()
