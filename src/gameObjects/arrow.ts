@@ -1,6 +1,7 @@
+import GameObject from './gameObject'
 import { Spritesheets } from '../assets'
 
-export default class Arrow extends Phaser.Sprite {
+export default class Arrow extends GameObject {
   private _enabled = false
   private hovered = false
 
@@ -9,8 +10,6 @@ export default class Arrow extends Phaser.Sprite {
 
     this.animations.add('default', [0], 1, false)
     this.animations.add('hovered', [1], 1, false)
-
-    this.enabled = true
 
     this.anchor = new Phaser.Point(0.5, 0.5)
 
@@ -22,21 +21,9 @@ export default class Arrow extends Phaser.Sprite {
     return this._enabled
   }
 
-  public set enabled(value: boolean) {
-    if (value === this.enabled) return
-    this._enabled = value
-    this.play('default')
-    if (this.enabled) {
-      this.inputEnabled = true
-      this.input.useHandCursor = true
-      this.alpha = 1
-    } else {
-      this.inputEnabled = false
-      if (this.hovered) {
-        this.game.canvas.style.cursor = 'default'
-      }
-      this.alpha = 0.6
-    }
+  public setInteractionEnabled(value: boolean) {
+    super.setInteractionEnabled(value)
+    this.alpha = value ? 1 : 0.6
     this.updateTexture()
   }
 
@@ -53,6 +40,6 @@ export default class Arrow extends Phaser.Sprite {
   }
 
   private updateTexture() {
-    this.play(this.enabled && this.hovered ? 'hovered' : 'default')
+    this.play(this.interactionEnabled && this.hovered ? 'hovered' : 'default')
   }
 }
