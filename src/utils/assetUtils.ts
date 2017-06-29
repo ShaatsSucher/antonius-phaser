@@ -36,8 +36,6 @@ export class Loader {
           }
         }
 
-        console.dir(spritesheet)
-
         this.game.load.spritesheet(
           spritesheet.key,
           spritesheet[imageOption],
