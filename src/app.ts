@@ -6,9 +6,9 @@ import * as WebFontLoader from 'webfontloader'
 
 import Boot from './states/boot'
 import Preloader from './states/preloader'
-import Title from './states/title'
-import HeadScene from './states/scenes/headScene'
-import BardScene from './states/scenes/bardScene'
+import IntroScene from './states/scenes/intro'
+import HeadScene from './states/scenes/head'
+import BardScene from './states/scenes/bard'
 import * as Utils from './utils/utils'
 import * as Assets from './assets'
 
@@ -24,7 +24,7 @@ class App extends Phaser.Game {
 
     this.state.add('boot', Boot, true)
     this.state.add('preloader', Preloader)
-    this.state.add('title', Title)
+    this.state.add('intro', IntroScene)
     this.state.add('head', HeadScene)
     this.state.add('bard', BardScene)
   }
