@@ -18,7 +18,11 @@ export default abstract class Scene extends Phaser.State {
     this._activeState = concreteStates[0]
   }
 
-  setBackgroundImage(key: string) {
+  public getScene<T extends Scene>(name: string): T {
+    return <T>this.state.states[name]
+  }
+
+  public setBackgroundImage(key: string) {
     this.backgroundKey = key
     this.backgroundImage.loadTexture(key)
   }
