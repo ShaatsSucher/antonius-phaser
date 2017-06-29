@@ -8,12 +8,12 @@ import SpeechHelper from '../utils/speechHelper'
 export default class CatCharacter extends Character {
   public speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.sequential(
     ArrayUtils.range(1, 3).map(i =>
-      Assets.Audio[`AudioCatDenial${StringUtils.intToString(i, 3)}`].key
+      Assets.Audio[`catDenial${StringUtils.intToString(i, 3)}`].key
     )
   ))
 
   constructor(game: Phaser.Game, x: number, y: number) {
-    super(game, x, y, Assets.Spritesheets.SpritesheetsCat.key)
+    super(game, x, y, Assets.Spritesheets.cat.key)
 
     this.animations.add('idle', null, 6, true)
 

@@ -10,17 +10,17 @@ export default class AntoniusCharacter extends Character {
   public speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.pattern(
     {
       l: ArrayUtils.range(1, 30).map(i =>
-        Assets.Audio[`AudioAntoniusLong${StringUtils.intToString(i, 3)}`].key
+        Assets.Audio[`antoniusLong${StringUtils.intToString(i, 3)}`].key
       ),
       s: ArrayUtils.range(1, 100).map(i =>
-        Assets.Audio[`AudioAntoniusShort${StringUtils.intToString(i, 3)}`].key
+        Assets.Audio[`antoniusShort${StringUtils.intToString(i, 3)}`].key
       )
     },
     () => this.speechPattern
   ))
 
   constructor(game: Phaser.Game, x: number, y: number) {
-    super(game, x, y, Assets.Spritesheets.SpritesheetsAntonius.key)
+    super(game, x, y, Assets.Spritesheets.antonius.key)
 
     this.animations.add('idle', [0], 0, false)
     this.animations.add('talking', [0, 1], 8, true)

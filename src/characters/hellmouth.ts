@@ -8,12 +8,12 @@ import SpeechHelper from '../utils/speechHelper'
 export default class HellmouthCharacter extends Character {
   public speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.random(
     ArrayUtils.range(1, 38).map(i =>
-      Assets.Audio[`AudioHellmouth${StringUtils.intToString(i, 3)}`].key
+      Assets.Audio[`hellmouth${StringUtils.intToString(i, 3)}`].key
     )
   ))
 
   constructor(game: Phaser.Game, x: number, y: number) {
-    super(game, x, y, Assets.Spritesheets.SpritesheetsHellmouthTalkcycle.key)
+    super(game, x, y, Assets.Spritesheets.hellmouthTalkcycle.key)
 
     this.animations.add('idle', [0], 60, true)
     this.animations.add('talking', null, 16, true)

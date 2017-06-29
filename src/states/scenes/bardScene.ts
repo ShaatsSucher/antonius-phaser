@@ -19,23 +19,23 @@ export default class BardScene extends Phaser.State {
 
   public create(): void {
     // Add background
-    this.game.add.sprite(0, 0, Assets.Images.ImagesBackgroundBard.key)
+    this.add.sprite(0, 0, Assets.Images.backgroundBard.key)
 
     const goose = this.goose = new GooseCharacter(this.game, 48, 10)
     goose.scale = new Phaser.Point(3, 3)
-    this.game.add.existing(goose)
+    this.add.existing(goose)
 
     const bard = this.bard = new BardCharacter(this.game, 48, 10)
     bard.scale = new Phaser.Point(3, 3)
-    this.game.add.existing(bard)
+    this.add.existing(bard)
 
     const cat = this.cat = new CatCharacter(this.game, 48, 10)
     cat.scale = new Phaser.Point(3, 3)
-    this.game.add.existing(cat)
+    this.add.existing(cat)
 
     const antonius = this.antonius = new AntoniusCharacter(this.game, 292, 120)
     antonius.scale = new Phaser.Point(3, 3)
-    this.game.add.existing(antonius)
+    this.add.existing(antonius)
 
     bard.setActiveState('idle')
     goose.setActiveState('idle')
@@ -44,6 +44,6 @@ export default class BardScene extends Phaser.State {
     antonius.setActiveState('idle')
 
     // Fade in from black over one second
-    this.game.camera.flash(0x000000, 1000)
+    this.camera.flash(0x000000, 1000)
   }
 }

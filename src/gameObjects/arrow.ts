@@ -5,7 +5,7 @@ export default class Arrow extends Phaser.Sprite {
   private hovered = false
 
   constructor(game: Phaser.Game, x: number, y: number) {
-    super(game, x, y, Spritesheets.SpritesheetsArrow.key)
+    super(game, x, y, Spritesheets.arrow.key)
 
     this.animations.add('default', [0], 1, false)
     this.animations.add('hovered', [1], 1, false)

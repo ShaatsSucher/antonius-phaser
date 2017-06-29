@@ -8,15 +8,15 @@ export default class Preloader extends Phaser.State {
   public preload(): void {
     this.preloadBarSprite = this.game.add.sprite(
       this.game.world.centerX, this.game.world.centerY,
-      Assets.Atlases.AtlasesPreloadSprite.key,
-      Assets.Atlases.AtlasesPreloadSprite.Frames.PreloadBar)
+      Assets.Atlases.preloadSprite.key,
+      Assets.Atlases.preloadSprite.frames.preloadBar)
     this.preloadBarSprite.anchor.setTo(0, 0.5)
     this.preloadBarSprite.x -= this.preloadBarSprite.width / 2
 
     this.preloadFrameSprite = this.game.add.sprite(
       this.game.world.centerX, this.game.world.centerY,
-      Assets.Atlases.AtlasesPreloadSprite.key,
-      Assets.Atlases.AtlasesPreloadSprite.Frames.PreloadFrame)
+      Assets.Atlases.preloadSprite.key,
+      Assets.Atlases.preloadSprite.frames.preloadFrame)
     this.preloadFrameSprite.anchor.setTo(0, 0.5)
     this.preloadFrameSprite.x -= this.preloadFrameSprite.width / 2
 

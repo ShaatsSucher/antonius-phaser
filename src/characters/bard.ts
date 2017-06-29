@@ -10,15 +10,15 @@ export default class BardCharacter extends Character {
     ['Do', 6], ['Re', 6], ['Mi', 6], ['Fa', 6], ['So', 5], ['La', 5], ['Ti', 6]
   ]).map(item =>
     ArrayUtils.range(1, item[1]).map(i =>
-      Assets.Audio[`AudioBard${item[0]}${StringUtils.intToString(i, 3)}`].key
+      Assets.Audio[`bard${item[0]}${StringUtils.intToString(i, 3)}`].key
     )
   )))
   public characterHead: Phaser.Sprite
 
   constructor(game: Phaser.Game, x: number, y: number) {
-    super(game, x, y, Assets.Spritesheets.SpritesheetsBard.key)
+    super(game, x, y, Assets.Spritesheets.bard.key)
 
-    this.characterHead = new Phaser.Sprite(this.game, 0, 0, Assets.Spritesheets.SpritesheetsBardHead.key)
+    this.characterHead = new Phaser.Sprite(this.game, 0, 0, Assets.Spritesheets.bardHead.key)
     this.characterHead.animations.add('talking', [0, 1], 4, true)
     this.addChild(this.characterHead)
     this.characterHead.visible = false

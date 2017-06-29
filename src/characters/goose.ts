@@ -8,12 +8,12 @@ import SpeechHelper from '../utils/speechHelper'
 export default class GooseCharacter extends Character {
   public speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.random(
     ArrayUtils.range(1, 14).map(i =>
-      Assets.Audio[`AudioGoose${StringUtils.intToString(i, 3)}`].key
+      Assets.Audio[`goose${StringUtils.intToString(i, 3)}`].key
     )
   ))
 
   constructor(game: Phaser.Game, x: number, y: number) {
-    super(game, x, y, Assets.Spritesheets.SpritesheetsGoose.key)
+    super(game, x, y, Assets.Spritesheets.goose.key)
 
     this.animations.add('idle', [0], 0, false)
     this.animations.add('talking', [0, 1], 8, true)

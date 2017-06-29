@@ -4,7 +4,7 @@ import * as Assets from '../assets'
 export default class Boot extends Phaser.State {
   public preload(): void {
     // Load any assets you need for your preloader state here.
-    this.game.load.atlasJSONHash(Assets.Atlases.AtlasesPreloadSprite.key, Assets.Atlases.AtlasesPreloadSprite.png, Assets.Atlases.AtlasesPreloadSprite.jsonHash)
+    this.game.load.atlasJSONHash(Assets.Atlases.preloadSprite.key, Assets.Atlases.preloadSprite.png, Assets.Atlases.preloadSprite.jsonHash)
   }
 
   public create(): void {

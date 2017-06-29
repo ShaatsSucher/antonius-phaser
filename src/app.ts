@@ -74,9 +74,10 @@ window.onload = () => {
       urls: []
     }
 
-    for (let font in Assets.CustomWebFonts) {
-      webFontLoaderOptions.custom.families.push(Assets.CustomWebFonts[font].getFamily())
-      webFontLoaderOptions.custom.urls.push(Assets.CustomWebFonts[font].getCSS())
+    for (let fontName of Object.keys(Assets.CustomWebFonts)) {
+      const font = Assets.CustomWebFonts[fontName]
+      webFontLoaderOptions.custom.families.push(font.family)
+      webFontLoaderOptions.custom.urls.push(font.css)
     }
   }
 

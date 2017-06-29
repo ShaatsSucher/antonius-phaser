@@ -14,7 +14,7 @@ export default class HeadScene extends Phaser.State {
 
   public create(): void {
     // Add background
-    this.game.add.sprite(0, 0, Assets.Images.ImagesBackgroundHead.key)
+    this.game.add.sprite(0, 0, Assets.Images.backgroundHead.key)
 
     // Add navigation arrow
     const arrow = new Arrow(this.game, 300, 95)
