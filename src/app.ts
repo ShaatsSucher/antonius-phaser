@@ -6,8 +6,8 @@ import * as WebFontLoader from 'webfontloader'
 
 import Boot from './states/boot'
 import Preloader from './states/preloader'
-import HeadScene from './states/scenes/headScene'
-import BardScene from './states/scenes/bardScene'
+import HeadScene from './states/scenes/head'
+import BardScene from './states/scenes/bard'
 import * as Utils from './utils/utils'
 import * as Assets from './assets'
 
