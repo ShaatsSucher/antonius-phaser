@@ -1,7 +1,7 @@
 import SceneState from './sceneState'
 
 export default abstract class Scene extends Phaser.State {
-  private showingScene = false
+  private isVisible = false
   private states: { [name: string]: SceneState<Scene> }
   private _activeState: SceneState<Scene>
 
@@ -35,7 +35,7 @@ export default abstract class Scene extends Phaser.State {
       await this.activeState.exit()
     }
     this._activeState = this.states[name]
-    if (this.showingScene) {
+    if (this.isVisible) {
       await this.activeState.enter()
     }
   }
@@ -54,7 +54,7 @@ export default abstract class Scene extends Phaser.State {
     })
 
     // Fade out
-    this.game.camera.fade(0x000000, 1000)
+    this.camera.fade(0x000000, 1000)
   }
 
   protected abstract createGameObjects(): void
@@ -77,11 +77,11 @@ export default abstract class Scene extends Phaser.State {
     this.createGameObjects()
 
     this.releaseInput()
-    this.showingScene = true
+    this.isVisible = true
     this.activeState.enter()
   }
 
   public exit() {
-    this.showingScene = false
+    this.isVisible = false
   }
 }
