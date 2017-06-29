@@ -42,7 +42,7 @@ export default abstract class Scene extends Phaser.State {
 
   public async fadeTo(nextScene: string): Promise<void> {
     // Disable all inputs to prevent the user to do anything stupid
-    this.game.input.enabled = false
+    this.lockInput()
 
     // Start the next state as soon as the fade-out is done
     this.game.camera.onFadeComplete.addOnce(() => {
@@ -55,8 +55,16 @@ export default abstract class Scene extends Phaser.State {
 
   protected abstract createGameObjects(): void
 
-  public create() {
+  public lockInput() {
     this.game.input.enabled = false
+  }
+
+  public releaseInput() {
+    this.game.input.enabled = true
+  }
+
+  public create() {
+    this.lockInput()
     this.camera.flash(0x000000, 1000)
 
     console.log(`Adding background '${this.backgroundKey}'`)
@@ -64,8 +72,7 @@ export default abstract class Scene extends Phaser.State {
 
     this.createGameObjects()
 
-    this.game.input.enabled = true
-
+    this.releaseInput()
     this.showingScene = true
     this.activeState.enter()
   }
