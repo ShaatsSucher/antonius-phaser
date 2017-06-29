@@ -16,6 +16,17 @@ export default class Character extends Phaser.Sprite {
     return this._activeState
   }
 
+  public set interactionEnabled(value: boolean) {
+    this.inputEnabled = value
+    const mouseHoversChar = this.getBounds().contains(this.input.pointerX(0), this.input.pointerY(0))
+    if (value) {
+      this.input.useHandCursor = true
+    }
+    this.game.canvas.style.cursor = mouseHoversChar && this.interactionEnabled
+      ? 'pointer'
+      : 'default'
+  }
+
   public async setActiveState(newState: string) {
     if (!this.states[newState]) {
       throw `'${newState}' is not a valid state`
