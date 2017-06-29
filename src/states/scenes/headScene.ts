@@ -1,3 +1,6 @@
+import Scene from './scene'
+import SceneState from './sceneState'
+
 import * as Assets from '../../assets'
 
 import HellmouthCharacter from '../../characters/hellmouth'
@@ -8,73 +11,83 @@ import Arrow from '../../gameObjects/arrow'
 import ArrayUtils from '../../utils/arrayUtils'
 import StringUtils from '../../utils/stringUtils'
 
-export default class HeadScene extends Phaser.State {
-  private hellmouth: HellmouthCharacter = null
-  private antonius: AntoniusCharacter = null
+export default class HeadScene extends Scene {
+  hellmouth: HellmouthCharacter = null
+  antonius: AntoniusCharacter = null
 
-  public create(): void {
-    // Add background
-    this.game.add.sprite(0, 0, Assets.Images.backgroundHead.key)
+  toBardArrow: Arrow
 
+  constructor() {
+    super(
+      Assets.Images.backgroundHead.key,
+      InitialState
+    )
+  }
+
+  protected createGameObjects() {
     // Add navigation arrow
-    const arrow = new Arrow(this.game, 300, 95)
-    arrow.events.onInputDown.addOnce(() => {
-      arrow.enabled = false
-      this.game.camera.onFadeComplete.addOnce(() => {
-        this.game.state.start('bard')
-      })
-      this.game.camera.fade(0x000000, 1000)
-    })
+    const arrow = this.toBardArrow = new Arrow(this.game, 300, 95)
     this.game.add.existing(arrow)
 
     // Add hellmouth
     const hellmouth = this.hellmouth = new HellmouthCharacter(this.game, 135, 40)
     this.game.add.existing(hellmouth)
 
-    const self = this
+    // Add antonius
+    const antonius = this.antonius = new AntoniusCharacter(this.game, 258, 120)
+    antonius.scale = new Phaser.Point(2, 2)
+    this.game.add.existing(antonius)
+  }
+}
+
+class InitialState implements SceneState<HeadScene> {
+  constructor (public readonly scene: HeadScene) { }
+  public getStateName() { return 'initial' }
+
+  public async enter(): Promise<void> {
+    const scene = this.scene
+
+    // Transition to next scene
+    scene.toBardArrow.events.onInputDown.addOnce(() => {
+      scene.toBardArrow.enabled = false
+      scene.fadeTo('bard')
+    })
+
     function makeMouthTalk() {
-      hellmouth.inputEnabled = true
-      hellmouth.input.useHandCursor = true
-      hellmouth.events.onInputDown.addOnce(() => {
-        hellmouth.inputEnabled = false
-        self.game.canvas.style.cursor = 'default'
-        hellmouth.speech.say('hello', 2, null, async () => {
-          hellmouth.setActiveState('talking')
+      scene.hellmouth.inputEnabled = true
+      scene.hellmouth.input.useHandCursor = true
+      scene.hellmouth.events.onInputDown.addOnce(() => {
+        scene.hellmouth.inputEnabled = false
+        scene.game.canvas.style.cursor = 'default'
+        scene.hellmouth.speech.say('hello', 2, null, async () => {
+          scene.hellmouth.setActiveState('talking')
         })
-        .then(() => hellmouth.setActiveState('idle'))
+        .then(() => scene.hellmouth.setActiveState('idle'))
         .then(makeMouthTalk)
       })
     }
     makeMouthTalk()
 
-    // Add antonius
-    const antonius = this.antonius = new AntoniusCharacter(this.game, 258, 120)
-    this.game.add.existing(antonius)
-    antonius.scale = new Phaser.Point(2, 2)
-
     function makeAntoniusTalk() {
-      antonius.inputEnabled = true
-      antonius.input.useHandCursor = true
-      antonius.speechPattern = Phaser.ArrayUtils.getRandomItem([
+      scene.antonius.inputEnabled = true
+      scene.antonius.input.useHandCursor = true
+      scene.antonius.speechPattern = Phaser.ArrayUtils.getRandomItem([
         'slslsl',
         'sllslsl',
         'llssll',
         'sssssssssl'
       ])
-      console.log(antonius.speechPattern)
-      antonius.events.onInputDown.addOnce(() => {
-        antonius.inputEnabled = false
-        self.game.canvas.style.cursor = 'default'
-        antonius.speech.say('hello', null, null, async () => {
-          antonius.setActiveState('talking')
+      console.log(scene.antonius.speechPattern)
+      scene.antonius.events.onInputDown.addOnce(() => {
+        scene.antonius.inputEnabled = false
+        scene.game.canvas.style.cursor = 'default'
+        scene.antonius.speech.say('hello', null, null, async () => {
+          scene.antonius.setActiveState('talking')
         })
-        .then(() => antonius.setActiveState('idle'))
+        .then(() => scene.antonius.setActiveState('idle'))
         .then(makeAntoniusTalk)
       })
     }
     makeAntoniusTalk()
-
-    // Fade in from black over one second
-    this.game.camera.flash(0x000000, 1000)
   }
 }
