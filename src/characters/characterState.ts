@@ -4,6 +4,6 @@ export default CharacterState
 interface CharacterState<T extends Character> {
   readonly character: T
 
-  enter?(): Promise<void>
+  enter(): Promise<void>
   exit?(): Promise<void>
 }
