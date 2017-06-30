@@ -95,17 +95,15 @@ class TheCakeIsALie implements SceneState<HeadScene> {
   constructor (public readonly scene: HeadScene) { }
   public getStateName() { return 'the cake is a lie' }
 
-  private inputBinding
-
   public async enter(): Promise<void> {
     const scene = this.scene
 
     await scene.hellmouth.setActiveState('idle')
     await scene.antonius.setActiveState('idle')
 
-    scene.antonius.interactionEnabled = true
-    scene.antonius.events.onInputDown.add(async () => {
-      scene.antonius.interactionEnabled = false
+    scene.hellmouth.interactionEnabled = true
+    scene.hellmouth.events.onInputDown.addOnce(async () => {
+      scene.hellmouth.interactionEnabled = false
 
       const resetTalkingAnim = async () => {
         scene.hellmouth.setActiveState('talking')
@@ -115,8 +113,7 @@ class TheCakeIsALie implements SceneState<HeadScene> {
       await scene.hellmouth.speech.say('Im weiteren Spielverlauf findest du bestimmt\ngenau den richtigen Gegenstand für diese Situation.', 6)
       await scene.hellmouth.speech.say('Komme später noch einmal zurück.', 2)
 
-      await scene.hellmouth.setActiveState('idle')
-      scene.hellmouth.interactionEnabled = true
+      scene.setActiveState(this.getStateName())
     })
 
     scene.toBardArrow.visible = true
