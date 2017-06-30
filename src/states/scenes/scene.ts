@@ -81,7 +81,7 @@ export default abstract class Scene extends Phaser.State {
     this.activeState.enter()
   }
 
-  public exit() {
+  public shutdown() {
     this.isVisible = false
   }
 }
