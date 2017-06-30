@@ -3,8 +3,7 @@ import SceneState from './sceneState'
 
 import * as Assets from '../../assets'
 
-import ArrayUtils from '../../utils/arrayUtils'
-import StringUtils from '../../utils/stringUtils'
+import { ArrayUtils, StringUtils } from '../../utils/utils'
 
 export default class IntroScene extends Scene {
   startButton: Phaser.Text

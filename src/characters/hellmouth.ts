@@ -1,8 +1,7 @@
 import * as Assets from '../assets'
 import Character from './character'
 import CharacterState from './characterState'
-import ArrayUtils from '../utils/arrayUtils'
-import StringUtils from '../utils/stringUtils'
+import { ArrayUtils, StringUtils } from '../utils/utils'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class HellmouthCharacter extends Character {

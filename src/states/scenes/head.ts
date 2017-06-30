@@ -8,8 +8,7 @@ import AntoniusCharacter from '../../characters/antonius'
 
 import Arrow from '../../gameObjects/arrow'
 
-import ArrayUtils from '../../utils/arrayUtils'
-import StringUtils from '../../utils/stringUtils'
+import { ArrayUtils, StringUtils } from '../../utils/utils'
 
 export default class HeadScene extends Scene {
   hellmouth: HellmouthCharacter = null

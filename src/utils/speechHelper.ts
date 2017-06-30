@@ -1,5 +1,5 @@
 import Character from '../characters/character'
-import ArrayUtils from '../utils/arrayUtils'
+import { ArrayUtils } from '../utils/utils'
 
 export default class SpeechHelper {
   private anchor: Phaser.Point

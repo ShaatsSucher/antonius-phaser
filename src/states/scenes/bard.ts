@@ -10,8 +10,7 @@ import CatCharacter from '../../characters/cat'
 
 import SheechHelper from '../../utils/speechHelper'
 
-import ArrayUtils from '../../utils/arrayUtils'
-import StringUtils from '../../utils/stringUtils'
+import { ArrayUtils, StringUtils } from '../../utils/utils'
 
 export default class BardScene extends Scene {
   private goose: GooseCharacter
