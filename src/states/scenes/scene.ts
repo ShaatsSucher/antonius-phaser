@@ -7,6 +7,8 @@ export default abstract class Scene extends Phaser.State {
 
   private backgroundImage: Phaser.Sprite
 
+  public onUpdate = new Phaser.Signal()
+
   constructor(private backgroundKey = '', ...states: (new (Scene) => SceneState<Scene>)[]) {
     super()
 
@@ -79,6 +81,10 @@ export default abstract class Scene extends Phaser.State {
     this.releaseInput()
     this.isVisible = true
     this.activeState.enter()
+  }
+
+  public update() {
+    this.onUpdate.dispatch()
   }
 
   public shutdown() {

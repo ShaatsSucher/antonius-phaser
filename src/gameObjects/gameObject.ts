@@ -1,12 +1,18 @@
 export default class GameObject extends Phaser.Sprite {
   private _interactionEnabled: boolean
 
+  public onUpdate = new Phaser.Signal()
+
   public set interactionEnabled(value: boolean) {
     this.setInteractionEnabled(value)
   }
 
   public get interactionEnabled() {
     return this._interactionEnabled
+  }
+
+  public update() {
+    this.onUpdate.dispatch()
   }
 
   public setInteractionEnabled(value: boolean) {
