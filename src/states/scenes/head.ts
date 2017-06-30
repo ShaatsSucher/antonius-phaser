@@ -65,12 +65,12 @@ class TheIntroduction implements SceneState<HeadScene> {
         scene.hellmouth.setActiveState('talking')
       }
 
-      await scene.hellmouth.speech.say('Um Gottes Willen...', 3, null, resetTalkingAnim)
-      await scene.hellmouth.speech.say('Es toben ganz schön viele\ndieser Dämonen herum!!', 6, null, resetTalkingAnim)
-      await scene.hellmouth.speech.say('Wenn du irgendwelche Fragen hast,\nkannst du dich jederzeit an mich wenden!', 6, null, resetTalkingAnim)
-      await scene.hellmouth.speech.say('Du schaffst das, Antonius!', 3, null, resetTalkingAnim)
-      await scene.hellmouth.speech.say('Wenn nicht du, wer dann?', 3, null, resetTalkingAnim)
-      await scene.hellmouth.speech.say('Nun geh und leg los...', 3, null, resetTalkingAnim)
+      await scene.hellmouth.speech.say('Um Gottes Willen...', 3)
+      await scene.hellmouth.speech.say('Es toben ganz schön viele\ndieser Dämonen herum!!', 6)
+      await scene.hellmouth.speech.say('Wenn du irgendwelche Fragen hast,\nkannst du dich jederzeit an mich wenden!', 6)
+      await scene.hellmouth.speech.say('Du schaffst das, Antonius!', 3)
+      await scene.hellmouth.speech.say('Wenn nicht du, wer dann?', 3)
+      await scene.hellmouth.speech.say('Nun geh und leg los...', 3)
 
       scene.setActiveState('the path is set')
     })
@@ -111,9 +111,9 @@ class TheCakeIsALie implements SceneState<HeadScene> {
         scene.hellmouth.setActiveState('talking')
       }
 
-      await scene.hellmouth.speech.say('Im Moment kannst du dem Minnesänger\nleider noch nicht helfen.', 4, null, resetTalkingAnim)
-      await scene.hellmouth.speech.say('Im weiteren Spielverlauf findest du bestimmt\ngenau den richtigen Gegenstand für diese Situation.', 6, null, resetTalkingAnim)
-      await scene.hellmouth.speech.say('Komme später noch einmal zurück.', 2, null, resetTalkingAnim)
+      await scene.hellmouth.speech.say('Im Moment kannst du dem Minnesänger\nleider noch nicht helfen.', 4)
+      await scene.hellmouth.speech.say('Im weiteren Spielverlauf findest du bestimmt\ngenau den richtigen Gegenstand für diese Situation.', 6)
+      await scene.hellmouth.speech.say('Komme später noch einmal zurück.', 2)
 
       await scene.hellmouth.setActiveState('idle')
       scene.hellmouth.interactionEnabled = true

@@ -2,60 +2,77 @@ import Character from '../characters/character'
 import { ArrayUtils } from '../utils/utils'
 
 export default class SpeechHelper {
-  private anchor: Phaser.Point
+  private textAnchor: Phaser.Point
+  private currentSample: Phaser.Sound
 
-  constructor(private character: Character, anchorX: number, anchorY: number,
-              private sampleGenerator: () => () => string | null) {
-    this.anchor = new Phaser.Point(anchorX, anchorY)
+  constructor(private character: Character,
+              anchorX: number, anchorY: number,
+              private sampleGenerator: (x?: string) => () => (string | null),
+              private resetCharacterStateBeforePlaying = true,
+              private idleState = 'idle',
+              private talkingState = 'talking') {
+    this.textAnchor = new Phaser.Point(anchorX, anchorY)
   }
 
-  public async say(text: string, timeout?: number, abort?: Promise<void>,
-             beforePlaying?: () => (Promise<void> | undefined)): Promise<void> {
-    const nextSample = this.sampleGenerator()
+  public async say(text: string, timeout?: number, generatorParam?: string): Promise<void> {
+    const nextSample = this.sampleGenerator(generatorParam)
 
-    let stopConditions: Promise<void>[] = []
+    const characterClicked = this.registerClickListener()
+
+    let stopPlayback: Promise<any> = characterClicked
     if (timeout) {
-      stopConditions.push(new Promise<void>(resolve => {
-        const timer = this.character.game.time.create()
-        timer.add(Phaser.Timer.SECOND * timeout, resolve)
-        timer.start()
-      }))
-    }
-    if (abort) {
-      stopConditions.push(abort)
+      const timer = this.character.game.time.create()
+      let timeoutCb: () => any
+      const timeoutPromise = new Promise(resolve => { timeoutCb = resolve })
+      timer.add(Phaser.Timer.SECOND * timeout, timeoutCb)
+      timer.start()
+      stopPlayback = Promise.race([characterClicked, timeoutPromise])
     }
 
-    let playbackDone: () => void
-    this.displayText(text, new Promise<void>(resolve => { playbackDone = resolve }))
+    await this.character.setActiveState(this.talkingState)
+    this.character.interactionEnabled = true
 
+    this.displayText(text, characterClicked)
     while (true) {
+      if (this.resetCharacterStateBeforePlaying) {
+        await this.character.setActiveState(this.talkingState)
+      }
+      const nextUp = nextSample()
+      if (!nextUp) {
+        break
+      }
       try {
-        if (beforePlaying) {
-          await beforePlaying()
-        }
-        const nextUp = nextSample()
-        if (!nextUp) {
-          break
-        }
-        await this.play(nextUp, stopConditions)
+        await this.play(nextUp, stopPlayback)
       } catch (_) {
         break
       }
     }
-    playbackDone()
+    await this.character.setActiveState(this.idleState)
+    await characterClicked
+    this.character.interactionEnabled = false
+  }
+
+  private registerClickListener(): Promise<void> {
+    this.character.interactionEnabled = true
+    return new Promise<void>(resolve => {
+      this.character.events.onInputDown.addOnce(resolve)
+    })
   }
 
   private displayText(text: string, until: Promise<void>) {
     // TODO: display `text` over `character` relative to `anchor`
     const test = { } // TODO: create text object
     const removeText = () => { } // TODO: add text removal logic
-    until.then(removeText, removeText)
+    until
+    .then(removeText, removeText)
   }
 
-  private play(sample: string, abortConditions: Promise<void>[] = []): Promise<void> {
+  private play(sample: string, abort: Promise<void>): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      Promise.race(abortConditions).then(() => reject('abort'), reject)
       const sound = this.character.game.sound.play(sample)
+      abort
+      .then(() => reject('abort'), reject)
+      .then(() => { if (sound.isPlaying || sound.pendingPlayback) sound.stop() })
       sound.onStop.addOnce(resolve)
     })
   }
@@ -88,8 +105,8 @@ export default class SpeechHelper {
         return Phaser.ArrayUtils.getRandomItem(samples[nextGroup])
       }
     },
-    pattern: (samples: { [pattern: string]: string[] }, getPattern: () => string) => () => {
-      const pattern: string[] = getPattern().split('')
+    pattern: (samples: { [pattern: string]: string[] }) => (initPattern: string) => {
+      const pattern: string[] = initPattern.split('')
       let currentRun = pattern
       let lastSample = null
       return () => {
@@ -102,7 +119,6 @@ export default class SpeechHelper {
           : samples[currentToken]
         const nextSample = Phaser.ArrayUtils.getRandomItem(availableSamples)
         lastSample = nextSample
-        console.log(nextSample)
         return nextSample
       }
     }

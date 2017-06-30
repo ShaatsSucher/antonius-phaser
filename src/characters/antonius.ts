@@ -14,8 +14,7 @@ export default class AntoniusCharacter extends Character {
       s: ArrayUtils.range(1, 100).map(i =>
         Assets.Audio[`antoniusShort${StringUtils.intToString(i, 3)}`].key
       )
-    },
-    () => this.speechPattern
+    }
   ))
 
   constructor(game: Phaser.Game, x: number, y: number) {
