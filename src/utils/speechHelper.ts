@@ -1,4 +1,5 @@
 import Character from '../characters/character'
+import { BitmapFonts } from '../assets'
 import { ArrayUtils } from '../utils/utils'
 
 export default class SpeechHelper {
@@ -59,12 +60,27 @@ export default class SpeechHelper {
     })
   }
 
-  private displayText(text: string, until: Promise<void>) {
-    // TODO: display `text` over `character` relative to `anchor`
-    const test = { } // TODO: create text object
-    const removeText = () => { } // TODO: add text removal logic
-    until
-    .then(removeText, removeText)
+  private displayText(text: string, shouldHide: Promise<void>) {
+    const bitmapText = new Phaser.BitmapText(
+      this.character.game, 0, 0, BitmapFonts.antoniusFont9px.key,
+      text, 9, 'center'
+    )
+    this.character.game.add.existing(bitmapText)
+    bitmapText.anchor.setTo(0.5, 1)
+
+    const updateListener = this.character.onUpdate.add(() => {
+      bitmapText.alignTo(
+        this.character,
+        Phaser.TOP_CENTER,
+        this.textAnchor.x, this.textAnchor.y
+      )
+    })
+
+    const removeText = () => {
+      updateListener.detach()
+      bitmapText.kill()
+    }
+    shouldHide.then(removeText, removeText)
   }
 
   private play(sample: string, abort: Promise<void>): Promise<void> {
