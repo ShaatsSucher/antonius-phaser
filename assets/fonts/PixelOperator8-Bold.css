@@ -1,0 +1,7 @@
+@font-face {
+  font-family: 'PixelOperator8';
+  src: url('PixelOperator8-Bold.woff') format('woff'),
+       url('PixelOperator8-Bold.ttf')  format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
