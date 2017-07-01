@@ -1,5 +1,5 @@
 import Character from '../characters/character'
-import { BitmapFonts } from '../assets'
+import { CustomWebFonts } from '../assets'
 import { ArrayUtils } from '../utils/utils'
 
 export default class SpeechHelper {
@@ -61,24 +61,42 @@ export default class SpeechHelper {
   }
 
   private displayText(text: string, shouldHide: Promise<void>) {
-    const bitmapText = new Phaser.BitmapText(
-      this.character.game, 0, 0, BitmapFonts.antoniusFont9px.key,
-      text, 9, 'center'
-    )
-    this.character.game.add.existing(bitmapText)
-    bitmapText.anchor.setTo(0.5, 1)
+    // For reasons of font-rendering, we need to render each line of the text
+    // separately.
+    const lines = text.split('\n').reverse()
+    const labels = lines.map(line => {
+      const label = this.character.game.add.text(0, 0, line, {
+        font: `8px ${CustomWebFonts.pixelOperator8Bold.family}`,
+        fill: '#fff',
+        stroke: '#000',
+        strokeThickness: 2
+      })
+      label.anchor.setTo(0.5, 1)
+      return label
+    })
 
     const updateListener = this.character.onUpdate.add(() => {
-      bitmapText.alignTo(
-        this.character,
-        Phaser.TOP_CENTER,
-        this.textAnchor.x, this.textAnchor.y
-      )
+      labels.forEach((label, index) => {
+        if (index === 0) {
+          // label directly above character
+          label.alignTo(
+            this.character, Phaser.TOP_CENTER,
+            this.textAnchor.x, this.textAnchor.y
+          )
+        } else {
+          label.alignTo(labels[index - 1], Phaser.TOP_CENTER)
+        }
+        if (label.width % 2 === 1) {
+          // The font renders badly when the label's width isn't even.
+          // Moving the label 0.5px to the right seems to fix this.
+          label.x += 0.5
+        }
+      })
     })
 
     const removeText = () => {
       updateListener.detach()
-      bitmapText.kill()
+      labels.forEach(label => label.kill())
     }
     shouldHide.then(removeText, removeText)
   }
