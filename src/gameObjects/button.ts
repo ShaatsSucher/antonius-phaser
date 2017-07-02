@@ -23,8 +23,8 @@ export class Button extends GameObject {
   }
 
   constructor(game: Phaser.Game, x: number, y: number, key: string,
-              defaultFrames: Frames = [0], hoverFrames: Frames = [1],
-              downFrames: Frames = [1], disabledFrames: Frames = [0],
+              defaultFrames: Frames = ['default'], hoverFrames: Frames = ['hovered'],
+              downFrames: Frames = ['down'], disabledFrames: Frames = ['disabled'],
               private useAnimations = true) {
     super(game, x, y, key)
 
