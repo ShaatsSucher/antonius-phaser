@@ -60,7 +60,7 @@ export class Loader {
           if (option === 'xml' || option === 'jsonArray'
               || option === 'jsonHash') {
             dataOption = option
-          } else if (option !== 'key' && option !== 'Frames') {
+          } else if (option !== 'key' && option !== 'frames') {
             imageOption = option
           }
         }
