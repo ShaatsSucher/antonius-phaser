@@ -41,6 +41,8 @@ export class Button extends GameObject {
     this.events.onInputOut.add(this.onInputOut, this)
     this.events.onInputDown.add(this.onInputDown, this)
     this.events.onInputUp.add(this.onInputUp, this)
+
+    this.interactionEnabled = true
   }
 
   public setInteractionEnabled(value: boolean) {
