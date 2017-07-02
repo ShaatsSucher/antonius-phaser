@@ -1,4 +1,4 @@
-import Button from './button'
+import { Button } from './button'
 import { Spritesheets } from '../assets'
 
 export default class Arrow extends Button {
