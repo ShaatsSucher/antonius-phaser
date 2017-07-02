@@ -21,7 +21,7 @@ export default class BardScene extends Scene {
 
   constructor() {
     super(
-      Assets.Images.backgroundBard.key,
+      Assets.Images.backgroundsBard.key,
       InitialState
     )
   }
@@ -54,6 +54,5 @@ class InitialState implements SceneState<BardScene> {
   public getStateName() { return 'initial' }
 
   public async enter(): Promise<void> {
-    this.scene.setBackgroundImage(Assets.Images.backgroundBard.key)
   }
 }

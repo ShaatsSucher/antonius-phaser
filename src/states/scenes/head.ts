@@ -18,7 +18,7 @@ export default class HeadScene extends Scene {
 
   constructor() {
     super(
-      Assets.Images.backgroundHead.key,
+      Assets.Images.backgroundsHead.key,
       TheIntroduction,
       ThePathIsSet,
       TheCakeIsALie
