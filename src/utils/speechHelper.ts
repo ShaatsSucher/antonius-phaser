@@ -103,7 +103,9 @@ export default class SpeechHelper {
 
   private play(sample: string, abort: Promise<void>): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      const sound = this.character.game.sound.play(sample)
+      // NOTE: passing the global volume here really shouldn't be necessary,
+      //       but if we don't, it *sometimes* ignores the global volume.
+      const sound = this.character.game.sound.play(sample, this.character.game.sound.volume)
       abort
       .then(() => reject('abort'), reject)
       .then(() => { if (sound.isPlaying || sound.pendingPlayback) sound.stop() })
