@@ -86,6 +86,8 @@ export default class SpeechHelper {
         } else {
           label.alignTo(labels[index - 1], Phaser.TOP_CENTER)
         }
+        label.x = Math.round(label.x)
+        label.y = Math.round(label.y)
         if (label.width % 2 === 1) {
           // The font renders badly when the label's width isn't even.
           // Moving the label 0.5px to the right seems to fix this.
