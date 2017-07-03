@@ -91,6 +91,12 @@ export default class SpeechHelper {
           // Moving the label 0.5px to the right seems to fix this.
           label.x += 0.5
         }
+        // if the text would leave the screen on the sides, offset it accordingly
+        const tooFarRight = (label.x + (label.width / 2)) - this.character.game.width
+        if (tooFarRight > 0) label.x -= tooFarRight
+        const tooFarLeft = label.x - (label.width / 2)
+        if (tooFarLeft < 0) label.y -= tooFarLeft
+
       })
     })
 
