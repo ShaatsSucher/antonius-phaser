@@ -21,6 +21,7 @@ export class Button extends GameObject {
     if (!this.interactionEnabled) return ButtonState.DISABLED
     return this._state
   }
+  public onStateChanged = new Phaser.Signal()
 
   constructor(game: Phaser.Game, x: number, y: number, key: string,
               defaultFrames: Frames = ['default'], hoverFrames: Frames = ['hovered'],
@@ -49,6 +50,7 @@ export class Button extends GameObject {
     super.setInteractionEnabled(value)
     this.alpha = value ? 1 : 0.6
     this.updateTexture()
+    this.onStateChanged.dispatch(this.state)
   }
 
   private onInputOver() {
@@ -56,6 +58,7 @@ export class Button extends GameObject {
     if (this.state === ButtonState.DOWN) return
     this._state = ButtonState.HOVERED
     this.updateTexture()
+    this.onStateChanged.dispatch(this.state)
   }
 
   private onInputOut() {
@@ -63,12 +66,14 @@ export class Button extends GameObject {
     if (this.state === ButtonState.DOWN) return
     this._state = ButtonState.DEFAULT
     this.updateTexture()
+    this.onStateChanged.dispatch(this.state)
   }
 
   private onInputDown() {
     if (this.state === ButtonState.DOWN) return
     this._state = ButtonState.DOWN
     this.updateTexture()
+    this.onStateChanged.dispatch(this.state)
   }
 
   private onInputUp() {
@@ -78,6 +83,7 @@ export class Button extends GameObject {
       ? ButtonState.HOVERED
       : ButtonState.DEFAULT
     this.updateTexture()
+    this.onStateChanged.dispatch(this.state)
   }
 
   protected updateTexture() {
