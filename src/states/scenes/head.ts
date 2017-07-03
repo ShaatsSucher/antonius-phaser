@@ -1,7 +1,7 @@
 import Scene from './scene'
 import SceneState from './sceneState'
 
-import * as Assets from '../../assets'
+import { Images, Audio } from '../../assets'
 
 import HellmouthCharacter from '../../characters/hellmouth'
 import AntoniusCharacter from '../../characters/antonius'
@@ -18,7 +18,7 @@ export default class HeadScene extends Scene {
 
   constructor() {
     super(
-      Assets.Images.backgroundsHead.key,
+      Images.backgroundsHead.key,
       TheIntroduction,
       ThePathIsSet,
       TheCakeIsALie
@@ -53,6 +53,9 @@ class TheIntroduction implements SceneState<HeadScene> {
   public async enter(): Promise<void> {
     const scene = this.scene
 
+    scene.playAtmo(Audio.soundscapesScreen1.key)
+    scene.playMusic(Audio.musicHeadScreen.key)
+
     scene.toBardArrow.visible = false
     await scene.hellmouth.setActiveState('idle')
 
@@ -84,6 +87,9 @@ class ThePathIsSet implements SceneState<HeadScene> {
   public async enter(): Promise<void> {
     const scene = this.scene
 
+    scene.playAtmo(Audio.soundscapesScreen1.key)
+    scene.playMusic(Audio.musicHeadScreen.key)
+
     await scene.hellmouth.setActiveState('idle')
     await scene.antonius.setActiveState('idle')
 
@@ -97,6 +103,9 @@ class TheCakeIsALie implements SceneState<HeadScene> {
 
   public async enter(): Promise<void> {
     const scene = this.scene
+
+    scene.playAtmo(Audio.soundscapesScreen1.key)
+    scene.playMusic(Audio.musicHeadScreen.key)
 
     await scene.hellmouth.setActiveState('idle')
     await scene.antonius.setActiveState('idle')
