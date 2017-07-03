@@ -1,4 +1,7 @@
 import SceneState from './sceneState'
+import { Button } from '../../gameObjects/button'
+import { Atlases } from '../../assets'
+import SettingsOverlay from '../../overlays/settings'
 
 export default abstract class Scene extends Phaser.State {
   private isVisible = false
@@ -77,6 +80,16 @@ export default abstract class Scene extends Phaser.State {
     this.backgroundImage = this.add.sprite(0, 0, this.backgroundKey)
 
     this.createGameObjects()
+
+    const settingsButton = new Button(this.game, 0, 0, Atlases.wrench.key)
+    settingsButton.x = this.game.canvas.width - 2 - settingsButton.width / 2
+    settingsButton.y = 2 + settingsButton.height / 2
+    settingsButton.interactionEnabled = true
+    this.add.existing(settingsButton)
+    settingsButton.events.onInputUp.add(() => {
+      this.releaseInput()
+      SettingsOverlay.instance.show()
+    })
 
     this.releaseInput()
     this.isVisible = true
