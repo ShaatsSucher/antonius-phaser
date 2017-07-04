@@ -86,6 +86,8 @@ export default class SpeechHelper {
         } else {
           label.alignTo(labels[index - 1], Phaser.TOP_CENTER)
         }
+        label.x = Math.round(label.x)
+        label.y = Math.round(label.y)
         if (label.width % 2 === 1) {
           // The font renders badly when the label's width isn't even.
           // Moving the label 0.5px to the right seems to fix this.
@@ -109,7 +111,9 @@ export default class SpeechHelper {
 
   private play(sample: string, abort: Promise<void>): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      const sound = this.character.game.sound.play(sample)
+      // NOTE: passing the global volume here really shouldn't be necessary,
+      //       but if we don't, it *sometimes* ignores the global volume.
+      const sound = this.character.game.sound.play(sample, this.character.game.sound.volume)
       abort
       .then(() => reject('abort'), reject)
       .then(() => { if (sound.isPlaying || sound.pendingPlayback) sound.stop() })

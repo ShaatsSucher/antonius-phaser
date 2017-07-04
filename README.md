@@ -1,4 +1,6 @@
 # Antonius (phaser edition)
+[![Build Status](https://travis-ci.org/ShaatsSucher/antonius-phaser.svg?branch=master)](https://travis-ci.org/ShaatsSucher/antonius-phaser)
+
 The post-Game-Jam-version of the [antonius project][antonius], relying on [phaser][phaserio] instead of directly on [PixiJS][pixijs].
 
 Based on the [PhaserNPMWebpackTypeScriptStarterProject][phaser-starter] by [Richard Roylance][rroylance].
