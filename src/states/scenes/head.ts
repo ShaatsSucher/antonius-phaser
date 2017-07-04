@@ -30,7 +30,7 @@ export default class HeadScene extends Scene {
     const arrow = this.toBardArrow = new Arrow(this.game, 300, 95)
     arrow.interactionEnabled = true
     this.game.add.existing(arrow)
-    arrow.events.onInputUp.addOnce(() => {
+    arrow.events.onInputDown.addOnce(() => {
       arrow.interactionEnabled = false
       this.fadeTo('bard')
     })
