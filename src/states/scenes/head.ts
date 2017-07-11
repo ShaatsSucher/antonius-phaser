@@ -15,6 +15,7 @@ export default class HeadScene extends Scene {
   antonius: AntoniusCharacter = null
 
   toBardArrow: Arrow
+  toFishArrow: Arrow
 
   constructor() {
     super(
@@ -26,13 +27,21 @@ export default class HeadScene extends Scene {
   }
 
   protected createGameObjects() {
-    // Add navigation arrow
+    // Add navigation arrows
     const arrow = this.toBardArrow = new Arrow(this.game, 300, 95)
     arrow.interactionEnabled = true
     this.game.add.existing(arrow)
     arrow.events.onInputDown.addOnce(() => {
       arrow.interactionEnabled = false
       this.fadeTo('bard')
+    })
+    const arrow2 = this.toFishArrow = new Arrow(this.game, 190, 200)
+    arrow2.rotation = Math.PI/2
+    arrow2.interactionEnabled = true
+    this.game.add.existing(arrow2)
+    arrow2.events.onInputDown.addOnce(() => {
+      arrow2.interactionEnabled = false
+      this.fadeTo('fish')
     })
 
     // Add hellmouth
@@ -57,6 +66,7 @@ class TheIntroduction implements SceneState<HeadScene> {
     scene.playMusic(Audio.musicHeadScreen.key)
 
     scene.toBardArrow.visible = false
+    scene.toFishArrow.visible = false
     await scene.hellmouth.setActiveState('idle')
 
     scene.hellmouth.interactionEnabled = true
@@ -94,6 +104,7 @@ class ThePathIsSet implements SceneState<HeadScene> {
     await scene.antonius.setActiveState('idle')
 
     scene.toBardArrow.visible = true
+    scene.toFishArrow.visible = true
   }
 }
 
