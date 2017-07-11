@@ -30,13 +30,13 @@ class InitialState implements SceneState<IntroScene> {
 
   private readonly text: [{ time: number, text: string }] = [
     { time: 2000, text: 'Mein Mund ist das Tor zur Hölle.' },
-    { time: 7000, text: 'Meine Aufgabe ist es, die Menschheit\nvor den Dämonen zu schützen...' },
-    { time: 16000, text: 'Doch...\nDiesmal ist etwas gewaltig schief gelaufen.' },
-    { time: 24000, text: 'Da habe ich einmal versehentlich gegähnt\nund schon sind alle Dämonen ausgerissen!' },
-    { time: 37000, text: 'Tu etwas, Antonius!' },
-    { time: 40000, text: 'Du, als frommer Christ, wirst sicher einen Weg\nfinden, die Dämonen zurück in die Hölle zu treiben!' },
-    { time: 56000, text: 'Gelingt es dir nicht, wird dir und der\ngesamten Menschheit ÜBLES widerfahren!!!' },
-    { time: 73000, text: '' }
+    { time: 8000, text: 'Meine Aufgabe ist es, die Menschheit\nvor den Dämonen zu schützen...' },
+    { time: 19000, text: 'Doch...\nDiesmal ist etwas gewaltig schief gelaufen.' },
+    { time: 29000, text: 'Da habe ich einmal versehentlich gegähnt\nund schon sind alle Dämonen ausgerissen!' },
+    { time: 44000, text: 'Tu etwas, Antonius!' },
+    { time: 48000, text: 'Du, als frommer Christ, wirst sicher einen Weg\nfinden, die Dämonen zurück in die Hölle zu treiben!' },
+    { time: 65000, text: 'Gelingt es dir nicht, wird dir und der\ngesamten Menschheit ÜBLES widerfahren!!!' },
+    { time: 80000, text: '' }
   ]
 
   public async enter(): Promise<void> {
