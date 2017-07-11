@@ -9,6 +9,7 @@ import Preloader from './states/preloader'
 import IntroScene from './states/scenes/intro'
 import HeadScene from './states/scenes/head'
 import BardScene from './states/scenes/bard'
+import FishScene from './states/scenes/fish'
 import * as Utils from './utils/utils'
 import * as Assets from './assets'
 
@@ -27,6 +28,7 @@ class App extends Phaser.Game {
     this.state.add('intro', IntroScene)
     this.state.add('head', HeadScene)
     this.state.add('bard', BardScene)
+    this.state.add('fish', FishScene)
   }
 }
 
