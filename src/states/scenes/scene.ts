@@ -2,6 +2,7 @@ import SceneState from './sceneState'
 import { Button } from '../../gameObjects/button'
 import { Atlases } from '../../assets'
 import SettingsOverlay from '../../overlays/settings'
+import Inventory from '../../overlays/inventory'
 
 export default abstract class Scene extends Phaser.State {
   private isVisible = false
@@ -12,6 +13,8 @@ export default abstract class Scene extends Phaser.State {
   private backgroundSoundVolumeMultiplier = 0.5
 
   private backgroundImage: Phaser.Sprite
+
+  public settingsButton: Button
 
   public onUpdate = new Phaser.Signal()
 
@@ -158,6 +161,7 @@ export default abstract class Scene extends Phaser.State {
 
     // Fade out
     this.camera.fade(0x000000, 1000)
+    this.game.tweens.create(Inventory.instance).to({ alpha: 0 }, 1000).start()
     this.stopAllBackgroundSounds()
   }
 
@@ -174,18 +178,19 @@ export default abstract class Scene extends Phaser.State {
   public create() {
     this.lockInput()
     this.camera.flash(0x000000, 1000)
+    this.game.tweens.create(Inventory.instance).to({ alpha: 1 }, 1000).start()
 
     console.log(`Adding background '${this.backgroundKey}'`)
     this.backgroundImage = this.add.sprite(0, 0, this.backgroundKey)
 
     this.createGameObjects()
 
-    const settingsButton = new Button(this.game, 0, 0, Atlases.wrench.key)
-    settingsButton.x = this.game.canvas.width - 2 - settingsButton.width / 2
-    settingsButton.y = 2 + settingsButton.height / 2
-    settingsButton.interactionEnabled = true
-    this.add.existing(settingsButton)
-    settingsButton.events.onInputUp.add(() => {
+    this.settingsButton = new Button(this.game, 0, 0, Atlases.wrench.key)
+    this.settingsButton.x = this.game.canvas.width - 2 - this.settingsButton.width / 2
+    this.settingsButton.y = 2 + this.settingsButton.height / 2
+    this.settingsButton.interactionEnabled = true
+    this.add.existing(this.settingsButton)
+    this.settingsButton.events.onInputUp.add(() => {
       this.releaseInput()
       SettingsOverlay.instance.show()
     })

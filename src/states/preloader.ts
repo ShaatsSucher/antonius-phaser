@@ -1,6 +1,7 @@
 import * as Assets from '../assets'
 import * as AssetUtils from '../utils/assetUtils'
 import SettingsOverlay from '../overlays/settings'
+import Inventory from '../overlays/inventory'
 
 export default class Preloader extends Phaser.State {
   private preloadBarSprite: Phaser.Sprite = null
@@ -32,6 +33,8 @@ export default class Preloader extends Phaser.State {
 
   private startGame(): void {
     SettingsOverlay.init(this.game)
+    Inventory.init(this.game)
+
     this.game.camera.onFadeComplete.addOnce(this.loadTitle, this)
     this.game.camera.fade(0x000000, 1000)
   }
