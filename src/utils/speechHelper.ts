@@ -172,6 +172,7 @@ export default class SpeechHelper {
         lastSample = nextSample
         return nextSample
       }
-    }
+    },
+    explicit: () => (samples: string[]) => () => samples.slice()
   }
 }
