@@ -13,6 +13,8 @@ export default abstract class Scene extends Phaser.State {
 
   private backgroundImage: Phaser.Sprite
 
+  public settingsButton: Button
+
   public onUpdate = new Phaser.Signal()
 
   constructor(private backgroundKey = '', ...states: (new (Scene) => SceneState<Scene>)[]) {
@@ -180,12 +182,12 @@ export default abstract class Scene extends Phaser.State {
 
     this.createGameObjects()
 
-    const settingsButton = new Button(this.game, 0, 0, Atlases.wrench.key)
-    settingsButton.x = this.game.canvas.width - 2 - settingsButton.width / 2
-    settingsButton.y = 2 + settingsButton.height / 2
-    settingsButton.interactionEnabled = true
-    this.add.existing(settingsButton)
-    settingsButton.events.onInputUp.add(() => {
+    this.settingsButton = new Button(this.game, 0, 0, Atlases.wrench.key)
+    this.settingsButton.x = this.game.canvas.width - 2 - this.settingsButton.width / 2
+    this.settingsButton.y = 2 + this.settingsButton.height / 2
+    this.settingsButton.interactionEnabled = true
+    this.add.existing(this.settingsButton)
+    this.settingsButton.events.onInputUp.add(() => {
       this.releaseInput()
       SettingsOverlay.instance.show()
     })

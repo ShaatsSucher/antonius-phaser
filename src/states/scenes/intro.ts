@@ -38,6 +38,8 @@ class InitialState implements SceneState<IntroScene> {
   ]
 
   public async enter(): Promise<void> {
+    this.scene.settingsButton.visible = false
+
     const worldRightOfPosition = this.scene.game.canvas.width - this.scene.image.x
     const imageRightOfAnchor = this.scene.image.width - this.scene.image.width * this.scene.image.anchor.x
     const initialScale = worldRightOfPosition / imageRightOfAnchor
@@ -111,5 +113,9 @@ class InitialState implements SceneState<IntroScene> {
         blurOutStarted = true
       }
     })
+  }
+
+  async exit(): Promise<void> {
+    this.scene.settingsButton.visible = true
   }
 }
