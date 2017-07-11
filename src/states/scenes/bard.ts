@@ -7,6 +7,7 @@ import AntoniusCharacter from '../../characters/antonius'
 import BardCharacter from '../../characters/bard'
 import GooseCharacter from '../../characters/goose'
 import CatCharacter from '../../characters/cat'
+import MeckieCharacter from '../../characters/meckie'
 
 import Arrow from '../../gameObjects/arrow'
 
@@ -18,6 +19,7 @@ export default class BardScene extends Scene {
   goose: GooseCharacter
   bard: BardCharacter
   cat: CatCharacter
+  meckie: MeckieCharacter
 
   antonius: AntoniusCharacter
 
@@ -47,6 +49,11 @@ export default class BardScene extends Scene {
     cat.scale = new Phaser.Point(3, 3)
     cat.setActiveState('idle')
     this.add.existing(cat)
+
+    const meckie = this.meckie = new MeckieCharacter(this.game, 30, 120)
+    meckie.scale = new Phaser.Point(0.3, 0.6)
+    meckie.setActiveState('idle')
+    this.add.existing(meckie)
 
     const antonius = this.antonius = new AntoniusCharacter(this.game, 292, 120)
     antonius.scale = new Phaser.Point(3, 3)
