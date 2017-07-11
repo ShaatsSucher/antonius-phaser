@@ -35,7 +35,7 @@ export default abstract class Scene extends Phaser.State {
     this.backgroundImage.loadTexture(key)
   }
 
-  public playAtmo(key: string): Promise<void> {
+  public playAtmo(key: string): Promise<Phaser.Sound> {
     return this.playBackgroundSound('atmo', key)
   }
 
@@ -47,7 +47,7 @@ export default abstract class Scene extends Phaser.State {
     return this.getBackgroundSound('atmo')
   }
 
-  public playMusic(key: string): Promise<void> {
+  public playMusic(key: string): Promise<Phaser.Sound> {
     return this.playBackgroundSound('music', key)
   }
 
@@ -59,11 +59,12 @@ export default abstract class Scene extends Phaser.State {
     return this.getBackgroundSound('music')
   }
 
-  public playBackgroundSound(type: string, key: string): Promise<void> {
+  public playBackgroundSound(type: string, key: string,
+        fadeIn: boolean = true, loop = true): Promise<Phaser.Sound> {
     const activeSound = this.activeBackgroundSounds[type]
     if (activeSound && activeSound.key === key) {
       // Don't do anything, if the selected sound is already active
-      return Promise.resolve()
+      return Promise.resolve(activeSound.sound)
     }
 
     // Fade out the previously active sound (if any)
@@ -74,16 +75,20 @@ export default abstract class Scene extends Phaser.State {
     }
 
     // Fade in the new sound
-    let fadeInDone: () => void
-    const fadeInComplete = new Promise<void>(resolve => { fadeInDone = resolve })
-
-    const sound = this.game.sound.play(key, 0, true)
-    sound.fadeTo(1000, this.game.sound.volume * this.backgroundSoundVolumeMultiplier)
-    sound.onFadeComplete.addOnce(fadeInDone)
-
+    const sound = this.game.sound.play(key, fadeIn ? 0 : 1, loop)
     this.activeBackgroundSounds[type] = { key, sound }
 
-    return fadeInComplete
+    if (fadeIn) {
+      let fadeInDone: (sound: Phaser.Sound) => void
+      const fadeInComplete = new Promise<Phaser.Sound>(resolve => { fadeInDone = resolve })
+
+      sound.fadeTo(1000, this.game.sound.volume * this.backgroundSoundVolumeMultiplier)
+      sound.onFadeComplete.addOnce(() => fadeInDone(sound))
+
+      return fadeInComplete
+    } else {
+      return Promise.resolve(sound)
+    }
   }
 
   public stopBackgroundSound(type: string): Promise<void> {
