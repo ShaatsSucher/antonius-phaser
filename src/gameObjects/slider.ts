@@ -11,8 +11,8 @@ export default class Slider extends Phaser.Group {
     this.onValueChanged.dispatch(this.value)
   }
 
-  private readonly sliderMin = 21
-  private readonly sliderMax = 125
+  private readonly sliderMin = 19
+  private readonly sliderMax = 121
 
   private background: Phaser.Sprite
   private icon: Phaser.Sprite
@@ -35,12 +35,12 @@ export default class Slider extends Phaser.Group {
     }
     this.add(this.icon)
 
-    this.sliderFill = new Phaser.TileSprite(game, this.sliderMax - 1, 6, 52, 2, Images.uiSliderFill.key)
-    this.sliderFill.anchor.set(1, 0)
+    this.sliderFill = new Phaser.TileSprite(game, this.sliderMin, 6, 52, 2, Images.uiSliderFill.key)
+    this.sliderFill.anchor.set(0, 0)
     this.add(this.sliderFill)
 
-    this.sliderHandle = new Button(game, 72, 2, Atlases.sliderHandle.key)
-    this.sliderHandle.anchor.setTo(1, 0)
+    this.sliderHandle = new Button(game, 69, 2, Atlases.sliderHandle.key)
+    this.sliderHandle.anchor.setTo(0, 0)
     this.registerDragHandlers()
     this.add(this.sliderHandle)
 
@@ -50,14 +50,13 @@ export default class Slider extends Phaser.Group {
   private updateSlider() {
     const fillWidth = (this.sliderMax - this.sliderMin) * this.value
     this.sliderFill.width = fillWidth
-    this.sliderHandle.x = this.sliderMax - fillWidth
+    this.sliderHandle.x = this.sliderMin + fillWidth
   }
 
   private onMouseMove(_, x: number) {
     if (this.sliderHandle.state !== ButtonState.DOWN) return
-    x -= this.x
-    this.sliderHandle.x = Math.max(this.sliderMin, Math.min(this.sliderMax, x))
-    this.value = (this.sliderMax - this.sliderHandle.x) / (this.sliderMax - this.sliderMin)
+    x -= this.x + this.sliderHandle.width / 2
+    this.value = (x - this.sliderMin) / (this.sliderMax - this.sliderMin)
   }
 
   public registerDragHandlers() {
