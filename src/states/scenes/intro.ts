@@ -26,8 +26,6 @@ class InitialState implements SceneState<IntroScene> {
   constructor(public readonly scene: IntroScene) { }
   public getStateName() { return 'initial' }
 
-  private audio: Phaser.Sound
-
   private readonly text: [{ time: number, text: string }] = [
     { time: 2000, text: 'Mein Mund ist das Tor zur Hölle.' },
     { time: 8000, text: 'Meine Aufgabe ist es, die Menschheit\nvor den Dämonen zu schützen...' },
@@ -45,18 +43,29 @@ class InitialState implements SceneState<IntroScene> {
     const initialScale = worldRightOfPosition / imageRightOfAnchor
     this.scene.image.scale.setTo(initialScale)
     this.scene.image.tint = 0xaaaaaa
+    this.scene.image.inputEnabled = true
+    this.scene.image.input.useHandCursor = true
+    this.scene.image.events.onInputDown.add(() => {
+      this.scene.fadeTo('head')
+    })
+
+    const audio = await this.scene.playBackgroundSound('intro', Audio.introIntro.key, false, false)
+    audio.onStop.addOnce(() => {
+      updateHandle.detach()
+      this.scene.fadeTo('head')
+    })
 
     let blurOutStarted = false
     let lastLabels: Phaser.Text[] = []
     let nextLines = this.text.concat() // Copy the array
     const updateHandle = this.scene.onUpdate.add(() => {
       // Zoom in as the audio plays
-      const progress = this.audio.currentTime / this.audio.durationMS
+      const progress = audio.currentTime / audio.durationMS
       this.scene.image.scale.setTo(initialScale + progress * (1 - initialScale))
 
       // Fade through dialogue
       if (nextLines.length > 0) {
-        if (nextLines[0].time <= this.audio.currentTime) {
+        if (nextLines[0].time <= audio.currentTime) {
           lastLabels.forEach(label => label.kill())
 
           const { time, text } = nextLines.shift()
@@ -97,20 +106,10 @@ class InitialState implements SceneState<IntroScene> {
         this.scene.game.tweens.create(filter).to({
           sizeX: this.scene.game.height / 3,
           sizeY: this.scene.game.width / 3
-        }, this.audio.durationMS - this.audio.currentTime + 1000).start()
+        }, audio.durationMS - audio.currentTime + 1000).start()
 
         blurOutStarted = true
       }
     })
-
-    this.audio = this.scene.sound.play(Audio.introIntro.key)
-    this.audio.onStop.addOnce(() => {
-      updateHandle.detach()
-      this.scene.fadeTo('head')
-    })
-  }
-
-  public async exit(): Promise<void> {
-    this.audio.stop()
   }
 }
