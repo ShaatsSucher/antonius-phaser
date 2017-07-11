@@ -2,6 +2,7 @@ import SceneState from './sceneState'
 import { Button } from '../../gameObjects/button'
 import { Atlases } from '../../assets'
 import SettingsOverlay from '../../overlays/settings'
+import Inventory from '../../overlays/inventory'
 
 export default abstract class Scene extends Phaser.State {
   private isVisible = false
@@ -160,6 +161,7 @@ export default abstract class Scene extends Phaser.State {
 
     // Fade out
     this.camera.fade(0x000000, 1000)
+    this.game.tweens.create(Inventory.instance).to({ alpha: 0 }, 1000).start()
     this.stopAllBackgroundSounds()
   }
 
@@ -176,6 +178,7 @@ export default abstract class Scene extends Phaser.State {
   public create() {
     this.lockInput()
     this.camera.flash(0x000000, 1000)
+    this.game.tweens.create(Inventory.instance).to({ alpha: 1 }, 1000).start()
 
     console.log(`Adding background '${this.backgroundKey}'`)
     this.backgroundImage = this.add.sprite(0, 0, this.backgroundKey)
