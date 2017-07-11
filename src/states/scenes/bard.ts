@@ -51,7 +51,7 @@ export default class BardScene extends Scene {
     this.add.existing(cat)
 
     const meckie = this.meckie = new MeckieCharacter(this.game, 30, 120)
-    meckie.scale = new Phaser.Point(0.3, 0.6)
+    meckie.scale = new Phaser.Point(3, 3)
     meckie.setActiveState('idle')
     this.add.existing(meckie)
 
