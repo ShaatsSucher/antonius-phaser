@@ -65,6 +65,7 @@ export default abstract class Scene extends Phaser.State {
   public playBackgroundSound(type: string, key: string,
         fadeIn: boolean = true, loop = true): Promise<Phaser.Sound> {
     const activeSound = this.activeBackgroundSounds[type]
+
     if (activeSound && activeSound.key === key) {
       // Don't do anything, if the selected sound is already active
       return Promise.resolve(activeSound.sound)
@@ -102,9 +103,10 @@ export default abstract class Scene extends Phaser.State {
     const fadeOutComplete = new Promise<void>(resolve => { fadeOutDone = resolve })
 
     activeSound.sound.fadeOut(1000)
+    activeSound.sound.onFadeComplete.addOnce(() => {
+      delete this.activeBackgroundSounds[type]
+    })
     activeSound.sound.onFadeComplete.addOnce(fadeOutDone)
-
-    this.activeBackgroundSounds[type] = undefined
 
     return fadeOutComplete
   }
@@ -114,7 +116,7 @@ export default abstract class Scene extends Phaser.State {
     if (!activeSound) return
     activeSound.sound.stop()
     activeSound.sound.destroy()
-    this.activeBackgroundSounds[type] = undefined
+    delete this.activeBackgroundSounds[type]
     return
   }
 
