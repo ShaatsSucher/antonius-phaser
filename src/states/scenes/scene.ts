@@ -43,12 +43,20 @@ export default abstract class Scene extends Phaser.State {
     return this.stopBackgroundSound('atmo')
   }
 
+  public getAtmo(): Phaser.Sound {
+    return this.getBackgroundSound('atmo')
+  }
+
   public playMusic(key: string): Promise<void> {
     return this.playBackgroundSound('music', key)
   }
 
   public stopMusic(): Promise<void> {
     return this.stopBackgroundSound('music')
+  }
+
+  public getMusic(): Phaser.Sound {
+    return this.getBackgroundSound('music')
   }
 
   public playBackgroundSound(type: string, key: string): Promise<void> {
@@ -110,6 +118,11 @@ export default abstract class Scene extends Phaser.State {
 
   public killAllBackgroundSounds() {
     Object.keys(this.activeBackgroundSounds).forEach(type => this.killBackgroundSound(type))
+  }
+
+  public getBackgroundSound(key: string): Phaser.Sound {
+    const sound = this.activeBackgroundSounds[key]
+    return sound && sound.sound
   }
 
   async setActiveState(name: string): Promise<void> {
