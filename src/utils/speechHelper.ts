@@ -122,6 +122,9 @@ export default class SpeechHelper {
   }
 
   public static Generators = {
+    mute: () => () => {
+      return () => { return null }
+    },
     sequential: (samples: string[]) => () => {
       let lastIndex = samples.length - 1
       return () => {
