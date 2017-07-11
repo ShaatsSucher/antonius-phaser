@@ -2,21 +2,22 @@ import Character from '../characters/character'
 import { CustomWebFonts } from '../assets'
 import { ArrayUtils } from '../utils/utils'
 
+type SampleGenerator = (...generatorParams: any[]) => () => (string | null)
 export default class SpeechHelper {
   private textAnchor: Phaser.Point
   private currentSample: Phaser.Sound
 
   constructor(private character: Character,
               anchorX: number, anchorY: number,
-              private sampleGenerator: (x?: string) => () => (string | null),
+              private sampleGenerator: SampleGenerator,
               private resetCharacterStateBeforePlaying = true,
               private idleState = 'idle',
               private talkingState = 'talking') {
     this.textAnchor = new Phaser.Point(anchorX, anchorY)
   }
 
-  public async say(text: string, timeout?: number, generatorParam?: string): Promise<void> {
-    const nextSample = this.sampleGenerator(generatorParam)
+  public async say(text: string, timeout?: number, ...generatorParams: any[]): Promise<void> {
+    const nextSample = this.sampleGenerator(...generatorParams)
 
     const characterClicked = this.registerClickListener()
 
@@ -124,6 +125,9 @@ export default class SpeechHelper {
   public static Generators = {
     mute: () => () => {
       return () => { return null }
+    },
+    combine: (generators: { [title: string]: SampleGenerator }) => (generator = 'default', ...params: any[]) => {
+      return generators[generator](...params)
     },
     sequential: (samples: string[]) => () => {
       let lastIndex = samples.length - 1
