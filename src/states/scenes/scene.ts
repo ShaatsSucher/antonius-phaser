@@ -162,6 +162,7 @@ export default abstract class Scene extends Phaser.State {
     })
 
     // Fade out
+    this.camera.resetFX()
     this.camera.fade(0x000000, 1000)
     this.game.tweens.create(Inventory.instance).to({ alpha: 0 }, 1000).start()
     this.stopAllBackgroundSounds()
@@ -179,6 +180,7 @@ export default abstract class Scene extends Phaser.State {
 
   public create() {
     this.lockInput()
+    this.camera.resetFX()
     this.camera.flash(0x000000, 1000)
     this.game.tweens.create(Inventory.instance).to({ alpha: 1 }, 1000).start()
 
