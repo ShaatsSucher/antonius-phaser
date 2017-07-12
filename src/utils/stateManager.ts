@@ -83,8 +83,7 @@ export class SceneStateManager<T extends Scene> {
     }
 
     this.activeState = nextState
-    await nextState.enter()
-    if (sceneIsVisible) await nextState.show()
+    await this.reenter()
   }
 
   private onSceneCreated() {
@@ -99,6 +98,13 @@ export class SceneStateManager<T extends Scene> {
   private onSceneShutDown() {
     if (this.activeState) {
       this.activeState.hide() // TODO: check if we actually need to await this
+    }
+  }
+
+  public async reenter(): Promise<void> {
+    await this.activeState.enter()
+    if (this.scene.isVisible) {
+      await this.activeState.show()
     }
   }
 }
