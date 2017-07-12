@@ -20,6 +20,7 @@ export default class FishCharacter extends Character {
 
     this.addCharacterState('idle', new IdleState(this))
     this.addCharacterState('talking', new TalkingState(this))
+    this.addCharacterState('dying', new DyingState(this))
 
     this.play('idle')
   }

@@ -8,6 +8,7 @@ import FishCharacter from '../../characters/fish'
 
 import Arrow from '../../gameObjects/arrow'
 
+import Inventory from '../../overlays/inventory'
 import { ArrayUtils, StringUtils } from '../../utils/utils'
 
 export default class FishScene extends Scene {
@@ -19,7 +20,11 @@ export default class FishScene extends Scene {
   constructor() {
     super(
       Images.backgroundsFish.key,
-      TheIntroduction
+      Start,
+      FishAlive,
+      FishDying,
+      FishDead,
+      FishGone
     )
   }
 
@@ -46,9 +51,9 @@ export default class FishScene extends Scene {
   }
 }
 
-class TheIntroduction implements SceneState<FishScene> {
+class Start implements SceneState<FishScene> {
   constructor (public readonly scene: FishScene) { }
-  public getStateName() { return 'the introduction' }
+  public getStateName() { return 'start' }
 
   public async enter(): Promise<void> {
     const scene = this.scene
@@ -57,5 +62,105 @@ class TheIntroduction implements SceneState<FishScene> {
     scene.playMusic(Audio.musicHeadScreen.key)
 
     scene.toHeadArrow.visible = true
+
+    scene.fish.setInteractionEnabled(true)
+    scene.fish.events.onInputDown.addOnce(async () => {
+      scene.toHeadArrow.visible = false
+      scene.fish.setInteractionEnabled(false)
+
+      await scene.antonius.speech.say('Ach, ich dachte doch\nirgendwas riecht hier fischig', 6, 'ssslsss')
+      await scene.fish.speech.say('Ent-schul-di-gung, aber was so "fischig"\nriecht ist ein Canal No. 5!', 10)
+      await scene.antonius.speech.say('Oh, du sprichst!', 3, 'lss')
+      await scene.fish.speech.say('Nicht nur spreche ich, ich atme Luft!\nWasser ist ja *schnauf* so was von altmodisch.', 8)
+      await scene.fish.speech.say('Frischluft, *röchel* das atmet man heutzutage!', 6)
+      await scene.antonius.speech.say('Sicher, dass es dir gut geht?\nDu siehst ein bisschen blass um die Kiemen aus...', 6, 'ssslsls')
+      await scene.fish.speech.say('Mir geht es *keuch* BLEN-DEND!', 5)
+
+      scene.setActiveState('fish alive')
+    })
+  }
+}
+
+class FishAlive implements SceneState<FishScene> {
+  constructor (public readonly scene: FishScene) { }
+  public getStateName() { return 'fish alive' }
+
+  public async enter(): Promise<void> {
+    const scene = this.scene
+
+    scene.toHeadArrow.visible = true
+
+    scene.fish.setInteractionEnabled(true)
+    scene.fish.events.onInputDown.addOnce(async () => {
+      scene.fish.setInteractionEnabled(false)
+
+      await scene.fish.speech.say('Mir geht es *keuch* BLEN-DEND!', 5)
+
+      // if (scene.game.state.states.bard.getStateName() != 'cat') {
+        scene.setActiveState(this.getStateName())
+      // } else {
+      //   scene.setActiveState('fish dead')
+      // }
+    })
+  }
+}
+
+class FishDying implements SceneState<FishScene> {
+  constructor (public readonly scene: FishScene) { }
+  public getStateName() { return 'fish dying' }
+
+  public async enter(): Promise<void> {
+    const scene = this.scene
+
+    scene.toHeadArrow.visible = true
+
+    scene.fish.setInteractionEnabled(true)
+    scene.fish.events.onInputDown.addOnce(async () => {
+      scene.fish.setInteractionEnabled(false)
+      scene.toHeadArrow.visible = false
+
+      await scene.fish.speech.say('Luft atmen ist *japs* gesund!', 4)
+      await scene.fish.speech.say('Es verjüngt die Haut, es reinigt die Poren,\nalles dank der Lunge!', 6)
+      await scene.fish.speech.say('... Moment, hab ich eigentlich eine Lunge?', 5)
+
+      scene.fish.setActiveState('dying')
+      const deathSound = scene.sound.play(Audio.fishFishDiesFishDies.key)
+      deathSound.onStop.addOnce(async () => {
+        console.log('ded')
+        scene.setActiveState('fish dead')
+      })
+
+      // scene.antonius.speech.say('Hmm… alles Teil von Gottes Plan. Ganz bestimmt.', 6, 'ssssss')
+    })
+  }
+}
+
+class FishDead implements SceneState<FishScene> {
+  constructor (public readonly scene: FishScene) { }
+  public getStateName() { return 'fish dead' }
+
+  public async enter(): Promise<void> {
+    const scene = this.scene
+
+    scene.toHeadArrow.visible = true
+
+    scene.fish.setInteractionEnabled(true)
+    scene.fish.events.onInputDown.addOnce(async () => {
+      scene.fish.setInteractionEnabled(false)
+
+      scene.fish.visible = false
+
+      Inventory.instance.item = Images.fish.key
+      scene.setActiveState('fish gone')
+    })
+  }
+}
+
+class FishGone implements SceneState<FishScene> {
+  constructor (public readonly scene: FishScene) { }
+  public getStateName() { return 'fish gone' }
+
+  public async enter(): Promise<void> {
+    this.scene.fish.visible = false
   }
 }

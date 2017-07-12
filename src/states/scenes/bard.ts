@@ -118,6 +118,7 @@ class ConversationState implements SceneState<BardScene> {
 
 
     scene.game.state.states.head.setActiveState('the cake is a lie')
+    scene.game.state.states.fish.setActiveState('fish dying')
     scene.setActiveState('cat')
   }
 }
