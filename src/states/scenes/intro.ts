@@ -3,7 +3,6 @@ import SceneState from './sceneState'
 
 import { Images, Audio, CustomWebFonts } from '../../assets'
 
-import Inventory from '../../overlays/inventory'
 import { ArrayUtils, StringUtils } from '../../utils/utils'
 
 export default class IntroScene extends Scene {
@@ -20,13 +19,10 @@ export default class IntroScene extends Scene {
       Images.backgroundsCraesbeeckAntonius.key
     )
     this.image.anchor.setTo(0.294, 0.489)
-
-    Inventory.instance.visible = false
   }
 
   public shutdown() {
     super.shutdown()
-    Inventory.instance.visible = true
   }
 }
 
@@ -47,7 +43,6 @@ class InitialState implements SceneState<IntroScene> {
 
   public async enter(): Promise<void> {
     this.scene.settingsButton.visible = false
-    Inventory.instance.visible = false
 
     const worldRightOfPosition = this.scene.game.canvas.width - this.scene.image.x
     const imageRightOfAnchor = this.scene.image.width - this.scene.image.width * this.scene.image.anchor.x
@@ -125,8 +120,6 @@ class InitialState implements SceneState<IntroScene> {
   }
 
   async exit(): Promise<void> {
-    console.log('exit intro')
     this.scene.settingsButton.visible = true
-    Inventory.instance.visible = true
   }
 }
