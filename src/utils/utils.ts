@@ -150,8 +150,9 @@ export class TimeUtils {
   public static wait(seconds: number): Promise<void> {
     let timeout: () => any
     const timer = Phaser.GAMES[0].time.create()
+    const timeoutPromise = new Promise<void>(resolve => { timeout = resolve })
     timer.add(seconds * Phaser.Timer.SECOND, timeout)
     timer.start()
-    return new Promise<void>(resolve => { timeout = resolve })
+    return timeoutPromise
   }
 }
