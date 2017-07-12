@@ -147,14 +147,15 @@ class MeckieConversationState implements SceneState<BardScene> {
 
     scene.meckie.setInteractionEnabled(false)
 
-    await scene.meckie.speech.say('Schnibbel schnabbel schnapp!\nIch schneid dir die Kapuze ab!', 6)
+    await scene.meckie.speech.say('Schnibbel schnabbel schnapp!\nIch schneid dir die Kapuze ab!', 6, 'ssssss')
     await scene.antonius.speech.say('Immer mit der Ruhe!\nWas hast du denn mit dem Messer vor?', 6, 'sslssl')
-    await scene.meckie.speech.say('Ich häcksel alles, groß und klein\nund du könntest der nächste sein', 6)
+    await scene.meckie.speech.say('Ich häcksel alles, groß und klein\nund du könntest der nächste sein', 6, 'ssssss')
     await scene.antonius.speech.say('Wäre es in Ordnung wenn du das...\nnicht tun könntest?', 6, 'sslsss')
-    await scene.meckie.speech.say('Verschonen könnt ich dich vielleicht,\neinfach was zum hacken reicht.', 6)
-    await scene.meckie.speech.say('Wie wär’s mit ‘nem Zerteil-Versuch\nmit deinem kleinen Bibel-Buch? Hähähähä!', 7)
+    await scene.meckie.speech.say('Verschonen könnt ich dich vielleicht,\neinfach was zum hacken reicht.', 6, 'ssssss')
+    await scene.meckie.speech.say('Wie wär’s mit ‘nem Zerteil-Versuch\nmit deinem kleinen Bibel-Buch?', 7, 'ssssss')
+    await scene.meckie.speech.say('Hähähähä!', 3, 'aaa')
     await scene.antonius.speech.say('Also bitte, dies ist ein Buch Gottes!', 4, 'ssss')
-    await scene.meckie.speech.say('Willst du nicht enden als Eingeweide,\nbring etwas, das ich zerschneide!', 6)
+    await scene.meckie.speech.say('Willst du nicht enden als Eingeweide,\nbring etwas, das ich zerschneide!', 6, 'ssssss')
 
     scene.setActiveState('dog')
   }
@@ -200,11 +201,11 @@ class DogState implements SceneState<BardScene> {
         Inventory.instance.item = null
 
         await scene.antonius.speech.say('Ich hätte hier einen Fisch,\nden du vielleicht zerschneiden könntest.', 6, 'ssssss')
-        await scene.meckie.speech.say('Ein Wasservieh, frisch aus der See,\nverwandle ich in Lachsfilet!', 6)
+        await scene.meckie.speech.say('Ein Wasservieh, frisch aus der See,\nverwandle ich in Lachsfilet!', 6, 'iiiiii')
         await scene.antonius.speech.say('Toll! Willst du denn damit etwas kochen, oder…?', 5, 'ssssl')
-        await scene.meckie.speech.say('Was ich tun wollt’ hab ich getan,\nich bin ja eigentlich vegan.', 6)
+        await scene.meckie.speech.say('Was ich tun wollt’ hab ich getan,\nich bin ja eigentlich vegan.', 6, 'ssssss')
         await scene.antonius.speech.say('Praktisch!', 1, 's')
-        await scene.meckie.speech.say('Das war jetzt auch mein letzter Reim,\nden Rest zerschnibbel ich daheim.', 6)
+        await scene.meckie.speech.say('Das war jetzt auch mein letzter Reim,\nden Rest zerschnibbel ich daheim.', 6, 'ssssss')
         await scene.antonius.speech.say('Tschuess!', 1, 'l')
 
         Inventory.instance.item = Assets.Images.filet.key

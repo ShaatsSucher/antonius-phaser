@@ -6,10 +6,21 @@ import SpeechHelper from '../utils/speechHelper'
 
 export default class MeckieCharacter extends Character {
   public speechPattern: string = 'l'
-  public speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.random(
-    ArrayUtils.range(1, 14).map(i =>
-      Assets.Audio[`goose${StringUtils.intToString(i, 3)}`].key
-    )
+  public speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.pattern(
+    {
+      l: ArrayUtils.range(1, 10).map(i =>
+        Assets.Audio[`knifeguyLongKnifeguyLong${StringUtils.intToString(i, 3)}`].key
+      ),
+      s: ArrayUtils.range(1, 21).map(i =>
+        Assets.Audio[`knifeguyShortKnifeguyShort${StringUtils.intToString(i, 3)}`].key
+      ),
+      i: ArrayUtils.range(1, 7).map(i =>
+        Assets.Audio[`knifeguyKnifeguyInterested${StringUtils.intToString(i, 3)}`].key
+      ),
+      a: ArrayUtils.range(1, 8).map(i =>
+        Assets.Audio[`knifeguyLaughingKnifeguyLaughing${StringUtils.intToString(i, 3)}`].key
+      )
+    }
   ))
 
   constructor(game: Phaser.Game, x: number, y: number) {
