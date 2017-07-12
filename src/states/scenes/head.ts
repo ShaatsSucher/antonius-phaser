@@ -36,7 +36,7 @@ export default class HeadScene extends Scene {
       this.fadeTo('bard')
     })
     const arrow2 = this.toFishArrow = new Arrow(this.game, 190, 200)
-    arrow2.rotation = Math.PI/2
+    arrow2.rotation = Math.PI / 2
     arrow2.interactionEnabled = true
     this.game.add.existing(arrow2)
     arrow2.events.onInputDown.addOnce(() => {
