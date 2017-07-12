@@ -5,7 +5,7 @@ import { ArrayUtils, StringUtils } from '../utils/utils'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class GooseCharacter extends Character {
-  public speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.random(
+  public speech = new SpeechHelper(this, 40, -60, SpeechHelper.Generators.random(
     ArrayUtils.range(1, 14).map(i =>
       Assets.Audio[`goose${StringUtils.intToString(i, 3)}`].key
     )

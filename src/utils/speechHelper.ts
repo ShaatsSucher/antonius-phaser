@@ -98,7 +98,7 @@ export default class SpeechHelper {
         const tooFarRight = (label.x + (label.width / 2)) - this.character.game.width
         if (tooFarRight > 0) label.x -= tooFarRight
         const tooFarLeft = label.x - (label.width / 2)
-        if (tooFarLeft < 0) label.y -= tooFarLeft
+        if (tooFarLeft < 0) label.x -= tooFarLeft
 
       })
     })

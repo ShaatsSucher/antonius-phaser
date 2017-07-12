@@ -5,7 +5,7 @@ import { ArrayUtils, StringUtils } from '../utils/utils'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class CatCharacter extends Character {
-  public speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.sequential(
+  public speech = new SpeechHelper(this, 0, -60, SpeechHelper.Generators.sequential(
     ArrayUtils.range(1, 3).map(i =>
       Assets.Audio[`catDenial${StringUtils.intToString(i, 3)}`].key
     )
