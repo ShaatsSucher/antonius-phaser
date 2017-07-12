@@ -19,7 +19,7 @@ export abstract class SceneState<T extends Scene> {
 export abstract class SceneStateTransition<T extends Scene> {
   public constructor(protected readonly scene: T) { }
 
-  public abstract enter(isVisible: boolean): Promise<Extending<SceneState<T>>>
+  public abstract enter(isVisible: boolean): Promise<Extending<SceneState<T>>|Extending<SceneStateTransition<T>>>
 }
 
 export class SceneStateManager<T extends Scene> {
@@ -62,13 +62,31 @@ export class SceneStateManager<T extends Scene> {
     }, null)
     if (!transition) throw `Invalid transition: ${Transition}`
 
-    const nextState = await transition.enter(this.scene.isVisible)
-    await this.setActiveState(nextState)
+    const NextStateOrTransition = await transition.enter(this.scene.isVisible)
+    await this.setStateOrTransition(NextStateOrTransition)
+  }
+
+  private findState(Type: Class<any>): SceneState<T> {
+    return this.states.reduce((acc, state) => acc || state.type === Type ? state.instance : null, null)
+  }
+
+  private findTransitionType(Type: Class<any>): Extending<SceneStateTransition<T>> {
+    return this.transitions.reduce((acc, trans) => acc || trans.type === Type ? trans.instance : null, null)
+  }
+
+  private async setStateOrTransition(StateOrTransition: (Extending<SceneState<T>>|Extending<SceneStateTransition<T>>)) {
+    const state = this.findState(StateOrTransition)
+    if (state) {
+      await this._setActiveState(state)
+    } else {
+      const transition = await this.findTransitionType(StateOrTransition)
+      await this.trigger(transition)
+    }
   }
 
   public async setActiveState(State: Extending<SceneState<T>>): Promise<void> {
-    const nextState = this.states.reduce((acc, trans) =>
-        acc || (trans.type === State ? trans.instance : null), null)
+    const nextState = this.states.reduce((acc, state) =>
+        acc || (state.type === State ? state.instance : null), null)
     if (!nextState) throw `Invalid state: ${State}`
     await this._setActiveState(nextState)
   }
