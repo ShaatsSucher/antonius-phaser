@@ -177,6 +177,7 @@ class Credits extends SceneStateTransition<HeadScene> {
         // Suction!
         meckie.setActiveState('idle')
         scene.hellmouth.setActiveState('open mouth')
+        scene.sound.play(Audio.hellmouthWhirlwind001.key)
         scene.tweens.create(meckie).to({ rotation: Math.PI * 10 }, 5000, Phaser.Easing.Cubic.In, true)
         scene.tweens.create(meckie.scale).to({ x: 0, y: 0 }, 5000, Phaser.Easing.Cubic.In, true)
         .onComplete.addOnce(async () => {
@@ -195,6 +196,7 @@ class Credits extends SceneStateTransition<HeadScene> {
           }, 3000).start().onComplete.addOnce(() => {
             cat.setActiveState('idle')
             scene.hellmouth.setActiveState('open mouth')
+            scene.sound.play(Audio.hellmouthWhirlwind001.key)
             scene.tweens.create(cat).to({ rotation: Math.PI * 10 }, 5000, Phaser.Easing.Cubic.In, true)
             scene.tweens.create(cat.scale).to({ x: 0, y: 0 }, 5000, Phaser.Easing.Cubic.In, true)
             .onComplete.addOnce(async () => {
@@ -212,7 +214,6 @@ class Credits extends SceneStateTransition<HeadScene> {
                 y: 143
               }, 3000).start().onComplete.addOnce(() => {
                 goose.setActiveState('idle')
-                scene.hellmouth.setActiveState('open mouth')
                 scene.tweens.create(goose).to({ rotation: Math.PI * 10 }, 5000, Phaser.Easing.Cubic.In, true)
                 scene.tweens.create(goose.scale).to({ x: 0, y: 0 }, 5000, Phaser.Easing.Cubic.In, true)
               })
@@ -230,6 +231,7 @@ class Credits extends SceneStateTransition<HeadScene> {
               }, 3000).start().onComplete.addOnce(() => {
                 bard.setActiveState('idle')
                 scene.hellmouth.setActiveState('open mouth')
+                scene.sound.play(Audio.hellmouthWhirlwind001.key)
                 scene.tweens.create(bard).to({ rotation: Math.PI * 10 }, 5000, Phaser.Easing.Cubic.In, true)
                 scene.tweens.create(bard.scale).to({ x: 0, y: 0 }, 5000, Phaser.Easing.Cubic.In, true).onComplete.addOnce(async () => {
                   await scene.hellmouth.setActiveState('close mouth')
