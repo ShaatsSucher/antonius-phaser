@@ -67,11 +67,11 @@ export class SceneStateManager<T extends Scene> {
   }
 
   private findState(Type: Class<any>): SceneState<T> {
-    return this.states.reduce((acc, state) => acc || state.type === Type ? state.instance : null, null)
+    return this.states.reduce((acc, state) => acc || (state.type === Type ? state.instance : null), null)
   }
 
   private findTransitionType(Type: Class<any>): Extending<SceneStateTransition<T>> {
-    return this.transitions.reduce((acc, trans) => acc || trans.type === Type ? trans.instance : null, null)
+    return this.transitions.reduce((acc, trans) => acc || (trans.type === Type ? trans.type : null), null)
   }
 
   private async setStateOrTransition(StateOrTransition: (Extending<SceneState<T>>|Extending<SceneStateTransition<T>>)) {
