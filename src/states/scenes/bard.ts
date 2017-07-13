@@ -276,13 +276,13 @@ class CatFeast extends SceneStateTransition<BardScene> {
     await scene.resetAll()
 
     await scene.antonius.speech.say('Hier, Miez!\nIch hab einen Fisch für dich.', null, 'llsssslsl')
-    await scene.cat.speech.say('...', 1)
+    await scene.cat.speech.say('...', 1, 'silent')
     await scene.antonius.speech.say('Komm, hol dir einen leckeren Fisch!', null, 'lsssssssl')
-    await scene.cat.speech.say('...', 1)
+    await scene.cat.speech.say('...', 1, 'silent')
     await TimeUtils.wait(0.5)
     Inventory.instance.item = ''
     await TimeUtils.wait(0.5)
-    await scene.cat.speech.say('... Angemessen.', 3)
+    await scene.cat.speech.say('... Angemessen.', 1, 'silent', Audio.catCatAccepts.key)
     await scene.antonius.speech.say('...', null, '')
     await scene.antonius.speech.say('Was?', null, 'l')
 
