@@ -173,7 +173,8 @@ class BardConversation extends SceneStateTransition<BardScene> {
 
     scene.bard.setActiveState('singing')
     scene.bard.interactionEnabled = true
-    const bardSong = scene.sound.play(Audio.bardSong.key)
+    const bardSong = scene.sound.play(Audio.bardSongShort.key)
+    bardSong.onStop.addOnce(() => { scene.bard.setActiveState('idle') })
 
     let bardClickedCallback: () => void
     const bardClicked = new Promise<void>(resolve => { bardClickedCallback = resolve })
