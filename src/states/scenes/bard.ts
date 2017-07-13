@@ -176,9 +176,25 @@ class BardConversation extends SceneStateTransition<BardScene> {
     const bardSong = scene.sound.play(Audio.bardSongShort.key)
     bardSong.onStop.addOnce(() => { scene.bard.setActiveState('idle') })
 
-    let bardClickedCallback: () => void
-    const bardClicked = new Promise<void>(resolve => { bardClickedCallback = resolve })
-    scene.bard.events.onInputUp.addOnce(bardClickedCallback)
+    const bardClicked = new Promise<void>(resolve => {
+      this.scene.game.input.mouse.capture = true
+      let mouseWasUp = false
+      let mouseWasDown = false
+      let handle: Phaser.SignalBinding
+      handle = this.scene.onUpdate.add(() => {
+        if (!this.scene.game.input.activePointer.leftButton.isDown) {
+          mouseWasUp = true
+        }
+        if (mouseWasUp && this.scene.game.input.activePointer.leftButton.isDown) {
+          mouseWasDown = true
+        }
+        if (mouseWasDown && !this.scene.game.input.activePointer.leftButton.isDown) {
+          this.scene.game.input.mouse.capture = false
+          handle.detach()
+          resolve()
+        }
+      })
+    })
 
     await bardClicked
     bardSong.stop()
