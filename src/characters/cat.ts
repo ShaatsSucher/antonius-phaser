@@ -5,11 +5,15 @@ import { ArrayUtils, StringUtils } from '../utils/utils'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class CatCharacter extends Character {
-  public speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.sequential(
-    ArrayUtils.range(1, 3).map(i =>
-      Assets.Audio[`catDenial${StringUtils.intToString(i, 3)}`].key
-    )
-  ))
+  public speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.combine({
+    default: SpeechHelper.Generators.sequential(
+      ArrayUtils.range(1, 3).map(i =>
+        Assets.Audio[`catDenial${StringUtils.intToString(i, 3)}`].key
+      )
+    ),
+    silent: SpeechHelper.Generators.explicit()
+  }
+))
 
   constructor(game: Phaser.Game, x: number, y: number) {
     super(game, x, y, Assets.Spritesheets.cat.key)
