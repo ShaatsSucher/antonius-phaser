@@ -91,6 +91,10 @@ export class SceneStateManager<T extends Scene> {
     await this._setActiveState(nextState)
   }
 
+  public getActiveState(): Extending<SceneState<T>> {
+    return this.states.reduce((acc, state) => acc || state.instance === this.activeState ? state.type : null, null)
+  }
+
   private async _setActiveState(nextState: SceneState<T>): Promise<void> {
     if (!nextState) throw 'nextState must be set'
 
