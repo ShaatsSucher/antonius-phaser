@@ -1,5 +1,4 @@
 import Scene from './scene'
-import SceneState from './sceneState'
 
 import { Images, Audio, CustomWebFonts } from '../../assets'
 
@@ -9,30 +8,11 @@ import { ArrayUtils, StringUtils } from '../../utils/utils'
 export default class IntroScene extends Scene {
   image: Phaser.Sprite
 
+  stateManagers = { } // We don't need states here
+
   constructor() {
-    super('', InitialState)
+    super('')
   }
-
-  protected createGameObjects() {
-    this.image = this.add.sprite(
-      Math.round(this.world.width * 0.292),
-      Math.round(this.world.height * 0.426),
-      Images.backgroundsCraesbeeckAntonius.key
-    )
-    this.image.anchor.setTo(0.294, 0.489)
-
-    Inventory.instance.visible = false
-  }
-
-  public shutdown() {
-    super.shutdown()
-    Inventory.instance.visible = true
-  }
-}
-
-class InitialState implements SceneState<IntroScene> {
-  constructor(public readonly scene: IntroScene) { }
-  public getStateName() { return 'initial' }
 
   private readonly text: [{ time: number, text: string }] = [
     { time: 2000, text: 'Mein Mund ist das Tor zur Hölle.' },
@@ -45,34 +25,60 @@ class InitialState implements SceneState<IntroScene> {
     { time: 80000, text: '' }
   ]
 
-  public async enter(): Promise<void> {
-    this.scene.settingsButton.visible = false
+  protected createGameObjects() {
+    this.image = this.add.sprite(
+      Math.round(this.world.width * 0.292),
+      Math.round(this.world.height * 0.426),
+      Images.backgroundsCraesbeeckAntonius.key
+    )
+    this.image.tint = 0xaaaaaa
+    this.image.inputEnabled = true
+    this.image.input.useHandCursor = true
+    this.image.anchor.setTo(0.294, 0.489)
+    const worldRightOfPosition = this.game.canvas.width - this.image.x
+    const imageRightOfAnchor = this.image.width - this.image.width * this.image.anchor.x
+    const initialScale = worldRightOfPosition / imageRightOfAnchor
+    this.image.scale.setTo(initialScale)
+
     Inventory.instance.visible = false
 
-    const worldRightOfPosition = this.scene.game.canvas.width - this.scene.image.x
-    const imageRightOfAnchor = this.scene.image.width - this.scene.image.width * this.scene.image.anchor.x
-    const initialScale = worldRightOfPosition / imageRightOfAnchor
-    this.scene.image.scale.setTo(initialScale)
-    this.scene.image.tint = 0xaaaaaa
-    this.scene.image.inputEnabled = true
-    this.scene.image.input.useHandCursor = true
-    this.scene.image.events.onInputDown.add(() => {
-      this.scene.fadeTo('head')
+    this.settingsButton.visible = false
+    Inventory.instance.visible = false
+
+    const label = this.game.add.text(this.game.world.centerX + 0.5, this.game.world.centerY, 'Zum Spielen klicken', {
+        font: `8px ${CustomWebFonts.pixelOperator8Bold.family}`,
+        fill: '#fff',
+        stroke: '#000',
+        strokeThickness: 2
+      }
+    )
+    label.anchor.setTo(0.5, 0.5)
+
+    this.image.events.onInputUp.addOnce(() => {
+      label.visible = false
+      this.startIntro()
+    })
+  }
+
+  private async startIntro() {
+    this.image.events.onInputDown.add(() => {
+      this.fadeTo('head')
     })
 
-    const audio = await this.scene.playBackgroundSound('intro', Audio.introIntro.key, false, false)
+    const audio = await this.playBackgroundSound('intro', Audio.introIntro.key, false, false)
     audio.onStop.addOnce(() => {
       updateHandle.detach()
-      this.scene.fadeTo('head')
+      this.fadeTo('head')
     })
 
+    const initialScale = this.image.scale.x
     let blurOutStarted = false
     let lastLabels: Phaser.Text[] = []
     let nextLines = this.text.concat() // Copy the array
-    const updateHandle = this.scene.onUpdate.add(() => {
+    const updateHandle = this.onUpdate.add(() => {
       // Zoom in as the audio plays
       const progress = audio.currentTime / audio.durationMS
-      this.scene.image.scale.setTo(initialScale + progress * (1 - initialScale))
+      this.image.scale.setTo(initialScale + progress * (1 - initialScale))
 
       // Fade through dialogue
       if (nextLines.length > 0) {
@@ -83,7 +89,7 @@ class InitialState implements SceneState<IntroScene> {
 
           const lines = text.split('\n').reverse()
           lastLabels = lines.map(line => {
-            const label = this.scene.game.add.text(0, 0, line, {
+            const label = this.game.add.text(0, 0, line, {
                 font: `8px ${CustomWebFonts.pixelOperator8Bold.family}`,
                 fill: '#fff',
                 stroke: '#000',
@@ -96,7 +102,7 @@ class InitialState implements SceneState<IntroScene> {
           lastLabels.forEach((label, index) => {
             if (index === 0) {
               label.position.setTo(
-                this.scene.game.world.centerX, this.scene.game.world.height - 5
+                this.game.world.centerX, this.game.world.height - 5
               )
             } else {
               label.alignTo(lastLabels[index - 1], Phaser.TOP_CENTER)
@@ -109,14 +115,14 @@ class InitialState implements SceneState<IntroScene> {
           })
         }
       } else if (!blurOutStarted) {
-        const filter = this.scene.game.add.filter('Pixelate', 800, 600)
+        const filter = this.game.add.filter('Pixelate', 800, 600)
         filter['sizeX'] = 1
         filter['sizeY'] = 1
-        this.scene.image.filters = [filter]
+        this.image.filters = [filter]
 
-        this.scene.game.tweens.create(filter).to({
-          sizeX: this.scene.game.height / 3,
-          sizeY: this.scene.game.width / 3
+        this.game.tweens.create(filter).to({
+          sizeX: this.game.height / 3,
+          sizeY: this.game.width / 3
         }, audio.durationMS - audio.currentTime + 1000).start()
 
         blurOutStarted = true
@@ -124,9 +130,10 @@ class InitialState implements SceneState<IntroScene> {
     })
   }
 
-  async exit(): Promise<void> {
-    console.log('exit intro')
-    this.scene.settingsButton.visible = true
+  public shutdown() {
+    super.shutdown()
+
+    this.settingsButton.visible = true
     Inventory.instance.visible = true
   }
 }

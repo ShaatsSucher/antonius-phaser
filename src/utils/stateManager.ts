@@ -9,11 +9,20 @@ export abstract class SceneState<T extends Scene> {
     protected readonly stateManager: SceneStateManager<T>
   ) { }
 
+  protected listeners: Phaser.SignalBinding[] = []
+
   public async enter(): Promise<void> { }
   public async show(): Promise<void> { }
 
   public async exit(): Promise<void> { }
-  public async hide(): Promise<void> { }
+  public async hide(): Promise<void> {
+    this.clearListeners()
+  }
+
+  public clearListeners() {
+    this.listeners.forEach(binding => binding.detach())
+    this.listeners = []
+  }
 }
 
 export abstract class SceneStateTransition<T extends Scene> {
@@ -28,6 +37,8 @@ export class SceneStateManager<T extends Scene> {
   private activeState: SceneState<T>
 
   private transitions: { type: Extending<SceneStateTransition<T>>, instance: SceneStateTransition<T> }[] = []
+
+  public onActiveStateChanged = new Phaser.Signal()
 
   constructor(
     private readonly scene: T,
@@ -60,7 +71,8 @@ export class SceneStateManager<T extends Scene> {
       if (trans.type === Transition) return trans.instance
       return null
     }, null)
-    if (!transition) throw `Invalid transition: ${Transition}`
+    if (!transition)
+      throw `Invalid transition: ${Transition.toString()}`
 
     const NextStateOrTransition = await transition.enter(this.scene.isVisible)
     await this.setStateOrTransition(NextStateOrTransition)
@@ -87,12 +99,12 @@ export class SceneStateManager<T extends Scene> {
   public async setActiveState(State: Extending<SceneState<T>>): Promise<void> {
     const nextState = this.states.reduce((acc, state) =>
         acc || (state.type === State ? state.instance : null), null)
-    if (!nextState) throw `Invalid state: ${State}`
+    if (!nextState) throw `Invalid state: ${State['name']}`
     await this._setActiveState(nextState)
   }
 
   public getActiveState(): Extending<SceneState<T>> {
-    return this.states.reduce((acc, state) => acc || state.instance === this.activeState ? state.type : null, null)
+    return this.states.reduce((acc, state) => acc || (state.instance === this.activeState ? state.type : null), null)
   }
 
   private async _setActiveState(nextState: SceneState<T>): Promise<void> {
@@ -106,6 +118,7 @@ export class SceneStateManager<T extends Scene> {
 
     this.activeState = nextState
     await this.reenter()
+    this.onActiveStateChanged.dispatch(nextState)
   }
 
   private onSceneCreated() {
@@ -124,6 +137,7 @@ export class SceneStateManager<T extends Scene> {
   }
 
   public async reenter(): Promise<void> {
+    this.activeState.clearListeners()
     await this.activeState.enter()
     if (this.scene.isVisible) {
       await this.activeState.show()

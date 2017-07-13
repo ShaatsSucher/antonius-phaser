@@ -23,6 +23,7 @@ export default class BardCharacter extends Character {
     super(game, x, y, Assets.Spritesheets.bard.key)
 
     this.characterHead = new Phaser.Sprite(this.game, 0, 0, Assets.Spritesheets.bardHead.key)
+    this.characterHead.position.setTo(-this.width / 2, 0)
     this.characterHead.animations.add('talking', [0, 1], 4, true)
     this.addChild(this.characterHead)
     this.characterHead.visible = false
