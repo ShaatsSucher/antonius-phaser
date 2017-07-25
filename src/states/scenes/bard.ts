@@ -58,19 +58,25 @@ export default class BardScene extends Scene {
   constructor() {
     super(Images.backgroundsBard.key)
 
-    function exceptFirst(cb: () => any) {
+    function exceptFirst(closure: () => any) {
       let first = true
       return () => {
         if (first) {
           first = false
           return
         }
-        cb()
+        closure()
       }
     }
 
-    this.stateManagers.bard.onActiveStateChanged.add(exceptFirst(() => this.stateManagers.meckie.reenter()))
-    this.stateManagers.meckie.onActiveStateChanged.add(exceptFirst(() => this.stateManagers.bard.reenter()))
+    // Make sure the character of both statemachines are always displayed
+    // correctly.
+    this.stateManagers.bard.onActiveStateChanged.add(exceptFirst(() =>
+      this.stateManagers.meckie.reenter()
+    ))
+    this.stateManagers.meckie.onActiveStateChanged.add(exceptFirst(() =>
+      this.stateManagers.bard.reenter()
+    ))
   }
 
   protected createGameObjects() {
@@ -149,8 +155,6 @@ export default class BardScene extends Scene {
 
 class InitialBard extends SceneState<BardScene> {
   public async show() {
-    console.log('Enter InitialBard')
-    console.log(new Error().stack)
     const scene = this.scene
     await scene.resetScene(true)
     await scene.resetBardRelated()
@@ -176,7 +180,7 @@ class BardConversation extends SceneStateTransition<BardScene> {
     const bardSong = scene.sound.play(Audio.bardSongShort.key)
     bardSong.onStop.addOnce(() => { scene.bard.setActiveState('idle') })
 
-    const bardClicked = new Promise<void>(resolve => {
+    const clickedAnywhere = new Promise<void>(resolve => {
       this.scene.game.input.mouse.capture = true
       let mouseWasUp = false
       let mouseWasDown = false
@@ -196,7 +200,7 @@ class BardConversation extends SceneStateTransition<BardScene> {
       })
     })
 
-    await bardClicked
+    await clickedAnywhere
     bardSong.stop()
     scene.bard.setInteractionEnabled(false)
 
@@ -279,15 +283,13 @@ class FiletInThePocket extends SceneState<BardScene> {
     scene.cat.interactionEnabled = true
     this.clearListeners()
     this.listeners.push(scene.cat.events.onInputUp.addOnce(
-      () => { console.log('triggerCatFeast'); this.stateManager.trigger(CatFeast) }
+      () => { this.stateManager.trigger(CatFeast) }
     ))
   }
 }
 
 class CatFeast extends SceneStateTransition<BardScene> {
   public async enter() {
-    console.log('Entering Cat Feast')
-
     const scene = this.scene
     await scene.resetAll()
 
@@ -357,6 +359,11 @@ class HelloThere extends SceneStateTransition<BardScene> {
     scene.bard.setActiveState('walking')
     scene.goose.setActiveState('walking')
 
+    // This is a hacky way to make the goose only move while it is jumping.
+    // (Frames 1 through 4: on the ground. Frames 5 through 7: in the air.)
+    // Doesn't always work in reality, since it is not actually synced with the
+    // animation, so depending on timing issues, the movement looks better or
+    // worse.
     const interpolate = t => {
       if (t < 4 / 7 / 3) return 0
       if (t < 1 / 3) return t * 7 / 3 - 4 / 9
