@@ -215,9 +215,6 @@ class BardConversation extends SceneStateTransition<BardScene> {
     await scene.antonius.speech.say('Ich sehe das Problem.\nVielleicht kann ich helfen.', null, 'ssssss')
 
     await scene.game.state.states.head.defaultStateManager.setActiveState(FishHintAvailable)
-    if (scene.game.state.states.fish.defaultStateManager.getActiveState() === FishAlive) {
-      await scene.game.state.states.fish.defaultStateManager.setActiveState(FishDying)
-    }
 
     return CatInTheWay
   }
@@ -247,10 +244,6 @@ class AnnoyedCat extends SceneStateTransition<BardScene> {
     await scene.cat.speech.say('[genervtes Miauen]', 4.9)
     await scene.antonius.speech.say('Das wird wohl schwieriger als gedacht...', null, 'sssssl')
 
-    if (scene.game.state.states.fish.defaultStateManager.getActiveState() === FishAlive) {
-      await scene.game.state.states.fish.defaultStateManager.setActiveState(FishDying)
-    }
-
     return CatInTheWay
   }
 }
@@ -265,10 +258,6 @@ class SadBard extends SceneStateTransition<BardScene> {
       'Wann hört das auf?',
       'Meine Nerven!'
     ]), 2)
-
-    if (scene.game.state.states.fish.defaultStateManager.getActiveState() === FishAlive) {
-      await scene.game.state.states.fish.defaultStateManager.setActiveState(FishDying)
-    }
 
     return CatInTheWay
   }
