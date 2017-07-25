@@ -6,6 +6,7 @@ import { Images, Audio } from '../../assets'
 import HellmouthCharacter from '../../characters/hellmouth'
 import AntoniusCharacter from '../../characters/antonius'
 
+import Character from '../../characters/character'
 import BardCharacter from '../../characters/bard'
 import GooseCharacter from '../../characters/goose'
 import CatCharacter from '../../characters/cat'
@@ -160,95 +161,58 @@ class Credits extends SceneStateTransition<HeadScene> {
 
       scene.antonius.x = 280
 
-      let creditsDoneCallback: () => void
-      const creditsDone = new Promise<void>(resolve => { creditsDoneCallback = resolve })
+      const swallow = async (characters: Character[] | Character, anchorY: number, walkStartY = 170) => {
+        let chars = characters instanceof Character ? [characters] : characters
 
-      const meckie = new MeckieCharacter(scene.game, 0, 0)
-      meckie.scale.setTo(-2, 2)
-      meckie.anchor.setTo(0.5, 0.3)
-      meckie.x = scene.game.width + meckie.anchor.x * meckie.width * meckie.scale.x
-      meckie.y = 170
-      await meckie.setActiveState('walking')
-      scene.add.existing(meckie)
-      scene.tweens.create(meckie).to({
-        x: 198,
-        y: 143
-      }, 3000).start().onComplete.addOnce(() => {
-        // Suction!
-        meckie.setActiveState('idle')
-        scene.hellmouth.setActiveState('open mouth')
-        scene.sound.play(Audio.hellmouthWhirlwind001.key)
-        scene.tweens.create(meckie).to({ rotation: Math.PI * 10 }, 5000, Phaser.Easing.Cubic.In, true)
-        scene.tweens.create(meckie.scale).to({ x: 0, y: 0 }, 5000, Phaser.Easing.Cubic.In, true)
-        .onComplete.addOnce(async () => {
-          await scene.hellmouth.setActiveState('close mouth')
+        await Promise.all(chars.map(async character => {
+          // Make character face left
+          character.scale.setTo(-2, 2)
 
-          const cat = new CatCharacter(scene.game, 0, 0)
-          cat.scale.setTo(-2, 2)
-          cat.anchor.setTo(0.5, 0)
-          cat.x = scene.game.width + cat.anchor.x * cat.width * cat.scale.x
-          cat.y = 170
-          await cat.setActiveState('walking')
-          scene.add.existing(cat)
-          scene.tweens.create(cat).to({
+          // Center the character's anchor
+          character.anchor.setTo(0.5, anchorY)
+
+          // Place character just right of the frame
+          character.x = scene.game.width + character.anchor.x * character.width * character.scale.x
+          character.y = walkStartY
+
+          await character.setActiveState('walking')
+          scene.add.existing(character)
+
+          // Move the character in front of the mouth
+          await scene.tweens.create(character).to({
             x: 198,
             y: 143
-          }, 3000).start().onComplete.addOnce(() => {
-            cat.setActiveState('idle')
-            scene.hellmouth.setActiveState('open mouth')
-            scene.sound.play(Audio.hellmouthWhirlwind001.key)
-            scene.tweens.create(cat).to({ rotation: Math.PI * 10 }, 5000, Phaser.Easing.Cubic.In, true)
-            scene.tweens.create(cat.scale).to({ x: 0, y: 0 }, 5000, Phaser.Easing.Cubic.In, true)
-            .onComplete.addOnce(async () => {
-              await scene.hellmouth.setActiveState('close mouth')
+          }, 3000).start().onComplete.asPromise()
+          await character.setActiveState('idle')
+        }))
 
-              const goose = new GooseCharacter(scene.game, 0, 0)
-              goose.scale.setTo(-2, 2)
-              goose.anchor.setTo(0.5, 0.4)
-              goose.x = scene.game.width + goose.anchor.x * goose.width * goose.scale.x
-              goose.y = 150
-              await goose.setActiveState('walking')
-              scene.add.existing(goose)
-              scene.tweens.create(goose).to({
-                x: 198,
-                y: 143
-              }, 3000).start().onComplete.addOnce(() => {
-                goose.setActiveState('idle')
-                scene.tweens.create(goose).to({ rotation: Math.PI * 10 }, 5000, Phaser.Easing.Cubic.In, true)
-                scene.tweens.create(goose.scale).to({ x: 0, y: 0 }, 5000, Phaser.Easing.Cubic.In, true)
-              })
+        scene.hellmouth.setActiveState('open mouth')
+        scene.sound.play(Audio.hellmouthWhirlwind001.key)
 
-              const bard = new BardCharacter(scene.game, 0, 0)
-              bard.scale.setTo(-2, 2)
-              bard.anchor.setTo(0.5, 0.4)
-              bard.x = scene.game.width + bard.anchor.x * bard.width * bard.scale.x
-              bard.y = 150
-              await bard.setActiveState('walking')
-              scene.add.existing(bard)
-              scene.tweens.create(bard).to({
-                x: 198,
-                y: 143
-              }, 3000).start().onComplete.addOnce(() => {
-                bard.setActiveState('idle')
-                scene.hellmouth.setActiveState('open mouth')
-                scene.sound.play(Audio.hellmouthWhirlwind001.key)
-                scene.tweens.create(bard).to({ rotation: Math.PI * 10 }, 5000, Phaser.Easing.Cubic.In, true)
-                scene.tweens.create(bard.scale).to({ x: 0, y: 0 }, 5000, Phaser.Easing.Cubic.In, true).onComplete.addOnce(async () => {
-                  await scene.hellmouth.setActiveState('close mouth')
-                  scene.fadeTo('end')
-                })
-              })
-            })
-          })
-        })
-      })
+        await Promise.all(chars.map(async character => {
+          await Promise.all([
+            scene.tweens.create(character).to({ rotation: Math.PI * 10 }, 5000, Phaser.Easing.Cubic.In, true).onComplete.asPromise(),
+            scene.tweens.create(character.scale).to({ x: 0, y: 0}, 5000, Phaser.Easing.Cubic.In, true).onComplete.asPromise()
+          ])
+        }))
 
-      await creditsDone
+        await scene.hellmouth.setActiveState('close mouth')
+      }
+
+      await swallow(new MeckieCharacter(scene.game, 0, 0), 0.3)
+      await swallow(new CatCharacter(scene.game, 0, 0), 0)
+      await swallow([
+        new GooseCharacter(scene.game, 0, 0),
+        new BardCharacter(scene.game, 0, 0)
+      ], 0.4, 150)
+
       return TheEnd
     }
   }
 }
 
 export class TheEnd extends SceneState<HeadScene> {
-
+  public async show() {
+    this.scene.fadeTo('end')
+  }
 }
