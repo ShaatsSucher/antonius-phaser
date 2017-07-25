@@ -137,14 +137,11 @@ export default abstract class Scene extends Phaser.State {
   }
 
   public async fadeTo(nextScene: string): Promise<void> {
-    // Disable all inputs to prevent the user to do anything stupid
-    console.log(`fadeTo ${nextScene}`)
+    // Disable all inputs to prevent the user from doing anything stupid.
     this.lockInput()
 
     // Start the next state as soon as the fade-out is done
-    let callId = 0
     this.game.camera.onFadeComplete.addOnce(() => {
-      console.log(`starting next state ${callId}`)
       this.game.state.start(nextScene)
     })
 
