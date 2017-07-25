@@ -189,6 +189,11 @@ export default class SpeechHelper {
         return nextSample
       }
     },
-    explicit: () => (sample: string | string[]) => () => sample instanceof String ? sample : sample.shift()
+    explicit: () => (sample: string | string[]) => () =>
+      typeof sample === 'string'
+        ? sample
+        : sample instanceof Array
+          ? sample.shift()
+          : null
   }
 }
