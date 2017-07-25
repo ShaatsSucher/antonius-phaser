@@ -22,13 +22,6 @@ export default class MeckieCharacter extends Character {
       )
     }
   ))
-  // public speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.combine({
-  //   default: SpeechHelper.Generators.random(
-  //     ArrayUtils.range(1, 14).map(i =>
-  //       Assets.Audio[`goose${StringUtils.intToString(i, 3)}`].key
-  //     )
-  //   )
-  // }))
 
   constructor(game: Phaser.Game, x: number, y: number) {
     super(game, x, y, Assets.Spritesheets.knifedude.key)
