@@ -29,7 +29,11 @@ export default class EndScene extends Scene {
     this.settingsButton.visible = false
     Inventory.instance.visible = false
 
-    const label = this.game.add.text(this.game.world.centerX + 0.5, this.game.world.centerY, 'Vielen Dank für\'s Spielen!', {
+    const label = this.game.add.text(
+      this.game.world.centerX + 0.5,
+      this.game.world.centerY,
+      'Vielen Dank für\'s Spielen!',
+      {
         font: `8px ${CustomWebFonts.pixelOperator8Bold.family}`,
         fill: '#fff',
         stroke: '#000',
