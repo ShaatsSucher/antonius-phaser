@@ -80,7 +80,7 @@ export default class IntroScene extends Scene {
       const progress = audio.currentTime / audio.durationMS
       this.image.scale.setTo(initialScale + progress * (1 - initialScale))
 
-      // Fade through dialogue
+      // Display dialogue synced to the intro audio
       if (nextLines.length > 0) {
         if (nextLines[0].time <= audio.currentTime) {
           lastLabels.forEach(label => label.kill())
