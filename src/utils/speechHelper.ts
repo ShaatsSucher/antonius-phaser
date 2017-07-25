@@ -189,6 +189,6 @@ export default class SpeechHelper {
         return nextSample
       }
     },
-    explicit: () => (sample: string) => () => sample
+    explicit: () => (sample: string | string[]) => () => sample instanceof String ? sample : sample.shift()
   }
 }
