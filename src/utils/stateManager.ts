@@ -71,8 +71,7 @@ export class SceneStateManager<T extends Scene> {
       if (trans.type === Transition) return trans.instance
       return null
     }, null)
-    if (!transition)
-      throw `Invalid transition: ${Transition.toString()}`
+    if (!transition) throw `Invalid transition: ${Transition.toString()}`
 
     const NextStateOrTransition = await transition.enter(this.scene.isVisible)
     await this.setStateOrTransition(NextStateOrTransition)
@@ -104,7 +103,10 @@ export class SceneStateManager<T extends Scene> {
   }
 
   public getActiveState(): Extending<SceneState<T>> {
-    return this.states.reduce((acc, state) => acc || (state.instance === this.activeState ? state.type : null), null)
+    return this.states.reduce(
+      (acc, state) => acc || (state.instance === this.activeState ? state.type : null),
+      null
+    )
   }
 
   private async _setActiveState(nextState: SceneState<T>): Promise<void> {
@@ -124,7 +126,7 @@ export class SceneStateManager<T extends Scene> {
   private onSceneCreated() {
     console.log('on scene created')
     if (this.activeState) {
-      this.activeState.show() // TODO: check if we actually need to await this
+      this.activeState.show() // TODO: check if we should `await` this
     } else {
       this._setActiveState(this.defaultState)
     }
@@ -132,7 +134,7 @@ export class SceneStateManager<T extends Scene> {
 
   private onSceneShutDown() {
     if (this.activeState) {
-      this.activeState.hide() // TODO: check if we actually need to await this
+      this.activeState.hide() // TODO: check if we should `await` this
     }
   }
 
