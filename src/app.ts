@@ -15,6 +15,7 @@ import * as Utils from './utils/utils'
 import * as Assets from './assets'
 
 import 'es6-promise/auto'
+import './utils/extensions'
 
 class App extends Phaser.Game {
   constructor(config: Phaser.IGameConfig) {
