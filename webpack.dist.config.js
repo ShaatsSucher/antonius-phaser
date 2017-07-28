@@ -35,7 +35,6 @@ module.exports = {
 
             // The items below most likely the ones you should be modifying
             'GOOGLE_WEB_FONTS': JSON.stringify([ // Add or remove entries in this array to change which fonts are loaded
-                'Barrio'
             ]),
             'SOUND_EXTENSIONS_PREFERENCE': JSON.stringify([ // Re-order the items in this array to change the desired order of checking your audio sources (do not add/remove/modify the entries themselves)
                 'webm', 'ogg', 'm4a', 'mp3', 'aac', 'ac3', 'caf', 'flac', 'mp4', 'wav'
@@ -51,7 +50,7 @@ module.exports = {
             screw_ie8: true
         }),
         new HtmlWebpackPlugin({
-            title: 'Phaser NPM Webpack TypeScript Starter Project!',
+            title: 'Antonius',
             template: path.join(__dirname, 'templates/index.ejs')
         })
     ],
@@ -78,4 +77,3 @@ module.exports = {
         ]
     }
 };
-

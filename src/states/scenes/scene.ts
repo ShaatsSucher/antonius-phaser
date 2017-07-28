@@ -1,13 +1,19 @@
-import SceneState from './sceneState'
 import { Button } from '../../gameObjects/button'
 import { Atlases } from '../../assets'
+
 import SettingsOverlay from '../../overlays/settings'
 import Inventory from '../../overlays/inventory'
 
+import { SceneStateManager } from '../../utils/stateManager'
+
 export default abstract class Scene extends Phaser.State {
-  private isVisible = false
-  private states: { [name: string]: SceneState<Scene> }
-  private _activeState: SceneState<Scene>
+  private _isVisible = false
+  public get isVisible() { return this._isVisible }
+
+  abstract stateManagers: { [name: string]: SceneStateManager<Scene> }
+  public get defaultStateManager(): SceneStateManager<Scene> {
+    return this.stateManagers.default
+  }
 
   private activeBackgroundSounds: { [type: string]: { key: string, sound: Phaser.Sound } } = { }
   private backgroundSoundVolumeMultiplier = 0.5
@@ -17,16 +23,11 @@ export default abstract class Scene extends Phaser.State {
   public settingsButton: Button
 
   public onUpdate = new Phaser.Signal()
+  public onCreate = new Phaser.Signal()
+  public onShutdown = new Phaser.Signal()
 
-  constructor(private backgroundKey = '', ...states: (new (Scene) => SceneState<Scene>)[]) {
+  constructor(private backgroundKey = '') {
     super()
-
-    const concreteStates = states.map(State => new State(this))
-    this.states = concreteStates.reduce((acc, state) => {
-      acc[state.getStateName()] = state
-      return acc
-    }, { })
-    this._activeState = concreteStates[0]
   }
 
   public getScene<T extends Scene>(name: string): T {
@@ -135,25 +136,8 @@ export default abstract class Scene extends Phaser.State {
     return sound && sound.sound
   }
 
-  async setActiveState(name: string): Promise<void> {
-    if (!this.states[name]) {
-      throw `Invalid state '${name}'`
-    }
-    if (this.activeState && this.activeState.exit) {
-      await this.activeState.exit()
-    }
-    this._activeState = this.states[name]
-    if (this.isVisible) {
-      await this.activeState.enter()
-    }
-  }
-
-  get activeState(): SceneState<Scene> {
-    return this._activeState
-  }
-
   public async fadeTo(nextScene: string): Promise<void> {
-    // Disable all inputs to prevent the user to do anything stupid
+    // Disable all inputs to prevent the user from doing anything stupid.
     this.lockInput()
 
     // Start the next state as soon as the fade-out is done
@@ -184,10 +168,7 @@ export default abstract class Scene extends Phaser.State {
     this.camera.flash(0x000000, 1000)
     this.game.tweens.create(Inventory.instance).to({ alpha: 1 }, 1000).start()
 
-    console.log(`Adding background '${this.backgroundKey}'`)
     this.backgroundImage = this.add.sprite(0, 0, this.backgroundKey)
-
-    this.createGameObjects()
 
     this.settingsButton = new Button(this.game, 0, 0, Atlases.wrench.key)
     this.settingsButton.x = this.game.canvas.width - 2 - this.settingsButton.width / 2
@@ -199,9 +180,15 @@ export default abstract class Scene extends Phaser.State {
       SettingsOverlay.instance.show()
     })
 
+    this.createGameObjects()
+
+    // Make sure nothing can obstruct the settings button
+    this.settingsButton.bringToTop()
+
     this.releaseInput()
-    this.isVisible = true
-    this.activeState.enter()
+    this._isVisible = true
+
+    this.onCreate.dispatch()
   }
 
   public update() {
@@ -209,7 +196,9 @@ export default abstract class Scene extends Phaser.State {
   }
 
   public shutdown() {
-    this.isVisible = false
+    this._isVisible = false
     this.killAllBackgroundSounds()
+
+    this.onShutdown.dispatch()
   }
 }

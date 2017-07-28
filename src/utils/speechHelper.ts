@@ -57,7 +57,23 @@ export default class SpeechHelper {
   private registerClickListener(): Promise<void> {
     this.character.interactionEnabled = true
     return new Promise<void>(resolve => {
-      this.character.events.onInputDown.addOnce(resolve)
+      this.character.game.input.mouse.capture = true
+      let mouseWasUp = false
+      let mouseWasDown = false
+      let handle: Phaser.SignalBinding
+      handle = this.character.onUpdate.add(() => {
+        if (!this.character.game.input.activePointer.leftButton.isDown) {
+          mouseWasUp = true
+        }
+        if (mouseWasUp && this.character.game.input.activePointer.leftButton.isDown) {
+          mouseWasDown = true
+        }
+        if (mouseWasDown && !this.character.game.input.activePointer.leftButton.isDown) {
+          this.character.game.input.mouse.capture = false
+          handle.detach()
+          resolve()
+        }
+      })
     })
   }
 
@@ -173,6 +189,11 @@ export default class SpeechHelper {
         return nextSample
       }
     },
-    explicit: () => (samples: string[]) => () => samples.slice()
+    explicit: () => (sample: string | string[]) => () =>
+      typeof sample === 'string'
+        ? sample
+        : sample instanceof Array
+          ? sample.shift()
+          : null
   }
 }

@@ -25,8 +25,10 @@ export default class GameObject extends Phaser.Sprite {
     // this.game.canvas.style.cursor = mouseHoversChar && this.interactionEnabled
     //   ? 'pointer'
     //   : 'default'
-    this.input.pixelPerfectOver = value
-    this.input.pixelPerfectClick = value
-    this.input.useHandCursor = value
+    if (value) {
+      this.input.pixelPerfectOver = value
+      this.input.pixelPerfectClick = value
+      this.input.useHandCursor = value
+    }
   }
 }

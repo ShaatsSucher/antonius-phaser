@@ -10,10 +10,12 @@ import IntroScene from './states/scenes/intro'
 import HeadScene from './states/scenes/head'
 import BardScene from './states/scenes/bard'
 import FishScene from './states/scenes/fish'
+import EndScene from './states/scenes/end'
 import * as Utils from './utils/utils'
 import * as Assets from './assets'
 
 import 'es6-promise/auto'
+import './utils/extensions'
 
 class App extends Phaser.Game {
   constructor(config: Phaser.IGameConfig) {
@@ -29,6 +31,7 @@ class App extends Phaser.Game {
     this.state.add('head', HeadScene)
     this.state.add('bard', BardScene)
     this.state.add('fish', FishScene)
+    this.state.add('end', EndScene)
   }
 }
 

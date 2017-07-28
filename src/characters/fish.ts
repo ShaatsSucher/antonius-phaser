@@ -16,11 +16,13 @@ export default class FishCharacter extends Character {
 
     this.animations.add('idle', [0], 0, false)
     this.animations.add('talking', [0, 1], 8, true)
-    this.animations.add('dying', ArrayUtils.range(3, 38), 8, false)
+    this.animations.add('dying', ArrayUtils.range(3, 36), 24, false)
+    this.animations.add('dead', [36], 0, false)
 
     this.addCharacterState('idle', new IdleState(this))
     this.addCharacterState('talking', new TalkingState(this))
     this.addCharacterState('dying', new DyingState(this))
+    this.addCharacterState('dead', new DeadState(this))
 
     this.play('idle')
   }
@@ -49,5 +51,14 @@ class DyingState implements CharacterState<FishCharacter> {
   async enter() {
     this.character.animations.stop() // reset animation if necessary
     const anim = this.character.play('dying')
+  }
+}
+
+class DeadState implements CharacterState<FishCharacter> {
+  constructor(public character: FishCharacter) { }
+
+  async enter() {
+    this.character.animations.stop() // reset animation if necessary
+    const anim = this.character.play('dead')
   }
 }
