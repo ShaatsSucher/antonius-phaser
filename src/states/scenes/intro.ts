@@ -4,6 +4,7 @@ import { Images, Audio, CustomWebFonts } from '../../assets'
 
 import Inventory from '../../overlays/inventory'
 import { ArrayUtils, StringUtils } from '../../utils/utils'
+import { AudioManager } from '../../utils/audioManager'
 
 export default class IntroScene extends Scene {
   image: Phaser.Sprite
@@ -61,12 +62,14 @@ export default class IntroScene extends Scene {
   }
 
   private async startIntro() {
-    this.image.events.onInputDown.add(() => {
-      this.fadeTo('head')
-    })
+    const clip = AudioManager.instance.tracks.speech.addClip(Audio.introIntro.key)
+    clip.play()
 
-    const audio = await this.playBackgroundSound('intro', Audio.introIntro.key, false, false)
-    audio.onStop.addOnce(() => {
+    Promise.race([
+      this.image.events.onInputUp.asPromise(),
+      clip.stopped
+    ]).then(() => {
+      clip.fadeTo(0, 1)
       updateHandle.detach()
       this.fadeTo('head')
     })
@@ -77,12 +80,12 @@ export default class IntroScene extends Scene {
     let nextLines = this.text.concat() // Copy the array
     const updateHandle = this.onUpdate.add(() => {
       // Zoom in as the audio plays
-      const progress = audio.currentTime / audio.durationMS
+      const progress = clip.sound.currentTime / clip.sound.durationMS
       this.image.scale.setTo(initialScale + progress * (1 - initialScale))
 
       // Display dialogue synced to the intro audio
       if (nextLines.length > 0) {
-        if (nextLines[0].time <= audio.currentTime) {
+        if (nextLines[0].time <= clip.sound.currentTime) {
           lastLabels.forEach(label => label.kill())
 
           const { time, text } = nextLines.shift()
@@ -123,7 +126,7 @@ export default class IntroScene extends Scene {
         this.game.tweens.create(filter).to({
           sizeX: this.game.height / 3,
           sizeY: this.game.width / 3
-        }, audio.durationMS - audio.currentTime + 1000).start()
+        }, clip.sound.durationMS - clip.sound.currentTime + 1000).start()
 
         blurOutStarted = true
       }

@@ -39,7 +39,11 @@ export default class HeadScene extends Scene {
   }
 
   constructor() {
-    super(Images.backgroundsHead.key)
+    super(
+      Images.backgroundsHead.key,
+      Audio.soundscapesScreen1.key,
+      Audio.musicHeadScreen.key
+    )
   }
 
   protected createGameObjects() {
@@ -71,9 +75,6 @@ export default class HeadScene extends Scene {
   }
 
   async resetScene(showArrows = false) {
-    this.playAtmo(Audio.soundscapesScreen1.key)
-    this.playMusic(Audio.musicHeadScreen.key)
-
     this.toBardArrow.visible = showArrows
     this.toFishArrow.visible = showArrows
 

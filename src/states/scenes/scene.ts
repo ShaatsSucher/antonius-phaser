@@ -5,6 +5,7 @@ import SettingsOverlay from '../../overlays/settings'
 import Inventory from '../../overlays/inventory'
 
 import { SceneStateManager } from '../../utils/stateManager'
+import { AudioManager } from '../../utils/audioManager'
 
 export default abstract class Scene extends Phaser.State {
   private _isVisible = false
@@ -15,8 +16,8 @@ export default abstract class Scene extends Phaser.State {
     return this.stateManagers.default
   }
 
-  private activeBackgroundSounds: { [type: string]: { key: string, sound: Phaser.Sound } } = { }
-  private backgroundSoundVolumeMultiplier = 0.5
+  private atmoKeys: string[]
+  private musicKeys: string[]
 
   private backgroundImage: Phaser.Sprite
 
@@ -26,8 +27,11 @@ export default abstract class Scene extends Phaser.State {
   public onCreate = new Phaser.Signal()
   public onShutdown = new Phaser.Signal()
 
-  constructor(private backgroundKey = '') {
+  constructor(private backgroundKey, atmoKeys: string | string[] = [], musicKeys: string | string[] = []) {
     super()
+
+    this.atmoKeys = Array.isArray(atmoKeys) ? atmoKeys : [atmoKeys]
+    this.musicKeys = Array.isArray(musicKeys) ? musicKeys : [musicKeys]
   }
 
   public getScene<T extends Scene>(name: string): T {
@@ -39,101 +43,20 @@ export default abstract class Scene extends Phaser.State {
     this.backgroundImage.loadTexture(key)
   }
 
-  public playAtmo(key: string): Promise<Phaser.Sound> {
-    return this.playBackgroundSound('atmo', key)
+  public get atmoClips(): string[] {
+    return this.atmoKeys
+  }
+  public setAtmoClips(keys: string | string[]): Promise<void> {
+    this.atmoKeys = Array.isArray(keys) ? keys : [keys]
+    return AudioManager.instance.tracks.atmo.crossFadeAll(this.atmoKeys, 1, 1, true)
   }
 
-  public stopAtmo(): Promise<void> {
-    return this.stopBackgroundSound('atmo')
+  public get musicClips(): string[] {
+    return this.musicKeys
   }
-
-  public getAtmo(): Phaser.Sound {
-    return this.getBackgroundSound('atmo')
-  }
-
-  public playMusic(key: string): Promise<Phaser.Sound> {
-    return this.playBackgroundSound('music', key)
-  }
-
-  public stopMusic(): Promise<void> {
-    return this.stopBackgroundSound('music')
-  }
-
-  public getMusic(): Phaser.Sound {
-    return this.getBackgroundSound('music')
-  }
-
-  public playBackgroundSound(type: string, key: string,
-        fadeIn: boolean = true, loop = true): Promise<Phaser.Sound> {
-    const activeSound = this.activeBackgroundSounds[type]
-
-    if (activeSound && activeSound.key === key) {
-      // Don't do anything, if the selected sound is already active
-      return Promise.resolve(activeSound.sound)
-    }
-
-    // Fade out the previously active sound (if any)
-    if (activeSound) {
-      const oldSound = activeSound.sound
-      oldSound.fadeOut(1000)
-      oldSound.onFadeComplete.addOnce(() => oldSound.destroy())
-    }
-
-    // Fade in the new sound
-    const sound = this.game.sound.play(key, fadeIn ? 0 : 1, loop)
-    this.activeBackgroundSounds[type] = { key, sound }
-
-    if (fadeIn) {
-      let fadeInDone: (sound: Phaser.Sound) => void
-      const fadeInComplete = new Promise<Phaser.Sound>(resolve => { fadeInDone = resolve })
-
-      sound.fadeTo(1000, this.game.sound.volume * this.backgroundSoundVolumeMultiplier)
-      sound.onFadeComplete.addOnce(() => fadeInDone(sound))
-
-      return fadeInComplete
-    } else {
-      return Promise.resolve(sound)
-    }
-  }
-
-  public stopBackgroundSound(type: string): Promise<void> {
-    const activeSound = this.activeBackgroundSounds[type]
-    if (!activeSound) return Promise.resolve()
-
-    let fadeOutDone: () => void
-    const fadeOutComplete = new Promise<void>(resolve => { fadeOutDone = resolve })
-
-    activeSound.sound.fadeOut(1000)
-    activeSound.sound.onFadeComplete.addOnce(() => {
-      delete this.activeBackgroundSounds[type]
-    })
-    activeSound.sound.onFadeComplete.addOnce(fadeOutDone)
-
-    return fadeOutComplete
-  }
-
-  public killBackgroundSound(type: string) {
-    const activeSound = this.activeBackgroundSounds[type]
-    if (!activeSound) return
-    activeSound.sound.stop()
-    activeSound.sound.destroy()
-    delete this.activeBackgroundSounds[type]
-    return
-  }
-
-  public stopAllBackgroundSounds(): Promise<void> {
-    return Promise.all(
-      Object.keys(this.activeBackgroundSounds).map(type => this.stopBackgroundSound(type))
-    ).then(() => {}) // Clear void[] type
-  }
-
-  public killAllBackgroundSounds() {
-    Object.keys(this.activeBackgroundSounds).forEach(type => this.killBackgroundSound(type))
-  }
-
-  public getBackgroundSound(key: string): Phaser.Sound {
-    const sound = this.activeBackgroundSounds[key]
-    return sound && sound.sound
+  public setMusicClips(keys: string | string[]): Promise<void> {
+    this.musicKeys = Array.isArray(keys) ? keys : [keys]
+    return AudioManager.instance.tracks.music.crossFadeAll(this.musicKeys, 1, 1, true)
   }
 
   public async fadeTo(nextScene: string): Promise<void> {
@@ -149,7 +72,11 @@ export default abstract class Scene extends Phaser.State {
     this.camera.resetFX()
     this.camera.fade(0x000000, 1000)
     this.game.tweens.create(Inventory.instance).to({ alpha: 0 }, 1000).start()
-    this.stopAllBackgroundSounds()
+
+    // Transition audio tracks as needed
+    const targetScene = this.game.state.states[nextScene] as Scene
+    AudioManager.instance.tracks.atmo.fadeAll(targetScene.atmoClips, 1, 2, true)
+    AudioManager.instance.tracks.music.fadeAll(targetScene.musicClips, 1, 2, true)
   }
 
   protected abstract createGameObjects(): void
@@ -188,6 +115,10 @@ export default abstract class Scene extends Phaser.State {
     this.releaseInput()
     this._isVisible = true
 
+    // Start atmo and music clips
+    AudioManager.instance.tracks.atmo.fadeAll(this.atmoKeys, 1, 1, true)
+    AudioManager.instance.tracks.music.fadeAll(this.musicKeys, 1, 1, true)
+
     this.onCreate.dispatch()
   }
 
@@ -197,7 +128,6 @@ export default abstract class Scene extends Phaser.State {
 
   public shutdown() {
     this._isVisible = false
-    this.killAllBackgroundSounds()
 
     this.onShutdown.dispatch()
   }
