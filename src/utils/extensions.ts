@@ -19,3 +19,15 @@ Array.prototype.flatMap = function flatMap<U>(callback: (currentValue, index: nu
     value !== undefined && value !== null
   )
 }
+
+interface Storage {
+  getNumber(key: string, defaultValue: number): number
+}
+Storage.prototype.getNumber = function getNumber(key: string, defaultValue: number): number {
+  const storedValue = window.localStorage.getItem(key)
+  if (storedValue === null) {
+    return defaultValue
+  }
+  const parsedValue = parseFloat(storedValue)
+  return isNaN(parsedValue) ? defaultValue : parsedValue
+}
