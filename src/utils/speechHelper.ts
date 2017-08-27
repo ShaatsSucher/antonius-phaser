@@ -1,6 +1,7 @@
 import Character from '../characters/character'
 import { CustomWebFonts } from '../assets'
 import { ArrayUtils } from '../utils/utils'
+import { AudioManager, Clip } from '../utils/audioManager'
 
 type SampleGenerator = (...generatorParams: any[]) => () => (string | null)
 export default class SpeechHelper {
@@ -127,15 +128,16 @@ export default class SpeechHelper {
   }
 
   private play(sample: string, abort: Promise<void>): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      // NOTE: passing the global volume here really shouldn't be necessary,
-      //       but if we don't, it *sometimes* ignores the global volume.
-      const sound = this.character.game.sound.play(sample, this.character.game.sound.volume)
-      abort
-      .then(() => reject('abort'), reject)
-      .then(() => { if (sound.isPlaying || sound.pendingPlayback) sound.stop() })
-      sound.onStop.addOnce(resolve)
-    })
+    const clip = AudioManager.instance.tracks.speech.addClip(sample)
+    clip.play()
+
+    const promise = Promise.race([
+      clip.stopped,
+      abort.then(() => { throw 'abort' })
+    ])
+    abort.then(() => clip.stop())
+
+    return promise
   }
 
   public static Generators = {
