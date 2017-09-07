@@ -69,8 +69,12 @@ export class AudioTrack {
   public set volume(value: number) {
     this.trackVolume = Math.max(0, Math.min(1, value))
     window.localStorage.setItem(`audioTrackVolume_${this.trackName}`, `${value}`)
-    this.allClips.forEach(clip => clip.updateVolume())
+    this.updateVolume()
     this.onTrackVolumeChange.dispatch(this.trackVolume)
+  }
+
+  public updateVolume() {
+    this.allClips.forEach(clip => clip.updateVolume())
   }
 
   public get allClips(): Clip[] {
@@ -189,6 +193,10 @@ export class Clip {
 
   public pause() {
     !this.soundStopped && this.sound.pause()
+  }
+
+  public resume() {
+    !this.soundStopped && this.sound.resume()
   }
 
   public stop() {
