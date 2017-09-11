@@ -18,7 +18,7 @@ import SheechHelper from '../../utils/speechHelper'
 import { AudioManager } from '../../utils/audioManager'
 
 import Inventory from '../../overlays/inventory'
-import { ArrayUtils, StringUtils, TimeUtils } from '../../utils/utils'
+import { ArrayUtils, StringUtils } from '../../utils/utils'
 
 export default class BardScene extends Scene {
   public characters = {
@@ -287,13 +287,13 @@ class CatFeast extends SceneStateTransition<BardScene> {
     const scene = this.scene
     await scene.resetAll()
 
-    await TimeUtils.wait(0.5)
     await scene.characters.antonius.speech.say('Hier, Miez!\nIch hab einen Fisch für dich.', null, 'llsssslsl')
     await scene.characters.cat.speech.say('...', 1, 'silent')
     await scene.characters.antonius.speech.say('Komm, hol dir einen leckeren Fisch!', null, 'lsssssssl')
     await scene.characters.cat.speech.say('...', 1, 'silent')
+    await scene.wait(0.5)
     Inventory.instance.item = ''
-    await TimeUtils.wait(0.5)
+    await scene.wait(0.5)
     await scene.characters.cat.speech.say('... Angemessen.', 1, 'silent', Audio.catCatAccepts.key)
     await scene.characters.antonius.speech.say('...', null, '')
     await scene.characters.antonius.speech.say('Was?', null, 'l')
@@ -331,7 +331,6 @@ class HelloThere extends SceneStateTransition<BardScene> {
     const scene = this.scene
     await scene.resetAll()
 
-    await TimeUtils.wait(0.5)
     scene.characters.cat.visible = false
 
     await scene.characters.bard.speech.say('Oh! Was für ein sonderbares Gefühl!', 3)
@@ -340,6 +339,7 @@ class HelloThere extends SceneStateTransition<BardScene> {
     scene.characters.bard.scale.x = -3
     scene.characters.bard.x = 124
     scene.characters.bard.y = 7
+    await scene.wait(0.5)
     await scene.characters.bard.speech.say('Ach da bist du ja, Reitgans!', 3)
     await scene.characters.goose.speech.say('... Ja, da bin ich.\nSchon die ganze Zeit.', 4)
     await scene.characters.bard.speech.say('Oh, du wirst nicht glauben,\nwie lange ich nach dir gesucht habe!', 5)
@@ -470,8 +470,8 @@ class CutFish extends SceneStateTransition<BardScene> {
     await scene.characters.antonius.speech.say('Ich hätte hier einen Fisch,\nden du vielleicht zerschneiden könntest.', null, 'ssssss')
     await scene.characters.meckie.speech.say('Ein Wasservieh, frisch aus der See,\nverwandle ich in Lachsfilet!', null, 'ilisi')
 
-    await TimeUtils.wait(1)
     scene.characters.meckie.setActiveState('swinging')
+    await scene.wait(1)
 
     await scene.characters.antonius.speech.say('Toll! Willst du denn damit etwas kochen, oder…?', null, 'ssssl')
 

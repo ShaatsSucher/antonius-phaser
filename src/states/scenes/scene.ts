@@ -8,10 +8,14 @@ import Inventory from '../../overlays/inventory'
 
 import { SceneStateManager } from '../../utils/stateManager'
 import { AudioManager } from '../../utils/audioManager'
+import { Pausable } from '../../utils/pausable'
+import { Property } from '../../utils/property'
 
-export default abstract class Scene extends Phaser.State {
+export default abstract class Scene extends Phaser.State implements Pausable {
   private _isVisible = false
   public get isVisible() { return this._isVisible }
+
+  public readonly isPaused = new Property<boolean>(false)
 
   public readonly tweens: Phaser.TweenManager
 
@@ -52,6 +56,17 @@ export default abstract class Scene extends Phaser.State {
 
     this.atmoKeys = Array.isArray(atmoKeys) ? atmoKeys : [atmoKeys]
     this.musicKeys = Array.isArray(musicKeys) ? musicKeys : [musicKeys]
+
+    this.isPaused.onValueChanged.add(isPaused => {
+      if (isPaused) {
+        this.lockInput()
+        this.tweens.pauseAll()
+      } else {
+        this.releaseInput()
+        this.tweens.resumeAll()
+      }
+      this.settingsButton.isPaused.value = isPaused
+    })
   }
 
   public getScene<T extends Scene>(name: string): T {
@@ -82,6 +97,7 @@ export default abstract class Scene extends Phaser.State {
   public async fadeTo(nextScene: string): Promise<void> {
     // Disable all inputs to prevent the user from doing anything stupid.
     this.lockInput()
+    this.settingsButton.isPaused.value = true
 
     // Start the next state as soon as the fade-out is done
     this.game.camera.onFadeComplete.addOnce(() => {
@@ -112,27 +128,25 @@ export default abstract class Scene extends Phaser.State {
   }
 
   public create() {
-    this.lockInput()
-    this.camera.resetFX()
-    this.camera.flash(0x000000, 1000)
-    this.game.tweens.create(Inventory.instance).to({ alpha: 1 }, 1000).start()
-
     this.backgroundImage = this.add.sprite(0, 0, this.backgroundKey)
 
     this.settingsButton = new Button(this.game, 0, 0, Atlases.wrench.key)
     this.settingsButton.x = this.game.canvas.width - 2 - this.settingsButton.width / 2
     this.settingsButton.y = 2 + this.settingsButton.height / 2
-    this.settingsButton.interactionEnabled = true
+    this.settingsButton.interactionEnabled = false
     this.add.existing(this.settingsButton)
-    this.settingsButton.events.onInputUp.add(() => {
-      this.releaseInput()
-      SettingsOverlay.instance.show()
-    })
 
-    this.createGameObjects()
+    this.settingsButton.events.onInputDown.add(() => {
+      this.isPaused.value = true
+      SettingsOverlay.instance.show().then(() => {
+        this.isPaused.value = false
+      })
+    })
 
     // Make sure nothing can obstruct the settings button
     this.settingsButton.bringToTop()
+    this.createGameObjects()
+    this.lockInput()
 
     this.releaseInput()
     this._isVisible = true
@@ -140,6 +154,18 @@ export default abstract class Scene extends Phaser.State {
     // Start atmo and music clips
     AudioManager.instance.tracks.atmo.fadeAll(this.atmoKeys, 1, 1, true)
     AudioManager.instance.tracks.music.fadeAll(this.musicKeys, 1, 1, true)
+
+    // Fade in scene
+    this.camera.resetFX()
+    this.camera.flash(0x000000, 1000)
+
+    this.settingsButton.isPaused.value = true
+    this.camera.onFlashComplete.asPromise().then(() => {
+      this.settingsButton.isPaused.value = false
+    }).then(() => {
+      this.settingsButton.interactionEnabled = true
+    })
+    this.tweens.create(Inventory.instance).to({ alpha: 1 }, 1000).start()
 
     this.onCreate.dispatch()
   }
@@ -152,5 +178,24 @@ export default abstract class Scene extends Phaser.State {
     this._isVisible = false
 
     this.onShutdown.dispatch()
+  }
+
+  public wait(seconds: number): Promise<void> {
+    return new Promise<void>(resolve => {
+      const timer = this.game.time.create()
+      const pauseHandler = this.isPaused.onValueChanged.add(isPaused => {
+        if (isPaused) {
+          timer.pause()
+        } else {
+          timer.resume()
+        }
+      })
+      timer.add(seconds * Phaser.Timer.SECOND, () => {
+        pauseHandler.detach()
+        resolve()
+        timer.destroy()
+      })
+      timer.start()
+    })
   }
 }
