@@ -5,8 +5,7 @@ import { ArrayUtils, StringUtils } from '../utils/utils'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class AntoniusCharacter extends Character {
-  public speechPattern: string = 'l'
-  public speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.pattern(
+  public readonly speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.pattern(
     {
       l: ArrayUtils.range(1, 30).map(i =>
         Assets.Audio[`antoniusLong${StringUtils.intToString(i, 3)}`].key

@@ -5,8 +5,7 @@ import { ArrayUtils, StringUtils } from '../utils/utils'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class MeckieCharacter extends Character {
-  public speechPattern: string = 'l'
-  public speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.pattern(
+  public readonly speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.pattern(
     {
       l: ArrayUtils.range(1, 10).map(i =>
         Assets.Audio[`knifeguyLong${StringUtils.intToString(i, 3)}`].key
