@@ -129,7 +129,6 @@ export class SceneStateManager<T extends Scene> {
   }
 
   private onSceneCreated() {
-    console.log('on scene created')
     if (this.activeState) {
       this.activeState.show() // TODO: check if we should `await` this
     } else {

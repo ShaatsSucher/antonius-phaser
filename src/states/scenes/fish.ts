@@ -122,7 +122,6 @@ class ImFine extends SceneStateTransition<FishScene> {
 
 export class FishAlive extends SceneState<FishScene> {
   public async show() {
-    console.log('fish alive')
     const scene = this.scene
     await scene.resetScene(true)
 
@@ -136,7 +135,6 @@ export class FishAlive extends SceneState<FishScene> {
 
 export class FishDying extends SceneState<FishScene> {
   public async show() {
-    console.log('fish dying')
     const scene = this.scene
     await scene.resetScene(true)
 
