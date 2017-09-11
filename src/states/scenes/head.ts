@@ -41,7 +41,7 @@ export default class HeadScene extends Scene {
   constructor() {
     super(
       Images.backgroundsHead.key,
-      Audio.soundscapesScreen1.key,
+      Audio.soundscapesScene5.key,
       Audio.musicHeadScreen.key
     )
   }
@@ -180,7 +180,7 @@ class Credits extends SceneStateTransition<HeadScene> {
           scene.add.existing(character)
 
           // Move the character in front of the mouth
-          await scene.tweens.create(character).to({
+          await scene.game.tweens.create(character).to({
             x: 198,
             y: 143
           }, 3000).start().onComplete.asPromise()
@@ -192,8 +192,8 @@ class Credits extends SceneStateTransition<HeadScene> {
 
         await Promise.all(chars.map(async character => {
           await Promise.all([
-            scene.tweens.create(character).to({ rotation: Math.PI * 10 }, 5000, Phaser.Easing.Cubic.In, true).onComplete.asPromise(),
-            scene.tweens.create(character.scale).to({ x: 0, y: 0}, 5000, Phaser.Easing.Cubic.In, true).onComplete.asPromise()
+            scene.game.tweens.create(character).to({ rotation: Math.PI * 10 }, 5000, Phaser.Easing.Cubic.In, true).onComplete.asPromise(),
+            scene.game.tweens.create(character.scale).to({ x: 0, y: 0}, 5000, Phaser.Easing.Cubic.In, true).onComplete.asPromise()
           ])
         }))
 

@@ -37,7 +37,7 @@ export default class FishScene extends Scene {
   constructor() {
     super(
       Images.backgroundsFish.key,
-      Audio.soundscapesScreen9Shore.key,
+      Audio.soundscapesScene9.key,
       Audio.musicHeadScreen.key
     )
   }
