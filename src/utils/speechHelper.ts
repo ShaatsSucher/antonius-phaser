@@ -2,11 +2,15 @@ import Character from '../characters/character'
 import { CustomWebFonts } from '../assets'
 import { ArrayUtils } from '../utils/utils'
 import { AudioManager, Clip } from '../utils/audioManager'
+import { Pausable } from '../utils/pausable'
+import { Property } from '../utils/property'
 
 type SampleGenerator = (...generatorParams: any[]) => () => (string | null)
-export default class SpeechHelper {
+export default class SpeechHelper implements Pausable {
   private textAnchor: Phaser.Point
   private currentSample: Phaser.Sound
+
+  public readonly isPaused = new Property<boolean>(false)
 
   constructor(private character: Character,
               anchorX: number, anchorY: number,
@@ -30,12 +34,17 @@ export default class SpeechHelper {
       timer.add(Phaser.Timer.SECOND * timeout, timeoutCb)
       timer.start()
       stopPlayback = Promise.race([characterClicked, timeoutPromise])
+
+      const pauseListener = this.isPaused.onValueChanged.add(paused => {
+        paused ? timer.pause() : timer.resume()
+      })
+      stopPlayback.all(() => pauseListener.detach)
     }
 
     await this.character.setActiveState(this.talkingState)
-    this.character.interactionEnabled = true
 
     this.displayText(text, characterClicked)
+
     while (true) {
       if (this.resetCharacterStateBeforePlaying) {
         await this.character.setActiveState(this.talkingState)
@@ -50,9 +59,9 @@ export default class SpeechHelper {
         break
       }
     }
+
     await this.character.setActiveState(this.idleState)
     await characterClicked
-    this.character.interactionEnabled = false
   }
 
   private registerClickListener(): Promise<void> {
@@ -62,7 +71,13 @@ export default class SpeechHelper {
       let mouseWasUp = false
       let mouseWasDown = false
       let handle: Phaser.SignalBinding
+
       handle = this.character.onUpdate.add(() => {
+        if (this.isPaused.value) {
+          mouseWasUp = false
+          mouseWasDown = false
+          return
+        }
         if (!this.character.game.input.activePointer.leftButton.isDown) {
           mouseWasUp = true
         }
@@ -120,11 +135,10 @@ export default class SpeechHelper {
       })
     })
 
-    const removeText = () => {
+    shouldHide.all(() => {
       updateListener.detach()
       labels.forEach(label => label.kill())
-    }
-    shouldHide.then(removeText, removeText)
+    })
   }
 
   private play(sample: string, abort: Promise<void>): Promise<void> {
@@ -137,6 +151,11 @@ export default class SpeechHelper {
     ])
     abort.then(() => clip.stop())
 
+    // Pause the current clip when pausing the SpeechHelper
+    const pauseListener = this.isPaused.onValueChanged.add((paused) => {
+      paused ? clip.pause() : clip.resume()
+    })
+    promise.all(() => pauseListener.detach())
     return promise
   }
 
