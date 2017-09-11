@@ -11,6 +11,8 @@ export default abstract class Scene extends Phaser.State {
   private _isVisible = false
   public get isVisible() { return this._isVisible }
 
+  public readonly tweens: Phaser.TweenManager
+
   abstract stateManagers: { [name: string]: SceneStateManager<Scene> }
   public get defaultStateManager(): SceneStateManager<Scene> {
     return this.stateManagers.default
@@ -27,8 +29,11 @@ export default abstract class Scene extends Phaser.State {
   public onCreate = new Phaser.Signal()
   public onShutdown = new Phaser.Signal()
 
-  constructor(private backgroundKey, atmoKeys: string | string[] = [], musicKeys: string | string[] = []) {
+  constructor(game: Phaser.Game, private backgroundKey,
+              atmoKeys: string | string[] = [], musicKeys: string | string[] = []) {
     super()
+
+    this.tweens = new Phaser.TweenManager(game)
 
     this.atmoKeys = Array.isArray(atmoKeys) ? atmoKeys : [atmoKeys]
     this.musicKeys = Array.isArray(musicKeys) ? musicKeys : [musicKeys]
@@ -71,7 +76,7 @@ export default abstract class Scene extends Phaser.State {
     // Fade out
     this.camera.resetFX()
     this.camera.fade(0x000000, 1000)
-    this.game.tweens.create(Inventory.instance).to({ alpha: 0 }, 1000).start()
+    this.tweens.create(Inventory.instance).to({ alpha: 0 }, 1000).start()
 
     // Transition audio tracks as needed
     const targetScene = this.game.state.states[nextScene] as Scene
