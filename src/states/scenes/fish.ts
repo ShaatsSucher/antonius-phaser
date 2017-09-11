@@ -19,7 +19,9 @@ export default class FishScene extends Scene {
     fish: null
   }
 
-  toHeadArrow: Arrow
+  public interactiveObjects = {
+    toHeadArrow: null
+  }
 
   stateManagers = {
     default: new SceneStateManager<FishScene>(this, [
@@ -47,12 +49,12 @@ export default class FishScene extends Scene {
 
   protected createGameObjects() {
     // Add navigation arrow
-    const arrow = this.toHeadArrow = new Arrow(this.game, 190, 20)
-    arrow.rotation = - Math.PI / 2
-    arrow.interactionEnabled = true
-    this.game.add.existing(arrow)
-    arrow.events.onInputDown.addOnce(() => {
-      arrow.interactionEnabled = false
+    const toHeadArrow = this.interactiveObjects.toHeadArrow = new Arrow(this.game, 190, 20)
+    toHeadArrow.rotation = - Math.PI / 2
+    toHeadArrow.interactionEnabled = true
+    this.game.add.existing(toHeadArrow)
+    toHeadArrow.events.onInputDown.addOnce(() => {
+      toHeadArrow.interactionEnabled = false
       this.fadeTo('head')
     })
 
@@ -68,7 +70,7 @@ export default class FishScene extends Scene {
   }
 
   async resetScene(showArrows = false) {
-    this.toHeadArrow.visible = showArrows
+    this.interactiveObjects.toHeadArrow.visible = showArrows
 
     this.characters.fish.interactionEnabled = false
     this.characters.antonius.interactionEnabled = false

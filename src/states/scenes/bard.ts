@@ -29,7 +29,9 @@ export default class BardScene extends Scene {
     meckie: null
   }
 
-  toHeadArrow: Arrow
+  public interactiveObjects = {
+    toHeadArrow: null
+  }
 
   readonly stateManagers: { [name: string]: SceneStateManager<BardScene> } = {
     bard: new SceneStateManager<BardScene>(this, [
@@ -57,8 +59,8 @@ export default class BardScene extends Scene {
     ])
   }
 
-  constructor() {
-    super(Images.backgroundsBard.key, Audio.soundscapesScreen2.key, [])
+  constructor(game: Phaser.Game) {
+    super(game, Images.backgroundsBard.key, Audio.soundscapesScreen2.key, [])
 
     function exceptFirst(closure: () => any) {
       let first = true
@@ -111,7 +113,7 @@ export default class BardScene extends Scene {
     antonius.setActiveState('idle')
     this.add.existing(antonius)
 
-    const arrow = this.toHeadArrow = new Arrow(this.game, 20, 95)
+    const arrow = this.interactiveObjects.toHeadArrow = new Arrow(this.game, 20, 95)
     arrow.rotation = Math.PI
     arrow.interactionEnabled = true
     this.game.add.existing(arrow)
@@ -122,7 +124,7 @@ export default class BardScene extends Scene {
   }
 
   async resetScene(showArrows = false) {
-    this.toHeadArrow.visible = showArrows
+    this.interactiveObjects.toHeadArrow.visible = showArrows
 
     this.characters.antonius.interactionEnabled = false
 

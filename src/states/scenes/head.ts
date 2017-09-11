@@ -23,8 +23,10 @@ export default class HeadScene extends Scene {
     antonius: null
   }
 
-  toBardArrow: Arrow
-  toFishArrow: Arrow
+  public interactiveObjects = {
+    toBardArrow: null,
+    toFishArrow: null
+  }
 
   stateManagers: { [name: string]: SceneStateManager<HeadScene> } = {
     default: new SceneStateManager(this, [
@@ -51,14 +53,14 @@ export default class HeadScene extends Scene {
 
   protected createGameObjects() {
     // Add navigation arrows
-    const arrow = this.toBardArrow = new Arrow(this.game, 300, 95)
+    const arrow = this.interactiveObjects.toBardArrow = new Arrow(this.game, 300, 95)
     arrow.interactionEnabled = true
     this.game.add.existing(arrow)
     arrow.events.onInputUp.addOnce(() => {
       arrow.interactionEnabled = false
       this.fadeTo('bard')
     })
-    const arrow2 = this.toFishArrow = new Arrow(this.game, 190, 200)
+    const arrow2 = this.interactiveObjects.toFishArrow = new Arrow(this.game, 190, 200)
     arrow2.rotation = Math.PI / 2
     arrow2.interactionEnabled = true
     this.game.add.existing(arrow2)
@@ -78,8 +80,8 @@ export default class HeadScene extends Scene {
   }
 
   async resetScene(showArrows = false) {
-    this.toBardArrow.visible = showArrows
-    this.toFishArrow.visible = showArrows
+    this.interactiveObjects.toBardArrow.visible = showArrows
+    this.interactiveObjects.toFishArrow.visible = showArrows
 
     this.characters.hellmouth.interactionEnabled = false
     this.characters.antonius.interactionEnabled = false

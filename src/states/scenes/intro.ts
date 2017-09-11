@@ -8,6 +8,7 @@ import { AudioManager } from '../../utils/audioManager'
 
 export default class IntroScene extends Scene {
   public characters = { }
+  public interactiveObjects = { }
 
   image: Phaser.Sprite
 

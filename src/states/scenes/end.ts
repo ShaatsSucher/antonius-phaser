@@ -11,6 +11,7 @@ export default class EndScene extends Scene {
   stateManagers = { } // We don't need states here
 
   public characters = { }
+  public interactiveObjects = { }
 
   constructor(game: Phaser.Game) {
     super(game, '')

@@ -1,6 +1,7 @@
 import { Button } from '../../gameObjects/button'
 import { Atlases } from '../../assets'
 import Character from '../../characters/character'
+import GameObject from '../../gameObjects/gameObject'
 
 import SettingsOverlay from '../../overlays/settings'
 import Inventory from '../../overlays/inventory'
@@ -24,6 +25,13 @@ export default abstract class Scene extends Phaser.State {
     return Object.keys(this.characters)
       .map(key => this.characters[key])
   }
+  public abstract interactiveObjects: { [name: string]: GameObject }
+  public get allInteractiveObjects(): GameObject[] {
+    return Object.keys(this.interactiveObjects)
+      .map(key => this.interactiveObjects[key])
+      .concat(this.allCharacters)
+  }
+  private lastInteractiveObjects: GameObject[] = []
 
   private atmoKeys: string[]
   private musicKeys: string[]
@@ -94,11 +102,13 @@ export default abstract class Scene extends Phaser.State {
   protected abstract createGameObjects(): void
 
   public lockInput() {
-    this.game.input.enabled = false
+    this.allInteractiveObjects
+      .forEach(object => object.isPaused.value = true)
   }
 
   public releaseInput() {
-    this.game.input.enabled = true
+    this.allInteractiveObjects
+      .forEach(object => object.isPaused.value = false)
   }
 
   public create() {
