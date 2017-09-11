@@ -73,11 +73,6 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     return <T>this.state.states[name]
   }
 
-  public setBackgroundImage(key: string) {
-    this.backgroundKey = key
-    this.backgroundImage.loadTexture(key)
-  }
-
   public get atmoClips(): string[] {
     return this.atmoKeys
   }
