@@ -21,12 +21,13 @@ import Inventory from '../../overlays/inventory'
 import { ArrayUtils, StringUtils, TimeUtils } from '../../utils/utils'
 
 export default class BardScene extends Scene {
-  goose: GooseCharacter
-  bard: BardCharacter
-  cat: CatCharacter
-  meckie: MeckieCharacter
-
-  antonius: AntoniusCharacter
+  public characters = {
+    antonius: null,
+    goose: null,
+    bard: null,
+    cat: null,
+    meckie: null
+  }
 
   toHeadArrow: Arrow
 
@@ -81,31 +82,31 @@ export default class BardScene extends Scene {
   }
 
   protected createGameObjects() {
-    const goose = this.goose = new GooseCharacter(this.game, 144, 10)
+    const goose = this.characters.goose = new GooseCharacter(this.game, 144, 10)
     goose.scale = new Phaser.Point(3, 3)
     goose.anchor.setTo(0.5, 0)
     goose.setActiveState('idle')
     this.add.existing(goose)
 
-    const bard = this.bard = new BardCharacter(this.game, 144, 10)
+    const bard = this.characters.bard = new BardCharacter(this.game, 144, 10)
     bard.scale = new Phaser.Point(3, 3)
     bard.anchor.setTo(0.5, 0)
     bard.setActiveState('idle')
     this.add.existing(bard)
 
-    const cat = this.cat = new CatCharacter(this.game, 144, 64)
+    const cat = this.characters.cat = new CatCharacter(this.game, 144, 64)
     cat.scale = new Phaser.Point(3, 3)
     cat.anchor.setTo(0.5, 0)
     cat.setActiveState('idle')
     this.add.existing(cat)
 
-    const meckie = this.meckie = new MeckieCharacter(this.game, 78, 120)
+    const meckie = this.characters.meckie = new MeckieCharacter(this.game, 78, 120)
     meckie.scale = new Phaser.Point(3, 3)
     meckie.anchor.setTo(0.5, 0)
     meckie.setActiveState('idle')
     this.add.existing(meckie)
 
-    const antonius = this.antonius = new AntoniusCharacter(this.game, 292, 120)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 292, 120)
     antonius.scale = new Phaser.Point(3, 3)
     antonius.setActiveState('idle')
     this.add.existing(antonius)
@@ -123,25 +124,25 @@ export default class BardScene extends Scene {
   async resetScene(showArrows = false) {
     this.toHeadArrow.visible = showArrows
 
-    this.antonius.interactionEnabled = false
+    this.characters.antonius.interactionEnabled = false
 
-    await this.antonius.setActiveState('idle')
+    await this.characters.antonius.setActiveState('idle')
   }
 
   async resetBardRelated() {
-    this.goose.interactionEnabled = false
-    this.bard.interactionEnabled = false
-    this.cat.interactionEnabled = false
+    this.characters.goose.interactionEnabled = false
+    this.characters.bard.interactionEnabled = false
+    this.characters.cat.interactionEnabled = false
 
-    await this.goose.setActiveState('idle')
-    await this.bard.setActiveState('idle')
-    await this.cat.setActiveState('idle')
+    await this.characters.goose.setActiveState('idle')
+    await this.characters.bard.setActiveState('idle')
+    await this.characters.cat.setActiveState('idle')
   }
 
   async resetMeckieRelated() {
-    this.meckie.interactionEnabled = false
+    this.characters.meckie.interactionEnabled = false
 
-    await this.meckie.setActiveState('idle')
+    await this.characters.meckie.setActiveState('idle')
   }
 
   async resetAll(showArrows = false) {
@@ -159,9 +160,9 @@ class InitialBard extends SceneState<BardScene> {
 
     this.scene.setMusicClips([])
 
-    scene.bard.interactionEnabled = true
+    scene.characters.bard.interactionEnabled = true
 
-    this.listeners.push(scene.bard.events.onInputUp.addOnce(
+    this.listeners.push(scene.characters.bard.events.onInputUp.addOnce(
       () => scene.stateManagers.bard.trigger(BardConversation)
     ))
   }
@@ -172,10 +173,10 @@ class BardConversation extends SceneStateTransition<BardScene> {
     const scene = this.scene
     await scene.resetAll()
 
-    scene.bard.setActiveState('singing')
-    scene.bard.interactionEnabled = true
+    scene.characters.bard.setActiveState('singing')
+    scene.characters.bard.interactionEnabled = true
     const bardSong = scene.sound.play(Audio.bardSongShort.key)
-    bardSong.onStop.addOnce(() => { scene.bard.setActiveState('idle') })
+    bardSong.onStop.addOnce(() => { scene.characters.bard.setActiveState('idle') })
 
     const clickedAnywhere = new Promise<void>(resolve => {
       this.scene.game.input.mouse.capture = true
@@ -199,19 +200,19 @@ class BardConversation extends SceneStateTransition<BardScene> {
 
     await clickedAnywhere
     bardSong.stop()
-    scene.bard.setInteractionEnabled(false)
+    scene.characters.bard.setInteractionEnabled(false)
 
     this.scene.setMusicClips(Audio.musicBardScreen.key)
 
-    await scene.goose.speech.say('Ach du meine Güte.\n Wie theatralisch!', 3)
-    await scene.antonius.speech.say('Ihr da, auf dem fantastischen Reitwesen!', null, 'slssls')
-    await scene.antonius.speech.say('Dieses Lied klingt so unendlich einsam,\nwarum seid Ihr so traurig?', null, 'ssssssss')
-    await scene.bard.speech.say('Hört mir denn keiner zu?\nIch vermisse meine Freundin,\ndie Reitgans, sehr!', 10)
-    await scene.goose.speech.say('So weit sind wir ja nicht von einander entfernt...', 6)
-    await scene.antonius.speech.say('Stimmt, soweit seid ihr doch\nnicht voneinander entfernt.', null, 'sssssss')
-    await scene.antonius.speech.say('Dreht euch doch ein mal um.', null, 'ssl')
-    await scene.bard.speech.say('Das geht nicht. Da ist etwas hinter mir!', 6)
-    await scene.antonius.speech.say('Ich sehe das Problem.\nVielleicht kann ich helfen.', null, 'ssssss')
+    await scene.characters.goose.speech.say('Ach du meine Güte.\n Wie theatralisch!', 3)
+    await scene.characters.antonius.speech.say('Ihr da, auf dem fantastischen Reitwesen!', null, 'slssls')
+    await scene.characters.antonius.speech.say('Dieses Lied klingt so unendlich einsam,\nwarum seid Ihr so traurig?', null, 'ssssssss')
+    await scene.characters.bard.speech.say('Hört mir denn keiner zu?\nIch vermisse meine Freundin,\ndie Reitgans, sehr!', 10)
+    await scene.characters.goose.speech.say('So weit sind wir ja nicht von einander entfernt...', 6)
+    await scene.characters.antonius.speech.say('Stimmt, soweit seid ihr doch\nnicht voneinander entfernt.', null, 'sssssss')
+    await scene.characters.antonius.speech.say('Dreht euch doch ein mal um.', null, 'ssl')
+    await scene.characters.bard.speech.say('Das geht nicht. Da ist etwas hinter mir!', 6)
+    await scene.characters.antonius.speech.say('Ich sehe das Problem.\nVielleicht kann ich helfen.', null, 'ssssss')
 
     await scene.game.state.states.head.defaultStateManager.setActiveState(FishHintAvailable)
 
@@ -227,13 +228,13 @@ class CatInTheWay extends SceneState<BardScene> {
 
     this.scene.setMusicClips(Audio.musicBardScreen.key)
 
-    scene.cat.interactionEnabled = true
-    this.listeners.push(scene.cat.events.onInputUp.addOnce(
+    scene.characters.cat.interactionEnabled = true
+    this.listeners.push(scene.characters.cat.events.onInputUp.addOnce(
       () => scene.stateManagers.bard.trigger(AnnoyedCat)
     ))
 
-    scene.bard.interactionEnabled = true
-    this.listeners.push(scene.bard.events.onInputUp.addOnce(
+    scene.characters.bard.interactionEnabled = true
+    this.listeners.push(scene.characters.bard.events.onInputUp.addOnce(
       () => scene.stateManagers.bard.trigger(SadBard)
     ))
   }
@@ -243,8 +244,8 @@ class AnnoyedCat extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
     await scene.resetAll()
-    await scene.cat.speech.say('[genervtes Miauen]', 4.9)
-    await scene.antonius.speech.say('Das wird wohl schwieriger als gedacht...', null, 'sssssl')
+    await scene.characters.cat.speech.say('[genervtes Miauen]', 4.9)
+    await scene.characters.antonius.speech.say('Das wird wohl schwieriger als gedacht...', null, 'sssssl')
 
     return CatInTheWay
   }
@@ -254,8 +255,8 @@ class SadBard extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
     await scene.resetAll()
-    await scene.bard.speech.say('*seufz*', 2, 'practice')
-    await scene.goose.speech.say(Phaser.ArrayUtils.getRandomItem([
+    await scene.characters.bard.speech.say('*seufz*', 2, 'practice')
+    await scene.characters.goose.speech.say(Phaser.ArrayUtils.getRandomItem([
       'Oh Mann...',
       'Wann hört das auf?',
       'Meine Nerven!'
@@ -271,9 +272,9 @@ class FiletInThePocket extends SceneState<BardScene> {
     await scene.resetScene(true)
     await scene.resetBardRelated()
 
-    scene.cat.interactionEnabled = true
+    scene.characters.cat.interactionEnabled = true
     this.clearListeners()
-    this.listeners.push(scene.cat.events.onInputUp.addOnce(
+    this.listeners.push(scene.characters.cat.events.onInputUp.addOnce(
       () => { this.stateManager.trigger(CatFeast) }
     ))
   }
@@ -284,28 +285,26 @@ class CatFeast extends SceneStateTransition<BardScene> {
     const scene = this.scene
     await scene.resetAll()
 
-    await scene.antonius.speech.say('Hier, Miez!\nIch hab einen Fisch für dich.', null, 'llsssslsl')
-    await scene.cat.speech.say('...', 1, 'silent')
-    await scene.antonius.speech.say('Komm, hol dir einen leckeren Fisch!', null, 'lsssssssl')
-    await scene.cat.speech.say('...', 1, 'silent')
     await TimeUtils.wait(0.5)
+    await scene.characters.antonius.speech.say('Hier, Miez!\nIch hab einen Fisch für dich.', null, 'llsssslsl')
+    await scene.characters.cat.speech.say('...', 1, 'silent')
+    await scene.characters.antonius.speech.say('Komm, hol dir einen leckeren Fisch!', null, 'lsssssssl')
+    await scene.characters.cat.speech.say('...', 1, 'silent')
     Inventory.instance.item = ''
     await TimeUtils.wait(0.5)
-    await scene.cat.speech.say('... Angemessen.', 1, 'silent', Audio.catCatAccepts.key)
-    await scene.antonius.speech.say('...', null, '')
-    await scene.antonius.speech.say('Was?', null, 'l')
+    await scene.characters.cat.speech.say('... Angemessen.', 1, 'silent', Audio.catCatAccepts.key)
+    await scene.characters.antonius.speech.say('...', null, '')
+    await scene.characters.antonius.speech.say('Was?', null, 'l')
 
-    scene.game.tweens.create(scene.cat).to({
+    await scene.tweens.create(scene.characters.cat).to({
       y: 150
-    }, 500, i => (1 + 2 / 3) * i * i - (2 / 3) * i).start().onComplete.addOnce(() => {
-      scene.cat.scale.x =  -3
-      scene.cat.setActiveState('walking')
-      scene.game.tweens.create(scene.cat).to({
-        x: -Math.abs(scene.cat.width * scene.cat.anchor.x)
-      }, 3000).start()
-    })
+    }, 500, i => (1 + 2 / 3) * i * i - (2 / 3) * i).start().onComplete.asPromise()
 
-    await TimeUtils.wait(3.5)
+    scene.characters.cat.scale.x =  -3
+    scene.characters.cat.setActiveState('walking')
+    await scene.tweens.create(scene.characters.cat).to({
+      x: -Math.abs(scene.characters.cat.width * scene.characters.cat.anchor.x)
+    }, 3000).start().onComplete.asPromise()
 
     return CatGone
   }
@@ -317,9 +316,9 @@ class CatGone extends SceneState<BardScene> {
     await scene.resetScene(true)
     await scene.resetBardRelated()
 
-    scene.cat.visible = false
-    scene.bard.interactionEnabled = true
-    this.listeners.push(scene.bard.events.onInputUp.addOnce(
+    scene.characters.cat.visible = false
+    scene.characters.bard.interactionEnabled = true
+    this.listeners.push(scene.characters.bard.events.onInputUp.addOnce(
       () => this.stateManager.trigger(HelloThere)
     ))
   }
@@ -330,25 +329,25 @@ class HelloThere extends SceneStateTransition<BardScene> {
     const scene = this.scene
     await scene.resetAll()
 
-    scene.cat.visible = false
-
-    await scene.bard.speech.say('Oh! Was für ein sonderbares Gefühl!', 3)
-    await scene.bard.speech.say('Als hätte sich eine Blockade\nvon meinem Rücken gelöst!', 5)
-    await scene.bard.speech.say('Was war das für eine schreckliche Last,\ndie soeben verschwunden ist?', 5)
-    scene.bard.scale.x = -3
-    scene.bard.x = 124
-    scene.bard.y = 7
     await TimeUtils.wait(0.5)
-    await scene.bard.speech.say('Ach da bist du ja, Reitgans!', 3)
-    await scene.goose.speech.say('... Ja, da bin ich.\nSchon die ganze Zeit.', 4)
-    await scene.bard.speech.say('Oh, du wirst nicht glauben,\nwie lange ich nach dir gesucht habe!', 5)
-    await scene.goose.speech.say('Ich kann\'s mir vorstellen.', 3)
-    await scene.bard.speech.say('Komm, lass uns nach Hause gehen!', 3)
-    scene.bard.scale.x = 3
-    scene.bard.x = 164
-    scene.goose.scale.x = -3
-    scene.bard.setActiveState('walking')
-    scene.goose.setActiveState('walking')
+    scene.characters.cat.visible = false
+
+    await scene.characters.bard.speech.say('Oh! Was für ein sonderbares Gefühl!', 3)
+    await scene.characters.bard.speech.say('Als hätte sich eine Blockade\nvon meinem Rücken gelöst!', 5)
+    await scene.characters.bard.speech.say('Was war das für eine schreckliche Last,\ndie soeben verschwunden ist?', 5)
+    scene.characters.bard.scale.x = -3
+    scene.characters.bard.x = 124
+    scene.characters.bard.y = 7
+    await scene.characters.bard.speech.say('Ach da bist du ja, Reitgans!', 3)
+    await scene.characters.goose.speech.say('... Ja, da bin ich.\nSchon die ganze Zeit.', 4)
+    await scene.characters.bard.speech.say('Oh, du wirst nicht glauben,\nwie lange ich nach dir gesucht habe!', 5)
+    await scene.characters.goose.speech.say('Ich kann\'s mir vorstellen.', 3)
+    await scene.characters.bard.speech.say('Komm, lass uns nach Hause gehen!', 3)
+    scene.characters.bard.scale.x = 3
+    scene.characters.bard.x = 164
+    scene.characters.goose.scale.x = -3
+    scene.characters.bard.setActiveState('walking')
+    scene.characters.goose.setActiveState('walking')
 
     // This is a hacky way to make the goose only move while it is jumping.
     // (Frames 1 through 4: on the ground. Frames 5 through 7: in the air.)
@@ -364,11 +363,11 @@ class HelloThere extends SceneStateTransition<BardScene> {
       return t * 7 / 3 - 12 / 9
     }
 
-    const xmin = -Math.abs((1 - scene.goose.anchor.x) * scene.goose.width)
-    scene.game.tweens.create(scene.goose).to({ x: xmin }, 3000, interpolate).start()
-    scene.game.tweens.create(scene.bard).to({ x: xmin }, 3000, interpolate).start()
-
-    await TimeUtils.wait(3)
+    const xmin = -Math.abs((1 - scene.characters.goose.anchor.x) * scene.characters.goose.width)
+    await Promise.all([
+      scene.tweens.create(scene.characters.goose).to({ x: xmin }, 3000, interpolate).start().onComplete.asPromise(),
+      scene.tweens.create(scene.characters.bard).to({ x: xmin }, 3000, interpolate).start().onComplete.asPromise()
+    ])
 
     return BardGone
   }
@@ -380,9 +379,9 @@ class BardGone extends SceneState<BardScene> {
     await scene.resetScene()
     await scene.resetBardRelated()
 
-    scene.cat.visible = false
-    scene.goose.visible = false
-    scene.bard.visible = false
+    scene.characters.cat.visible = false
+    scene.characters.goose.visible = false
+    scene.characters.bard.visible = false
 
     await scene.game.state.states.head.defaultStateManager.setActiveState(Suction)
   }
@@ -396,8 +395,8 @@ class InitialMeckie extends SceneState<BardScene> {
     await scene.resetScene(true)
     await scene.resetMeckieRelated()
 
-    scene.meckie.interactionEnabled = true
-    this.listeners.push(scene.meckie.events.onInputUp.addOnce(
+    scene.characters.meckie.interactionEnabled = true
+    this.listeners.push(scene.characters.meckie.events.onInputUp.addOnce(
       () => this.stateManager.trigger(MeckieIntroduction)
     ))
   }
@@ -408,13 +407,13 @@ class MeckieIntroduction extends SceneStateTransition<BardScene> {
     const scene = this.scene
     await scene.resetAll()
 
-    await scene.meckie.speech.say('Schnibbel schnabbel schnapp!\nIch schneid dir die Kapuze ab!', null, 'sssslsll')
-    await scene.antonius.speech.say('Immer mit der Ruhe!\nWas hast du denn mit dem Messer vor?', null, 'sslssl')
-    await scene.meckie.speech.say('Ich häcksel alles, groß und klein\nund du könntest der nächste sein', null, 'sslsllslsll')
-    await scene.antonius.speech.say('Wäre es in Ordnung wenn du das...\nnicht tun könntest?', null, 'sslsss')
-    await scene.meckie.speech.say('Verschonen könnt ich dich vielleicht,\neinfach was zum hacken reicht.', null, 'sisllslssl')
-    await scene.meckie.speech.say('Wie wär’s mit ‘nem Zerteil-Versuch\nmit deinem kleinen Bibel-Buch? Hähähähä!', null, 'isslisslh')
-    await scene.antonius.speech.say('Also bitte, dies ist ein Buch Gottes!', null, 'sssl')
+    await scene.characters.meckie.speech.say('Schnibbel schnabbel schnapp!\nIch schneid dir die Kapuze ab!', null, 'sssslsll')
+    await scene.characters.antonius.speech.say('Immer mit der Ruhe!\nWas hast du denn mit dem Messer vor?', null, 'sslssl')
+    await scene.characters.meckie.speech.say('Ich häcksel alles, groß und klein\nund du könntest der nächste sein', null, 'sslsllslsll')
+    await scene.characters.antonius.speech.say('Wäre es in Ordnung wenn du das...\nnicht tun könntest?', null, 'sslsss')
+    await scene.characters.meckie.speech.say('Verschonen könnt ich dich vielleicht,\neinfach was zum hacken reicht.', null, 'sisllslssl')
+    await scene.characters.meckie.speech.say('Wie wär’s mit ‘nem Zerteil-Versuch\nmit deinem kleinen Bibel-Buch? Hähähähä!', null, 'isslisslh')
+    await scene.characters.antonius.speech.say('Also bitte, dies ist ein Buch Gottes!', null, 'sssl')
 
     return MeckieRequest
   }
@@ -425,7 +424,7 @@ class MeckieRequest extends SceneStateTransition<BardScene> {
     const scene = this.scene
     await scene.resetAll()
 
-    await scene.meckie.speech.say('Willst du nicht enden als Eingeweide,\nbring etwas, das ich zerschneide!', null, 'sslslsllslh')
+    await scene.characters.meckie.speech.say('Willst du nicht enden als Eingeweide,\nbring etwas, das ich zerschneide!', null, 'sslslsllslh')
 
     if (scene.game.state.states.fish.defaultStateManager.getActiveState() === FishAlive) {
       await scene.game.state.states.fish.defaultStateManager.setActiveState(FishDying)
@@ -441,8 +440,8 @@ class WaitingForFish extends SceneState<BardScene> {
     await scene.resetScene(true)
     await scene.resetMeckieRelated()
 
-    scene.meckie.interactionEnabled = true
-    this.listeners.push(scene.meckie.events.onInputDown.addOnce(
+    scene.characters.meckie.interactionEnabled = true
+    this.listeners.push(scene.characters.meckie.events.onInputDown.addOnce(
       () => this.stateManager.trigger(MeckieRequest)
     ))
   }
@@ -454,8 +453,8 @@ export class AntoniusBroughtFish extends SceneState<BardScene> {
     await scene.resetScene(true)
     await scene.resetMeckieRelated()
 
-    scene.meckie.interactionEnabled = true
-    this.listeners.push(scene.meckie.events.onInputUp.addOnce(
+    scene.characters.meckie.interactionEnabled = true
+    this.listeners.push(scene.characters.meckie.events.onInputUp.addOnce(
       () => this.stateManager.trigger(CutFish)
     ))
   }
@@ -466,27 +465,27 @@ class CutFish extends SceneStateTransition<BardScene> {
     const scene = this.scene
     await scene.resetAll()
 
-    await scene.antonius.speech.say('Ich hätte hier einen Fisch,\nden du vielleicht zerschneiden könntest.', null, 'ssssss')
-    await scene.meckie.speech.say('Ein Wasservieh, frisch aus der See,\nverwandle ich in Lachsfilet!', null, 'ilisi')
+    await scene.characters.antonius.speech.say('Ich hätte hier einen Fisch,\nden du vielleicht zerschneiden könntest.', null, 'ssssss')
+    await scene.characters.meckie.speech.say('Ein Wasservieh, frisch aus der See,\nverwandle ich in Lachsfilet!', null, 'ilisi')
 
-    scene.meckie.setActiveState('swinging')
     await TimeUtils.wait(1)
+    scene.characters.meckie.setActiveState('swinging')
 
-    await scene.antonius.speech.say('Toll! Willst du denn damit etwas kochen, oder…?', null, 'ssssl')
+    await scene.characters.antonius.speech.say('Toll! Willst du denn damit etwas kochen, oder…?', null, 'ssssl')
 
     Inventory.instance.item = Images.filet.key
 
-    await scene.meckie.speech.say('Was ich tun wollt’ hab ich getan,\nich bin ja eigentlich vegan.', null, 'ssslsslsslsl')
-    await scene.antonius.speech.say('Praktisch!', null, 's')
-    await scene.meckie.speech.say('Das war jetzt auch mein letzter Reim,\nden Rest zerschnibbel ich daheim.', null, 'slsslsslslssl')
-    await scene.antonius.speech.say('Tschüss!', null, 'l')
+    await scene.characters.meckie.speech.say('Was ich tun wollt’ hab ich getan,\nich bin ja eigentlich vegan.', null, 'ssslsslsslsl')
+    await scene.characters.antonius.speech.say('Praktisch!', null, 's')
+    await scene.characters.meckie.speech.say('Das war jetzt auch mein letzter Reim,\nden Rest zerschnibbel ich daheim.', null, 'slsslsslslssl')
+    await scene.characters.antonius.speech.say('Tschüss!', null, 'l')
 
-    scene.meckie.scale.x = -3
-    scene.meckie.setActiveState('walking')
-    this.scene.game.tweens.create(scene.meckie).to({
-      x: -Math.abs(scene.meckie.width * scene.meckie.anchor.x)
-    }, 3000).start()
-    await TimeUtils.wait(3)
+    scene.characters.meckie.scale.x = -3
+    scene.characters.meckie.setActiveState('walking')
+
+    await this.scene.tweens.create(scene.characters.meckie).to({
+      x: -Math.abs(scene.characters.meckie.width * scene.characters.meckie.anchor.x)
+    }, 3000).start().onComplete.asPromise()
 
     this.scene.stateManagers.bard.setActiveState(FiletInThePocket)
 
@@ -499,6 +498,6 @@ class FishCut extends SceneState<BardScene> {
     const scene = this.scene
     await scene.resetScene(true)
     await scene.resetMeckieRelated()
-    scene.meckie.visible = false
+    scene.characters.meckie.visible = false
   }
 }

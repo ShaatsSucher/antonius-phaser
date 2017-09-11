@@ -1,5 +1,6 @@
 import { Button } from '../../gameObjects/button'
 import { Atlases } from '../../assets'
+import Character from '../../characters/character'
 
 import SettingsOverlay from '../../overlays/settings'
 import Inventory from '../../overlays/inventory'
@@ -16,6 +17,12 @@ export default abstract class Scene extends Phaser.State {
   abstract stateManagers: { [name: string]: SceneStateManager<Scene> }
   public get defaultStateManager(): SceneStateManager<Scene> {
     return this.stateManagers.default
+  }
+
+  public abstract characters: { [name: string]: Character }
+  public get allCharacters(): Character[] {
+    return Object.keys(this.characters)
+      .map(key => this.characters[key])
   }
 
   private atmoKeys: string[]

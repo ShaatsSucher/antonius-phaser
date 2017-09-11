@@ -10,8 +10,10 @@ export default class EndScene extends Scene {
 
   stateManagers = { } // We don't need states here
 
-  constructor() {
-    super('')
+  public characters = { }
+
+  constructor(game: Phaser.Game) {
+    super(game, '')
   }
 
   protected createGameObjects() {

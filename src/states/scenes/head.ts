@@ -18,8 +18,10 @@ import Inventory from '../../overlays/inventory'
 import { ArrayUtils, StringUtils } from '../../utils/utils'
 
 export default class HeadScene extends Scene {
-  hellmouth: HellmouthCharacter = null
-  antonius: AntoniusCharacter = null
+  public characters = {
+    hellmouth: null,
+    antonius: null
+  }
 
   toBardArrow: Arrow
   toFishArrow: Arrow
@@ -38,8 +40,9 @@ export default class HeadScene extends Scene {
     ])
   }
 
-  constructor() {
+  constructor(game: Phaser.Game) {
     super(
+      game,
       Images.backgroundsHead.key,
       Audio.soundscapesScreen1.key,
       Audio.musicHeadScreen.key
@@ -65,11 +68,11 @@ export default class HeadScene extends Scene {
     })
 
     // Add hellmouth
-    const hellmouth = this.hellmouth = new HellmouthCharacter(this.game, 135, 40)
+    const hellmouth = this.characters.hellmouth = new HellmouthCharacter(this.game, 135, 40)
     this.game.add.existing(hellmouth)
 
     // Add antonius
-    const antonius = this.antonius = new AntoniusCharacter(this.game, 258, 120)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 258, 120)
     antonius.scale = new Phaser.Point(2, 2)
     this.game.add.existing(antonius)
   }
@@ -78,11 +81,11 @@ export default class HeadScene extends Scene {
     this.toBardArrow.visible = showArrows
     this.toFishArrow.visible = showArrows
 
-    this.hellmouth.interactionEnabled = false
-    this.antonius.interactionEnabled = false
+    this.characters.hellmouth.interactionEnabled = false
+    this.characters.antonius.interactionEnabled = false
 
-    await this.hellmouth.setActiveState('idle')
-    await this.antonius.setActiveState('idle')
+    await this.characters.hellmouth.setActiveState('idle')
+    await this.characters.antonius.setActiveState('idle')
   }
 }
 
@@ -90,8 +93,8 @@ class Introduction extends SceneState<HeadScene> {
   public async show() {
     await this.scene.resetScene()
 
-    this.scene.hellmouth.interactionEnabled = true
-    this.listeners.push(this.scene.hellmouth.events.onInputDown.addOnce(
+    this.scene.characters.hellmouth.interactionEnabled = true
+    this.listeners.push(this.scene.characters.hellmouth.events.onInputDown.addOnce(
       () => this.scene.defaultStateManager.trigger(IntroductionSpeech)
     ))
   }
@@ -104,12 +107,12 @@ class IntroductionSpeech extends SceneStateTransition<HeadScene> {
 
       await scene.resetScene()
 
-      await scene.hellmouth.speech.say('Um Gottes Willen...', 3)
-      await scene.hellmouth.speech.say('Es toben ganz schön viele\ndieser Dämonen herum!!', 6)
-      await scene.hellmouth.speech.say('Wenn du irgendwelche Fragen hast,\nkannst du dich jederzeit an mich wenden!', 6)
-      await scene.hellmouth.speech.say('Du schaffst das, Antonius!', 3)
-      await scene.hellmouth.speech.say('Wenn nicht du, wer dann?', 3)
-      await scene.hellmouth.speech.say('Nun geh und leg los...', 3)
+      await scene.characters.hellmouth.speech.say('Um Gottes Willen...', 3)
+      await scene.characters.hellmouth.speech.say('Es toben ganz schön viele\ndieser Dämonen herum!!', 6)
+      await scene.characters.hellmouth.speech.say('Wenn du irgendwelche Fragen hast,\nkannst du dich jederzeit an mich wenden!', 6)
+      await scene.characters.hellmouth.speech.say('Du schaffst das, Antonius!', 3)
+      await scene.characters.hellmouth.speech.say('Wenn nicht du, wer dann?', 3)
+      await scene.characters.hellmouth.speech.say('Nun geh und leg los...', 3)
     }
     return Silent
   }
@@ -125,8 +128,8 @@ export class FishHintAvailable extends SceneState<HeadScene> {
   public async show() {
     await this.scene.resetScene(true)
 
-    this.scene.hellmouth.interactionEnabled = true
-    this.listeners.push(this.scene.hellmouth.events.onInputUp.addOnce(
+    this.scene.characters.hellmouth.interactionEnabled = true
+    this.listeners.push(this.scene.characters.hellmouth.events.onInputUp.addOnce(
       () => this.scene.defaultStateManager.trigger(FishHintSpeech)
     ))
   }
@@ -138,7 +141,7 @@ class FishHintSpeech extends SceneStateTransition<HeadScene> {
       await this.scene.resetScene()
 
       const scene = this.scene
-      await scene.hellmouth.speech.say('Hmmm...\nAus dem Süden kommt ein merkwürdiger Geruch!', 4)
+      await scene.characters.hellmouth.speech.say('Hmmm...\nAus dem Süden kommt ein merkwürdiger Geruch!', 4)
     }
     return FishHintAvailable
   }
@@ -160,7 +163,7 @@ class Credits extends SceneStateTransition<HeadScene> {
       scene.settingsButton.visible = false
       Inventory.instance.visible = false
 
-      scene.antonius.x = 280
+      scene.characters.antonius.x = 280
 
       const swallow = async (characters: Character[] | Character, anchorY: number, walkStartY = 170) => {
         let chars = characters instanceof Character ? [characters] : characters
@@ -187,7 +190,7 @@ class Credits extends SceneStateTransition<HeadScene> {
           await character.setActiveState('idle')
         }))
 
-        scene.hellmouth.setActiveState('open mouth')
+        scene.characters.hellmouth.setActiveState('open mouth')
         scene.sound.play(Audio.hellmouthWhirlwind001.key)
 
         await Promise.all(chars.map(async character => {
@@ -197,7 +200,7 @@ class Credits extends SceneStateTransition<HeadScene> {
           ])
         }))
 
-        await scene.hellmouth.setActiveState('close mouth')
+        await scene.characters.hellmouth.setActiveState('close mouth')
       }
 
       await swallow(new MeckieCharacter(scene.game, 0, 0), 0.3)
