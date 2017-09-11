@@ -46,7 +46,7 @@ export default class HeadScene extends Scene {
     super(
       game,
       Images.backgroundsHead.key,
-      Audio.soundscapesScreen1.key,
+      Audio.soundscapesScene5.key,
       Audio.musicHeadScreen.key
     )
   }

@@ -42,7 +42,7 @@ export default class FishScene extends Scene {
     super(
       game,
       Images.backgroundsFish.key,
-      Audio.soundscapesScreen9Shore.key,
+      Audio.soundscapesScene9.key,
       Audio.musicHeadScreen.key
     )
   }

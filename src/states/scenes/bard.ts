@@ -59,8 +59,8 @@ export default class BardScene extends Scene {
     ])
   }
 
-  constructor(game: Phaser.Game) {
-    super(game, Images.backgroundsBard.key, Audio.soundscapesScreen2.key, [])
+  constructor() {
+    super(game, Images.backgroundsBard.key, Audio.soundscapesScene6.key, [])
 
     function exceptFirst(closure: () => any) {
       let first = true
