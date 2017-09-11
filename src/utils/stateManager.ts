@@ -1,13 +1,18 @@
 import Scene from '../states/scenes/scene'
 
+import { Pausable } from './pausable'
+import { Property } from './property'
+
 type Class<T> = new (...params) => T
 export type Extending<T> = new<N extends T> (...params) => N
 
-export abstract class SceneState<T extends Scene> {
+export abstract class SceneState<T extends Scene> implements Pausable {
   public constructor(
     protected readonly scene: T,
     protected readonly stateManager: SceneStateManager<T>
   ) { }
+
+  public readonly isPaused = new Property<boolean>(false)
 
   protected listeners: Phaser.SignalBinding[] = []
 
