@@ -121,6 +121,12 @@ export default class BardScene extends Scene {
   }
 
   async resetScene(showArrows = false) {
+<<<<<<< HEAD
+=======
+    this.playAtmo(Audio.soundscapesScene6.key)
+    this.playMusic(Audio.musicBardScreen.key)
+
+>>>>>>> master
     this.toHeadArrow.visible = showArrows
 
     this.antonius.interactionEnabled = false

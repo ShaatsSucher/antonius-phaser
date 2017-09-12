@@ -75,6 +75,12 @@ export default class HeadScene extends Scene {
   }
 
   async resetScene(showArrows = false) {
+<<<<<<< HEAD
+=======
+    this.playAtmo(Audio.soundscapesScene5.key)
+    this.playMusic(Audio.musicHeadScreen.key)
+
+>>>>>>> master
     this.toBardArrow.visible = showArrows
     this.toFishArrow.visible = showArrows
 
