@@ -120,7 +120,7 @@ export default class BardScene extends Scene {
   }
 
   async resetScene(showArrows = false) {
-    this.playAtmo(Audio.soundscapesScreen2.key)
+    this.playAtmo(Audio.soundscapesScene6.key)
     this.playMusic(Audio.musicBardScreen.key)
 
     this.toHeadArrow.visible = showArrows

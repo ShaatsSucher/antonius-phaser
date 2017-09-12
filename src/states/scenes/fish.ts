@@ -61,7 +61,7 @@ export default class FishScene extends Scene {
   }
 
   async resetScene(showArrows = false) {
-    this.playAtmo(Audio.soundscapesScreen9Shore.key)
+    this.playAtmo(Audio.soundscapesScene9.key)
     this.playMusic(Audio.musicHeadScreen.key)
 
     this.toHeadArrow.visible = showArrows
