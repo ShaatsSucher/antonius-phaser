@@ -31,3 +31,10 @@ Storage.prototype.getNumber = function getNumber(key: string, defaultValue: numb
   const parsedValue = parseFloat(storedValue)
   return isNaN(parsedValue) ? defaultValue : parsedValue
 }
+
+interface Promise<T> {
+  all(callback: () => void): Promise<T>
+}
+Promise.prototype.all = function any(callback: () => void) {
+  return this.then(callback, callback)
+}

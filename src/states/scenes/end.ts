@@ -3,15 +3,18 @@ import Scene from './scene'
 import { Images, Audio, CustomWebFonts } from '../../assets'
 
 import Inventory from '../../overlays/inventory'
-import { ArrayUtils, StringUtils, TimeUtils } from '../../utils/utils'
+import { ArrayUtils, StringUtils } from '../../utils/utils'
 
 export default class EndScene extends Scene {
   image: Phaser.Sprite
 
   stateManagers = { } // We don't need states here
 
-  constructor() {
-    super('')
+  public characters = { }
+  public interactiveObjects = { }
+
+  constructor(game: Phaser.Game) {
+    super(game, '')
   }
 
   protected createGameObjects() {
@@ -42,7 +45,7 @@ export default class EndScene extends Scene {
     )
     label.anchor.setTo(0.5, 0.5)
 
-    TimeUtils.wait(10).then(() => {
+    this.wait(10).then(() => {
       this.game.camera.onFadeComplete.addOnce(() => {
         window.location.reload()
       })

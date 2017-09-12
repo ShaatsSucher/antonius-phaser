@@ -145,13 +145,3 @@ export class ArrayUtils {
     return index === -1 ? array : ArrayUtils.removeAt(array, index)
   }
 }
-
-export class TimeUtils {
-  public static wait(seconds: number): Promise<void> {
-    return new Promise<void>(resolve => {
-      const timer = Phaser.GAMES[0].time.create()
-      timer.add(seconds * Phaser.Timer.SECOND, resolve)
-      timer.start()
-    })
-  }
-}

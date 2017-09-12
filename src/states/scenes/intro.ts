@@ -7,12 +7,15 @@ import { ArrayUtils, StringUtils } from '../../utils/utils'
 import { AudioManager } from '../../utils/audioManager'
 
 export default class IntroScene extends Scene {
+  public characters = { }
+  public interactiveObjects = { }
+
   image: Phaser.Sprite
 
   stateManagers = { } // We don't need states here
 
-  constructor() {
-    super('')
+  constructor(game: Phaser.Game) {
+    super(game, '')
   }
 
   private readonly text: [{ time: number, text: string }] = [
@@ -123,7 +126,7 @@ export default class IntroScene extends Scene {
         filter['sizeY'] = 1
         this.image.filters = [filter]
 
-        this.game.tweens.create(filter).to({
+        this.tweens.create(filter).to({
           sizeX: this.game.height / 3,
           sizeY: this.game.width / 3
         }, clip.sound.durationMS - clip.sound.currentTime + 1000).start()

@@ -5,7 +5,7 @@ import { ArrayUtils, StringUtils } from '../utils/utils'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class HellmouthCharacter extends Character {
-  public speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.random(
+  public readonly speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.random(
     ArrayUtils.range(1, 38).map(i =>
       Assets.Audio[`hellmouth${StringUtils.intToString(i, 3)}`].key
     )

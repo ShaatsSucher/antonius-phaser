@@ -14,10 +14,14 @@ import Inventory from '../../overlays/inventory'
 import { ArrayUtils, StringUtils } from '../../utils/utils'
 
 export default class FishScene extends Scene {
-  antonius: AntoniusCharacter = null
-  fish: FishCharacter
+  public characters = {
+    antonius: null,
+    fish: null
+  }
 
-  toHeadArrow: Arrow
+  public interactiveObjects = {
+    toHeadArrow: null
+  }
 
   stateManagers = {
     default: new SceneStateManager<FishScene>(this, [
@@ -34,8 +38,9 @@ export default class FishScene extends Scene {
     ])
   }
 
-  constructor() {
+  constructor(game: Phaser.Game) {
     super(
+      game,
       Images.backgroundsFish.key,
       Audio.soundscapesScene9.key,
       Audio.musicHeadScreen.key
@@ -44,34 +49,34 @@ export default class FishScene extends Scene {
 
   protected createGameObjects() {
     // Add navigation arrow
-    const arrow = this.toHeadArrow = new Arrow(this.game, 190, 20)
-    arrow.rotation = - Math.PI / 2
-    arrow.interactionEnabled = true
-    this.game.add.existing(arrow)
-    arrow.events.onInputDown.addOnce(() => {
-      arrow.interactionEnabled = false
+    const toHeadArrow = this.interactiveObjects.toHeadArrow = new Arrow(this.game, 190, 20)
+    toHeadArrow.rotation = - Math.PI / 2
+    toHeadArrow.interactionEnabled = true
+    this.game.add.existing(toHeadArrow)
+    toHeadArrow.events.onInputDown.addOnce(() => {
+      toHeadArrow.interactionEnabled = false
       this.fadeTo('head')
     })
 
     // Add antonius
-    const antonius = this.antonius = new AntoniusCharacter(this.game, 270, 120)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 270, 120)
     antonius.scale = new Phaser.Point(3, 3)
     antonius.setActiveState('idle')
     this.game.add.existing(antonius)
 
-    const fish = this.fish = new FishCharacter(this.game, 150, 120)
+    const fish = this.characters.fish = new FishCharacter(this.game, 150, 120)
     fish.scale = new Phaser.Point(3, 3)
     this.game.add.existing(fish)
   }
 
   async resetScene(showArrows = false) {
-    this.toHeadArrow.visible = showArrows
+    this.interactiveObjects.toHeadArrow.visible = showArrows
 
-    this.fish.interactionEnabled = false
-    this.antonius.interactionEnabled = false
+    this.characters.fish.interactionEnabled = false
+    this.characters.antonius.interactionEnabled = false
 
-    await this.fish.setActiveState('idle')
-    await this.antonius.setActiveState('idle')
+    await this.characters.fish.setActiveState('idle')
+    await this.characters.antonius.setActiveState('idle')
   }
 }
 
@@ -80,9 +85,9 @@ class Initial extends SceneState<FishScene> {
     const scene = this.scene
     await scene.resetScene(true)
 
-    scene.fish.interactionEnabled = true
+    scene.characters.fish.interactionEnabled = true
 
-    this.listeners.push(scene.fish.events.onInputUp.addOnce(
+    this.listeners.push(scene.characters.fish.events.onInputUp.addOnce(
       () => this.stateManager.trigger(FishConversation))
     )
   }
@@ -93,12 +98,12 @@ class FishConversation extends SceneStateTransition<FishScene> {
     const scene = this.scene
     await scene.resetScene()
 
-    await scene.antonius.speech.say('Ach, ich dachte doch\nirgendwas riecht hier fischig', null, 'ssslsss')
-    await scene.fish.speech.say('Ent-schul-di-gung, aber was so "fischig"\nriecht ist ein Canal No. 5!', 10)
-    await scene.antonius.speech.say('Oh, du sprichst!', null, 'lss')
-    await scene.fish.speech.say('Nicht nur spreche ich, ich atme Luft!\nWasser ist ja *schnauf* so was von altmodisch.', 8)
-    await scene.fish.speech.say('Frischluft, *röchel* das atmet man heutzutage!', 6)
-    await scene.antonius.speech.say('Sicher, dass es dir gut geht?\nDu siehst ein bisschen blass um die Kiemen aus...', null, 'ssslsls')
+    await scene.characters.antonius.speech.say('Ach, ich dachte doch\nirgendwas riecht hier fischig', null, 'ssslsss')
+    await scene.characters.fish.speech.say('Ent-schul-di-gung, aber was so "fischig"\nriecht ist ein Canal No. 5!', 10)
+    await scene.characters.antonius.speech.say('Oh, du sprichst!', null, 'lss')
+    await scene.characters.fish.speech.say('Nicht nur spreche ich, ich atme Luft!\nWasser ist ja *schnauf* so was von altmodisch.', 8)
+    await scene.characters.fish.speech.say('Frischluft, *röchel* das atmet man heutzutage!', 6)
+    await scene.characters.antonius.speech.say('Sicher, dass es dir gut geht?\nDu siehst ein bisschen blass um die Kiemen aus...', null, 'ssslsls')
 
     return ImFine
   }
@@ -109,7 +114,7 @@ class ImFine extends SceneStateTransition<FishScene> {
     const scene = this.scene
     await scene.resetScene()
 
-    await scene.fish.speech.say('Mir geht es *keuch* BLEN-DEND!', 5)
+    await scene.characters.fish.speech.say('Mir geht es *keuch* BLEN-DEND!', 5)
 
     return FishAlive
   }
@@ -117,13 +122,12 @@ class ImFine extends SceneStateTransition<FishScene> {
 
 export class FishAlive extends SceneState<FishScene> {
   public async show() {
-    console.log('fish alive')
     const scene = this.scene
     await scene.resetScene(true)
 
-    scene.fish.interactionEnabled = true
+    scene.characters.fish.interactionEnabled = true
 
-    this.listeners.push(scene.fish.events.onInputUp.addOnce(
+    this.listeners.push(scene.characters.fish.events.onInputUp.addOnce(
       () => this.stateManager.trigger(ImFine))
     )
   }
@@ -131,13 +135,12 @@ export class FishAlive extends SceneState<FishScene> {
 
 export class FishDying extends SceneState<FishScene> {
   public async show() {
-    console.log('fish dying')
     const scene = this.scene
     await scene.resetScene(true)
 
-    scene.fish.interactionEnabled = true
+    scene.characters.fish.interactionEnabled = true
 
-    this.listeners.push(scene.fish.events.onInputDown.addOnce(
+    this.listeners.push(scene.characters.fish.events.onInputDown.addOnce(
       () => this.stateManager.trigger(Suffocation)
     ))
   }
@@ -148,11 +151,11 @@ class Suffocation extends SceneStateTransition<FishScene> {
     const scene = this.scene
     await scene.resetScene()
 
-    await scene.fish.speech.say('Luft atmen ist *japs* gesund!', 4)
-    await scene.fish.speech.say('Es verjüngt die Haut, es reinigt die Poren,\nalles dank der Lunge!', 6)
-    await scene.fish.speech.say('... Moment, hab ich eigentlich eine Lunge?', 5)
+    await scene.characters.fish.speech.say('Luft atmen ist *japs* gesund!', 4)
+    await scene.characters.fish.speech.say('Es verjüngt die Haut, es reinigt die Poren,\nalles dank der Lunge!', 6)
+    await scene.characters.fish.speech.say('... Moment, hab ich eigentlich eine Lunge?', 5)
 
-    await scene.fish.setActiveState('dying')
+    await scene.characters.fish.setActiveState('dying')
     const deathSound = scene.sound.play(Audio.fishFishDiesFishDies.key)
 
     let soundDoneCallback: () => void
@@ -161,7 +164,7 @@ class Suffocation extends SceneStateTransition<FishScene> {
 
     await soundDone
 
-    await scene.antonius.speech.say('Hmm… alles Teil von Gottes Plan. Ganz bestimmt.', null, 'sssssl')
+    await scene.characters.antonius.speech.say('Hmm… alles Teil von Gottes Plan. Ganz bestimmt.', null, 'sssssl')
     await scene.game.state.states.head.defaultStateManager.setActiveState(Silent)
 
     return FishDead
@@ -173,11 +176,11 @@ class FishDead extends SceneState<FishScene> {
     const scene = this.scene
     await scene.resetScene(true)
 
-    await scene.fish.setActiveState('dead')
+    await scene.characters.fish.setActiveState('dead')
 
-    scene.fish.interactionEnabled = true
+    scene.characters.fish.interactionEnabled = true
 
-    this.listeners.push(scene.fish.events.onInputDown.addOnce(
+    this.listeners.push(scene.characters.fish.events.onInputDown.addOnce(
       () => this.stateManager.trigger(CollectFish)
     ))
   }
@@ -200,6 +203,6 @@ class FishGone extends SceneState<FishScene> {
     const scene = this.scene
     await scene.resetScene(true)
 
-    scene.fish.visible = false
+    scene.characters.fish.visible = false
   }
 }

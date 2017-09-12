@@ -26,6 +26,8 @@ export default class SettingsOverlay extends Phaser.Group {
 
   /* Actual Class */
 
+  public onMenuClosed = new Phaser.Signal()
+
   private volumeSlider: Slider
   private constructor(game: Phaser.Game) {
     super(game, null, 'settings overlay', true)
@@ -77,14 +79,13 @@ export default class SettingsOverlay extends Phaser.Group {
 
   private oldState: { volume: number }
 
-  public show() {
+  public show(): Promise<void> {
     this.visible = true
-    this.game.paused = true
-    this.game.world.ignoreChildInput = true
     this.volumeSlider.registerDragHandlers()
     this.oldState = {
       volume: this.game.sound.volume
     }
+    return this.onMenuClosed.asPromise()
   }
 
   private hide(resetSettings: boolean) {
@@ -93,8 +94,6 @@ export default class SettingsOverlay extends Phaser.Group {
     }
 
     this.visible = false
-    this.game.paused = false
-    this.game.world.filters = null
-    this.game.world.ignoreChildInput = false
+    this.onMenuClosed.dispatch()
   }
 }
