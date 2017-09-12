@@ -1,7 +1,15 @@
 import * as Assets from '../assets'
 import * as AssetUtils from '../utils/assetUtils'
+
+import IntroScene from './scenes/intro'
+import HeadScene from './scenes/head'
+import BardScene from './scenes/bard'
+import FishScene from './scenes/fish'
+import EndScene from './scenes/end'
+
 import SettingsOverlay from '../overlays/settings'
 import Inventory from '../overlays/inventory'
+import { AudioManager } from '../utils/audioManager'
 
 export default class Preloader extends Phaser.State {
   private preloadBarSprite: Phaser.Sprite = null
@@ -32,8 +40,15 @@ export default class Preloader extends Phaser.State {
   }
 
   private startGame(): void {
+    this.state.add('intro', IntroScene)
+    this.state.add('head', HeadScene)
+    this.state.add('bard', BardScene)
+    this.state.add('fish', FishScene)
+    this.state.add('end', EndScene)
+
     SettingsOverlay.init(this.game)
     Inventory.init(this.game)
+    AudioManager.init(this.game.sound)
 
     this.game.camera.onFadeComplete.addOnce(this.loadTitle, this)
     this.game.camera.fade(0x000000, 1000)

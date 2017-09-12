@@ -15,6 +15,7 @@ import MeckieCharacter from '../../characters/meckie'
 import Arrow from '../../gameObjects/arrow'
 
 import SheechHelper from '../../utils/speechHelper'
+import { AudioManager } from '../../utils/audioManager'
 
 import Inventory from '../../overlays/inventory'
 import { ArrayUtils, StringUtils, TimeUtils } from '../../utils/utils'
@@ -56,7 +57,7 @@ export default class BardScene extends Scene {
   }
 
   constructor() {
-    super(Images.backgroundsBard.key)
+    super(Images.backgroundsBard.key, Audio.soundscapesScene6.key, [])
 
     function exceptFirst(closure: () => any) {
       let first = true
@@ -120,9 +121,6 @@ export default class BardScene extends Scene {
   }
 
   async resetScene(showArrows = false) {
-    this.playAtmo(Audio.soundscapesScene6.key)
-    this.playMusic(Audio.musicBardScreen.key)
-
     this.toHeadArrow.visible = showArrows
 
     this.antonius.interactionEnabled = false
@@ -159,7 +157,7 @@ class InitialBard extends SceneState<BardScene> {
     await scene.resetScene(true)
     await scene.resetBardRelated()
 
-    scene.killBackgroundSound('music')
+    this.scene.setMusicClips([])
 
     scene.bard.interactionEnabled = true
 
@@ -173,7 +171,6 @@ class BardConversation extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
     await scene.resetAll()
-    scene.killBackgroundSound('music')
 
     scene.bard.setActiveState('singing')
     scene.bard.interactionEnabled = true
@@ -204,6 +201,8 @@ class BardConversation extends SceneStateTransition<BardScene> {
     bardSong.stop()
     scene.bard.setInteractionEnabled(false)
 
+    this.scene.setMusicClips(Audio.musicBardScreen.key)
+
     await scene.goose.speech.say('Ach du meine Güte.\n Wie theatralisch!', 3)
     await scene.antonius.speech.say('Ihr da, auf dem fantastischen Reitwesen!', null, 'slssls')
     await scene.antonius.speech.say('Dieses Lied klingt so unendlich einsam,\nwarum seid Ihr so traurig?', null, 'ssssssss')
@@ -225,6 +224,9 @@ class CatInTheWay extends SceneState<BardScene> {
     const scene = this.scene
     await scene.resetScene(true)
     await scene.resetBardRelated()
+
+    this.scene.setMusicClips(Audio.musicBardScreen.key)
+
     scene.cat.interactionEnabled = true
     this.listeners.push(scene.cat.events.onInputUp.addOnce(
       () => scene.stateManagers.bard.trigger(AnnoyedCat)

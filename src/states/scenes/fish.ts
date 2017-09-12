@@ -35,7 +35,11 @@ export default class FishScene extends Scene {
   }
 
   constructor() {
-    super(Images.backgroundsFish.key)
+    super(
+      Images.backgroundsFish.key,
+      Audio.soundscapesScene9.key,
+      Audio.musicHeadScreen.key
+    )
   }
 
   protected createGameObjects() {
@@ -61,9 +65,6 @@ export default class FishScene extends Scene {
   }
 
   async resetScene(showArrows = false) {
-    this.playAtmo(Audio.soundscapesScene9.key)
-    this.playMusic(Audio.musicHeadScreen.key)
-
     this.toHeadArrow.visible = showArrows
 
     this.fish.interactionEnabled = false
