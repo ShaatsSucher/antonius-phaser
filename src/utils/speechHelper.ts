@@ -94,50 +94,61 @@ export default class SpeechHelper implements Pausable {
   }
 
   private displayText(text: string, shouldHide: Promise<void>) {
+    const frameMargin = 5
+    const textStyle = {
+      font: `8px ${CustomWebFonts.pixelOperator8Bold.family}`,
+      fill: '#fff',
+      stroke: '#000',
+      strokeThickness: 2
+    }
+
     // For reasons of font-rendering, we need to render each line of the text
     // separately.
-    const lines = text.split('\n').reverse()
+    const lines = text.split('\n')
+    let groupWidth = 0
     const labels = lines.map(line => {
-      const label = this.character.game.add.text(0, 0, line, {
-        font: `8px ${CustomWebFonts.pixelOperator8Bold.family}`,
-        fill: '#fff',
-        stroke: '#000',
-        strokeThickness: 2
-      })
-      label.anchor.setTo(0.5, 1)
+      const label = new Phaser.Text(this.character.game, 0, 0, line, textStyle)
+      label.anchor.setTo(0.5, 0)
+      groupWidth = Math.max(groupWidth, label.width)
       return label
     })
 
-    const updateListener = this.character.onUpdate.add(() => {
-      labels.forEach((label, index) => {
-        if (index === 0) {
-          // label directly above character
-          label.alignTo(
-            this.character, Phaser.TOP_CENTER,
-            this.textAnchor.x, this.textAnchor.y
-          )
-        } else {
-          label.alignTo(labels[index - 1], Phaser.TOP_CENTER)
-        }
-        label.x = Math.round(label.x)
-        label.y = Math.round(label.y)
-        if (label.width % 2 === 1) {
-          // The font renders badly when the label's width isn't even.
-          // Moving the label 0.5px to the right seems to fix this.
-          label.x += 0.5
-        }
-        // if the text would leave the screen on the sides, offset it accordingly
-        const tooFarRight = (label.x + (label.width / 2)) - this.character.game.width
-        if (tooFarRight > 0) label.x -= tooFarRight
-        const tooFarLeft = label.x - (label.width / 2)
-        if (tooFarLeft < 0) label.x -= tooFarLeft
+    const init: [Phaser.Group, number] = [this.character.game.add.group(), 0]
+    const [group, groupHeight] = labels.reduce(([group, nextY], label): [Phaser.Group, number] => {
+      // The font renders badly when the label's width is odd. Offsetting the
+      // label a little seems to fix this.
+      const correctionOffset = label.width % 2 === 1 ? 0.5 : 0
 
-      })
+      label.position.setTo(
+        Math.round(groupWidth / 2) + correctionOffset,
+        Math.round(nextY)
+      )
+      group.add(label)
+      return [group, nextY + label.height]
+    }, init)
+
+    if (groupWidth > this.character.game.width - (2 * frameMargin)) {
+      console.warn(`Text is wider than allowed: '${text}'`)
+    }
+    if (groupHeight > this.character.game.height - (2 * frameMargin)) {
+      console.warn(`Text is higher than allowed: '${text}'`)
+    }
+
+    console.dir(group)
+
+    const updateListener = this.character.onUpdate.add(() => {
+      group.alignTo(
+        this.character, Phaser.TOP_CENTER,
+        this.textAnchor.x, this.textAnchor.y
+      )
+
+      group.x = Math.round(Math.max(frameMargin, Math.min(this.character.game.width - frameMargin - groupWidth, group.x)))
+      group.y = Math.round(Math.max(frameMargin, Math.min(this.character.game.height - frameMargin - groupHeight, group.y)))
     })
 
     shouldHide.all(() => {
       updateListener.detach()
-      labels.forEach(label => label.kill())
+      group.destroy()
     })
   }
 
