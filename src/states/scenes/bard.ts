@@ -57,7 +57,7 @@ export default class BardScene extends Scene {
   }
 
   constructor() {
-    super(Images.backgroundsBard.key, Audio.soundscapesScreen2.key, [])
+    super(Images.backgroundsBard.key, Audio.soundscapesScene6.key, [])
 
     function exceptFirst(closure: () => any) {
       let first = true

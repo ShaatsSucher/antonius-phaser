@@ -1,7 +1,7 @@
 import { TimeUtils } from './utils'
 
 export class AudioManager {
-  public readonly masterVolumeChanged = new Phaser.Signal()
+  public readonly onMasterVolumeChanged = new Phaser.Signal()
   private masterVolume: number
   public readonly tweenManager: Phaser.TweenManager
   private readonly timer: Phaser.Timer
@@ -39,7 +39,8 @@ export class AudioManager {
   public set master(value: number) {
     this.masterVolume = Math.max(0, Math.min(1, value))
     window.localStorage.setItem('audioMasterVolume', `${value}`)
-    this.masterVolumeChanged.dispatch(this.masterVolume)
+    this.allTracks.forEach(track => track.updateVolume())
+    this.onMasterVolumeChanged.dispatch(this.masterVolume)
   }
 
   public get allTracks(): AudioTrack[] {
@@ -54,15 +55,12 @@ export class AudioManager {
 export class AudioTrack {
   private clips: { [key: string]: Clip } = { }
   private trackVolume: number
-  public readonly trackVolumeChange = new Phaser.Signal()
+  public readonly onTrackVolumeChange = new Phaser.Signal()
 
   constructor(public readonly audioManager: AudioManager,
               public readonly trackName: string,
               defaultVolume = 1) {
     this.volume = window.localStorage.getNumber(`audioTrackVolume_${trackName}`, defaultVolume)
-    audioManager.masterVolumeChanged.add(() => {
-      this.updateVolume()
-    })
   }
 
   public get volume(): number {
@@ -72,12 +70,15 @@ export class AudioTrack {
     this.trackVolume = Math.max(0, Math.min(1, value))
     window.localStorage.setItem(`audioTrackVolume_${this.trackName}`, `${value}`)
     this.updateVolume()
+    this.onTrackVolumeChange.dispatch(this.trackVolume)
   }
 
-  private updateVolume() {
-    Object.keys(this.clips).map(key => this.clips[key]).forEach(clip => {
-      clip.updateVolume()
-    })
+  public updateVolume() {
+    this.allClips.forEach(clip => clip.updateVolume())
+  }
+
+  public get allClips(): Clip[] {
+    return Object.keys(this.clips).map(key => this.clips[key])
   }
 
   public getActiveClip(key: string): Clip {
@@ -192,6 +193,10 @@ export class Clip {
 
   public pause() {
     !this.soundStopped && this.sound.pause()
+  }
+
+  public resume() {
+    !this.soundStopped && this.sound.resume()
   }
 
   public stop() {
