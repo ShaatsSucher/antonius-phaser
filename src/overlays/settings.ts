@@ -28,6 +28,8 @@ export default class SettingsOverlay extends Phaser.Group {
 
   /* Actual Class */
 
+  public onMenuClosed = new Phaser.Signal()
+
   private masterVolumeSlider: Slider
   private musicVolumeSlider: Slider
   private atmoVolumeSlider: Slider
@@ -108,11 +110,8 @@ export default class SettingsOverlay extends Phaser.Group {
     speechVolume: number
   }
 
-  public show() {
+  public show(): Promise<void> {
     this.visible = true
-    this.game.paused = true
-    this.game.world.ignoreChildInput = true
-
     ; [
       this.masterVolumeSlider,
       this.musicVolumeSlider,
@@ -131,6 +130,7 @@ export default class SettingsOverlay extends Phaser.Group {
       atmoVolume: AudioManager.instance.tracks.atmo.volume,
       speechVolume: AudioManager.instance.tracks.speech.volume
     }
+    return this.onMenuClosed.asPromise()
   }
 
   private hide(resetSettings: boolean) {
@@ -142,8 +142,6 @@ export default class SettingsOverlay extends Phaser.Group {
     }
 
     this.visible = false
-    this.game.paused = false
-    this.game.world.filters = null
-    this.game.world.ignoreChildInput = false
+    this.onMenuClosed.dispatch()
   }
 }

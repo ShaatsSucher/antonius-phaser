@@ -5,7 +5,7 @@ import { ArrayUtils, StringUtils } from '../utils/utils'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class FishCharacter extends Character {
-  public speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.random(
+  public readonly speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.random(
     ArrayUtils.range(1, 33).map(i =>
       Assets.Audio[`fishFish${StringUtils.intToString(i, 3)}`].key
     )
