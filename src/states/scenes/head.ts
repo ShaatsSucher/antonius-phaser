@@ -171,8 +171,9 @@ class Credits extends SceneStateTransition<HeadScene> {
         let chars = characters instanceof Character ? [characters] : characters
 
         await Promise.all(chars.map(async character => {
-          // Make character face left
-          character.scale.setTo(-2, 2)
+          // Flip  + sclale characters
+          character.scale.x *= -2
+          character.scale.y *= 2
 
           // Center the character's anchor
           character.anchor.setTo(0.5, anchorY)
@@ -207,9 +208,12 @@ class Credits extends SceneStateTransition<HeadScene> {
 
       await swallow(new MeckieCharacter(scene.game, 0, 0), 0.3)
       await swallow(new CatCharacter(scene.game, 0, 0), 0)
+      const bard = new BardCharacter(scene.game, 0, 0)
+      bard.anchor.setTo(0, 0)
+      bard.scale.x *= -1
       await swallow([
         new GooseCharacter(scene.game, 0, 0),
-        new BardCharacter(scene.game, 0, 0)
+        bard
       ], 0.4, 150)
 
       return TheEnd
