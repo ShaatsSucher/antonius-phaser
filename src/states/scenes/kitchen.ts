@@ -4,6 +4,7 @@ import { SceneStateManager, SceneState, SceneStateTransition } from '../../utils
 import { Images, Audio } from '../../assets'
 
 import AntoniusCharacter from '../../characters/antonius'
+import EggWomanCharacter from '../../characters/eggwoman'
 import Arrow from '../../gameObjects/arrow'
 
 import Inventory from '../../overlays/inventory'
@@ -11,6 +12,7 @@ import Inventory from '../../overlays/inventory'
 export default class KitchenScene extends Scene {
   public characters = {
     antonius: null,
+    eggwoman: null
   }
 
   public interactiveObjects = {
@@ -58,6 +60,11 @@ export default class KitchenScene extends Scene {
     antonius.scale = new Phaser.Point(3, 3)
     antonius.setActiveState('idle')
     this.game.add.existing(antonius)
+
+    const eggwoman = this.characters.eggwoman = new EggWomanCharacter(this.game, 150, 120)
+    eggwoman.scale = new Phaser.Point(0.5, 0.5)
+    eggwoman.setActiveState('idle')
+    this.game.add.existing(eggwoman)
   }
 }
 
