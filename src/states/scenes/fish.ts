@@ -20,7 +20,8 @@ export default class FishScene extends Scene {
   }
 
   public interactiveObjects = {
-    toHeadArrow: null
+    toHeadArrow: null,
+    toKitchenArrow: null
   }
 
   stateManagers = {
@@ -48,7 +49,7 @@ export default class FishScene extends Scene {
   }
 
   protected createGameObjects() {
-    // Add navigation arrow
+    // Add navigation arrows
     const toHeadArrow = this.interactiveObjects.toHeadArrow = new Arrow(this.game, 190, 20)
     toHeadArrow.rotation = - Math.PI / 2
     toHeadArrow.interactionEnabled = true
@@ -56,6 +57,14 @@ export default class FishScene extends Scene {
     toHeadArrow.events.onInputDown.addOnce(() => {
       toHeadArrow.interactionEnabled = false
       this.fadeTo('head')
+    })
+
+    const toKitchenArrow = this.interactiveObjects.toKitchenArrow = new Arrow(this.game, 364, 108)
+    toKitchenArrow.interactionEnabled = true
+    this.game.add.existing(toKitchenArrow)
+    toKitchenArrow.events.onInputDown.addOnce(() => {
+      toKitchenArrow.interactionEnabled = false
+      this.fadeTo('kitchen')
     })
 
     // Add antonius

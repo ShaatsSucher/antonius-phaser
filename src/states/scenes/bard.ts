@@ -30,7 +30,8 @@ export default class BardScene extends Scene {
   }
 
   public interactiveObjects = {
-    toHeadArrow: null
+    toHeadArrow: null,
+    toKitchenArrow: null
   }
 
   readonly stateManagers: { [name: string]: SceneStateManager<BardScene> } = {
@@ -113,13 +114,22 @@ export default class BardScene extends Scene {
     antonius.setActiveState('idle')
     this.add.existing(antonius)
 
-    const arrow = this.interactiveObjects.toHeadArrow = new Arrow(this.game, 20, 95)
-    arrow.rotation = Math.PI
-    arrow.interactionEnabled = true
-    this.game.add.existing(arrow)
-    arrow.events.onInputDown.addOnce(() => {
-      arrow.interactionEnabled = false
+    const toHeadArrow = this.interactiveObjects.toHeadArrow = new Arrow(this.game, 20, 95)
+    toHeadArrow.rotation = Math.PI
+    toHeadArrow.interactionEnabled = true
+    this.game.add.existing(toHeadArrow)
+    toHeadArrow.events.onInputDown.addOnce(() => {
+      toHeadArrow.interactionEnabled = false
       this.fadeTo('head')
+    })
+
+    const toKitchenArrow = this.interactiveObjects.toKitchenArrow = new Arrow(this.game, 192, 196)
+    toKitchenArrow.rotation = Math.PI / 2
+    toKitchenArrow.interactionEnabled = true
+    this.game.add.existing(toKitchenArrow)
+    toKitchenArrow.events.onInputDown.addOnce(() => {
+      toKitchenArrow.interactionEnabled = false
+      this.fadeTo('kitchen')
     })
   }
 
