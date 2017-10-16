@@ -7,6 +7,7 @@ import { Images, Audio } from '../../assets'
 
 import AntoniusCharacter from '../../characters/antonius'
 import FishCharacter from '../../characters/fish'
+import AlphaPigCharacter from '../../characters/alphapig'
 
 import Arrow from '../../gameObjects/arrow'
 
@@ -16,7 +17,8 @@ import { ArrayUtils, StringUtils } from '../../utils/utils'
 export default class FishScene extends Scene {
   public characters = {
     antonius: null,
-    fish: null
+    fish: null,
+    alphapig: null
   }
 
   public interactiveObjects = {
@@ -68,14 +70,18 @@ export default class FishScene extends Scene {
     })
 
     // Add antonius
-    const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 270, 120)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 280, 110)
     antonius.scale = new Phaser.Point(3, 3)
     antonius.setActiveState('idle')
     this.game.add.existing(antonius)
 
-    const fish = this.characters.fish = new FishCharacter(this.game, 150, 120)
+    const fish = this.characters.fish = new FishCharacter(this.game, 200, 120)
     fish.scale = new Phaser.Point(3, 3)
     this.game.add.existing(fish)
+
+    const pig = this.characters.alphapig = new AlphaPigCharacter(this.game, 105, 130)
+    pig.scale = new Phaser.Point(3, 3)
+    this.game.add.existing(pig)
   }
 
   async resetScene(showArrows = false) {
