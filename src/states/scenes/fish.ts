@@ -8,6 +8,7 @@ import { Images, Audio } from '../../assets'
 import AntoniusCharacter from '../../characters/antonius'
 import FishCharacter from '../../characters/fish'
 import AlphaPigCharacter from '../../characters/alphapig'
+import NailGooseCharacter from '../../characters/nailgoose'
 
 import Arrow from '../../gameObjects/arrow'
 
@@ -18,7 +19,8 @@ export default class FishScene extends Scene {
   public characters = {
     antonius: null,
     fish: null,
-    alphapig: null
+    alphapig: null,
+    nailgoose: null
   }
 
   public interactiveObjects = {
@@ -82,6 +84,10 @@ export default class FishScene extends Scene {
     const pig = this.characters.alphapig = new AlphaPigCharacter(this.game, 105, 130)
     pig.scale = new Phaser.Point(3, 3)
     this.game.add.existing(pig)
+
+    const goose = this.characters.nailgoose = new NailGooseCharacter(this.game, 160, 80)
+    goose.scale = new Phaser.Point(3, 3)
+    this.game.add.existing(goose)
   }
 
   async resetScene(showArrows = false) {
