@@ -5,6 +5,8 @@ import { Images, Audio } from '../../assets'
 
 import AntoniusCharacter from '../../characters/antonius'
 import EggWomanCharacter from '../../characters/eggwoman'
+import Cook1Character from '../../characters/cook1'
+import Cook2Character from '../../characters/cook2'
 import Arrow from '../../gameObjects/arrow'
 
 import Inventory from '../../overlays/inventory'
@@ -12,7 +14,9 @@ import Inventory from '../../overlays/inventory'
 export default class KitchenScene extends Scene {
   public characters = {
     antonius: null,
-    eggwoman: null
+    eggwoman: null,
+    cook1: null,
+    cook2: null
   }
 
   public interactiveObjects = {
@@ -61,10 +65,20 @@ export default class KitchenScene extends Scene {
     antonius.setActiveState('idle')
     this.game.add.existing(antonius)
 
-    const eggwoman = this.characters.eggwoman = new EggWomanCharacter(this.game, 150, 120)
-    eggwoman.scale = new Phaser.Point(0.5, 0.5)
+    const eggwoman = this.characters.eggwoman = new EggWomanCharacter(this.game, 200, 100)
+    eggwoman.scale = new Phaser.Point(3, 3)
     eggwoman.setActiveState('idle')
     this.game.add.existing(eggwoman)
+
+    const cook1 = this.characters.cook1 = new Cook1Character(this.game, 100, 100)
+    cook1.scale = new Phaser.Point(0.2, 0.2)
+    cook1.setActiveState('idle')
+    this.game.add.existing(cook1)
+
+    const cook2 = this.characters.cook2 = new Cook1Character(this.game, 130, 100)
+    cook2.scale = new Phaser.Point(0.2, 0.2)
+    cook2.setActiveState('idle')
+    this.game.add.existing(cook2)
   }
 }
 
