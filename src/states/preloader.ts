@@ -6,6 +6,7 @@ import HeadScene from './scenes/head'
 import BardScene from './scenes/bard'
 import FishScene from './scenes/fish'
 import KitchenScene from './scenes/kitchen'
+import TreeScene from './scenes/tree'
 import EndScene from './scenes/end'
 
 import SettingsOverlay from '../overlays/settings'
@@ -46,6 +47,7 @@ export default class Preloader extends Phaser.State {
     this.state.add('bard', BardScene)
     this.state.add('fish', FishScene)
     this.state.add('kitchen', KitchenScene)
+    this.state.add('tree', TreeScene)
     this.state.add('end', EndScene)
 
     SettingsOverlay.init(this.game)

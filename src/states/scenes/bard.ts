@@ -31,7 +31,8 @@ export default class BardScene extends Scene {
 
   public interactiveObjects = {
     toHeadArrow: null,
-    toKitchenArrow: null
+    toKitchenArrow: null,
+    toTreeArrow: null
   }
 
   readonly stateManagers: { [name: string]: SceneStateManager<BardScene> } = {
@@ -130,6 +131,14 @@ export default class BardScene extends Scene {
     toKitchenArrow.events.onInputDown.addOnce(() => {
       toKitchenArrow.interactionEnabled = false
       this.fadeTo('kitchen')
+    })
+
+    const toTreeArrow = this.interactiveObjects.toTreeArrow = new Arrow(this.game, 364, 95)
+    toTreeArrow.interactionEnabled = true
+    this.game.add.existing(toTreeArrow)
+    toTreeArrow.events.onInputDown.addOnce(() => {
+      toTreeArrow.interactionEnabled = false
+      this.fadeTo('tree')
     })
   }
 
