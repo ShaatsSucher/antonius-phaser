@@ -184,7 +184,7 @@ export class Clip {
     if (this.soundStopped) { return Promise.reject('Clip was already stopped') }
 
     this.sound.volume = this.effectiveVolume
-    this.sound.play()
+    if (!this.sound.isPlaying) this.sound.play()
 
     this.stopped = new Promise<void>(resolve => { this.sound.onStop.addOnce(resolve) })
     return this.stopped
