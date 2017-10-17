@@ -2,6 +2,7 @@ import * as Assets from '../assets'
 import Character from './character'
 import CharacterState from './characterState'
 import { ArrayUtils, StringUtils } from '../utils/utils'
+import Scene from '../states/scenes/scene'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class HellmouthCharacter extends Character {
@@ -11,8 +12,8 @@ export default class HellmouthCharacter extends Character {
     )
   ))
 
-  constructor(game: Phaser.Game, x: number, y: number) {
-    super(game, x, y, Assets.Spritesheets.hellmouthTalkcycle.key)
+  constructor(scene: Scene, x: number, y: number) {
+    super(scene, x, y, Assets.Spritesheets.hellmouthTalkcycle.key)
 
     this.animations.add('idle', [0], 0, false)
     this.animations.add('talking', null, 16, true)

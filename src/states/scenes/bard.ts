@@ -84,31 +84,31 @@ export default class BardScene extends Scene {
   }
 
   protected createGameObjects() {
-    const goose = this.characters.goose = new GooseCharacter(this.game, 144, 10)
+    const goose = this.characters.goose = new GooseCharacter(this, 144, 10)
     goose.scale = new Phaser.Point(3, 3)
     goose.anchor.setTo(0.5, 0)
     goose.setActiveState('idle')
     this.add.existing(goose)
 
-    const bard = this.characters.bard = new BardCharacter(this.game, 144, 10)
+    const bard = this.characters.bard = new BardCharacter(this, 144, 10)
     bard.scale = new Phaser.Point(3, 3)
     bard.anchor.setTo(0.5, 0)
     bard.setActiveState('idle')
     this.add.existing(bard)
 
-    const cat = this.characters.cat = new CatCharacter(this.game, 144, 64)
+    const cat = this.characters.cat = new CatCharacter(this, 144, 64)
     cat.scale = new Phaser.Point(3, 3)
     cat.anchor.setTo(0.5, 0)
     cat.setActiveState('idle')
     this.add.existing(cat)
 
-    const meckie = this.characters.meckie = new MeckieCharacter(this.game, 78, 120)
+    const meckie = this.characters.meckie = new MeckieCharacter(this, 78, 120)
     meckie.scale = new Phaser.Point(3, 3)
     meckie.anchor.setTo(0.5, 0)
     meckie.setActiveState('idle')
     this.add.existing(meckie)
 
-    const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 292, 120)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 292, 120)
     antonius.scale = new Phaser.Point(3, 3)
     antonius.setActiveState('idle')
     this.add.existing(antonius)
@@ -180,27 +180,7 @@ class BardConversation extends SceneStateTransition<BardScene> {
     const bardSong = scene.sound.play(Audio.bardSongShort.key)
     bardSong.onStop.addOnce(() => { scene.characters.bard.setActiveState('idle') })
 
-    const clickedAnywhere = new Promise<void>(resolve => {
-      this.scene.game.input.mouse.capture = true
-      let mouseWasUp = false
-      let mouseWasDown = false
-      let handle: Phaser.SignalBinding
-      handle = this.scene.onUpdate.add(() => {
-        if (!this.scene.game.input.activePointer.leftButton.isDown) {
-          mouseWasUp = true
-        }
-        if (mouseWasUp && this.scene.game.input.activePointer.leftButton.isDown) {
-          mouseWasDown = true
-        }
-        if (mouseWasDown && !this.scene.game.input.activePointer.leftButton.isDown) {
-          this.scene.game.input.mouse.capture = false
-          handle.detach()
-          resolve()
-        }
-      })
-    })
-
-    await clickedAnywhere
+    await scene.clickedAnywhere()
     bardSong.stop()
     scene.characters.bard.setInteractionEnabled(false)
 

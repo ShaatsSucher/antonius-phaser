@@ -65,32 +65,7 @@ export default class SpeechHelper implements Pausable {
   }
 
   private registerClickListener(): Promise<void> {
-    this.character.interactionEnabled = true
-    return new Promise<void>(resolve => {
-      this.character.game.input.mouse.capture = true
-      let mouseWasUp = false
-      let mouseWasDown = false
-      let handle: Phaser.SignalBinding
-
-      handle = this.character.onUpdate.add(() => {
-        if (this.isPaused.value) {
-          mouseWasUp = false
-          mouseWasDown = false
-          return
-        }
-        if (!this.character.game.input.activePointer.leftButton.isDown) {
-          mouseWasUp = true
-        }
-        if (mouseWasUp && this.character.game.input.activePointer.leftButton.isDown) {
-          mouseWasDown = true
-        }
-        if (mouseWasDown && !this.character.game.input.activePointer.leftButton.isDown) {
-          this.character.game.input.mouse.capture = false
-          handle.detach()
-          resolve()
-        }
-      })
-    })
+    return this.character.scene.clickedAnywhere()
   }
 
   private displayText(text: string, shouldHide: Promise<void>) {

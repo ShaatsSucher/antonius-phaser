@@ -59,12 +59,12 @@ export default class FishScene extends Scene {
     })
 
     // Add antonius
-    const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 270, 120)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 270, 120)
     antonius.scale = new Phaser.Point(3, 3)
     antonius.setActiveState('idle')
     this.game.add.existing(antonius)
 
-    const fish = this.characters.fish = new FishCharacter(this.game, 150, 120)
+    const fish = this.characters.fish = new FishCharacter(this, 150, 120)
     fish.scale = new Phaser.Point(3, 3)
     this.game.add.existing(fish)
   }

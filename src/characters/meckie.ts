@@ -2,6 +2,7 @@ import * as Assets from '../assets'
 import Character from './character'
 import CharacterState from './characterState'
 import { ArrayUtils, StringUtils } from '../utils/utils'
+import Scene from '../states/scenes/scene'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class MeckieCharacter extends Character {
@@ -22,8 +23,8 @@ export default class MeckieCharacter extends Character {
     }
   ))
 
-  constructor(game: Phaser.Game, x: number, y: number) {
-    super(game, x, y, Assets.Spritesheets.knifedude.key)
+  constructor(scene: Scene, x: number, y: number) {
+    super(scene, x, y, Assets.Spritesheets.knifedude.key)
 
     this.animations.add('idle', [0], 0, false)
     this.animations.add('talking', [21, 22], 8, true)
