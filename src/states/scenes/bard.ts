@@ -204,7 +204,7 @@ class BardConversation extends SceneStateTransition<BardScene> {
     bardSong.stop()
     scene.characters.bard.setInteractionEnabled(false)
 
-    this.scene.setMusicClips(Audio.musicBardScreen.key)
+    this.scene.setMusicClips(Audio.musicBard.key)
 
     await scene.characters.goose.speech.say('Ach du meine Güte.\n Wie theatralisch!', 3)
     await scene.characters.antonius.speech.say('Ihr da, auf dem fantastischen Reitwesen!', null, 'slssls')
@@ -228,7 +228,7 @@ class CatInTheWay extends SceneState<BardScene> {
     await scene.resetScene(true)
     await scene.resetBardRelated()
 
-    this.scene.setMusicClips(Audio.musicBardScreen.key)
+    this.scene.setMusicClips(Audio.musicBard.key)
 
     scene.characters.cat.interactionEnabled = true
     this.listeners.push(scene.characters.cat.events.onInputUp.addOnce(
