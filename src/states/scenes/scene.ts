@@ -175,6 +175,31 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     this.onShutdown.dispatch()
   }
 
+  public clickedAnywhere(ignorePause: boolean = false): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      let mouseWasUp = false
+      let mouseWasDown = false
+      let handle: Phaser.SignalBinding
+      handle = this.onUpdate.add(() => {
+        if (!ignorePause && this.isPaused.value) {
+          mouseWasUp = true
+          mouseWasDown = false
+        }
+        if (!this.game.input.activePointer.leftButton.isDown) {
+          mouseWasUp = true
+        }
+        if (mouseWasUp && this.game.input.activePointer.leftButton.isDown) {
+          mouseWasDown = true
+        }
+        if (mouseWasDown && !this.game.input.activePointer.leftButton.isDown) {
+          this.game.input.mouse.capture = false
+          handle.detach()
+          resolve()
+        }
+      })
+    })
+  }
+
   public wait(seconds: number): Promise<void> {
     return new Promise<void>(resolve => {
       const timer = this.game.time.create()
