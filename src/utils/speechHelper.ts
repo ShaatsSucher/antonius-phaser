@@ -109,8 +109,6 @@ export default class SpeechHelper implements Pausable {
       console.warn(`Text is higher than allowed: '${text}'`)
     }
 
-    console.dir(group)
-
     const updateListener = this.character.onUpdate.add(() => {
       group.alignTo(
         this.character, Phaser.TOP_CENTER,
