@@ -140,6 +140,6 @@ export default class IntroScene extends Scene {
     super.shutdown()
 
     this.settingsButton.visible = true
-    Inventory.instance.visible = true
+    this.inventoryButton.visible = true
   }
 }

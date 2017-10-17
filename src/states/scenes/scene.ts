@@ -43,6 +43,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
   private backgroundImage: Phaser.Sprite
 
   public settingsButton: Button
+  public inventoryButton: Button
 
   public onUpdate = new Phaser.Signal()
   public onCreate = new Phaser.Signal()
@@ -66,6 +67,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
         this.tweens.resumeAll()
       }
       this.settingsButton.isPaused.value = isPaused
+      this.inventoryButton.isPaused.value = isPaused
     })
   }
 
@@ -93,6 +95,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     // Disable all inputs to prevent the user from doing anything stupid.
     this.lockInput()
     this.settingsButton.isPaused.value = true
+    this.inventoryButton.isPaused.value = true
 
     // Start the next state as soon as the fade-out is done
     this.game.camera.onFadeComplete.addOnce(() => {
@@ -102,7 +105,6 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     // Fade out
     this.camera.resetFX()
     this.camera.fade(0x000000, 1000)
-    this.tweens.create(Inventory.instance).to({ alpha: 0 }, 1000).start()
 
     // Transition audio tracks as needed
     const targetScene = this.game.state.states[nextScene] as Scene
@@ -138,8 +140,25 @@ export default abstract class Scene extends Phaser.State implements Pausable {
       })
     })
 
-    // Make sure nothing can obstruct the settings button
+    this.inventoryButton = new Button(this.game, 0, 0, Atlases.wrench.key)
+    this.inventoryButton.x = this.game.width - 2 - this.inventoryButton.width / 2
+    this.inventoryButton.y = this.game.height - 2 - this.inventoryButton.height / 2
+    this.inventoryButton.interactionEnabled = false
+    this.add.existing(this.inventoryButton)
+
+    this.inventoryButton.events.onInputDown.add(() => {
+      this.isPaused.value = true
+      this.clickedAnywhere(true).then(() => {
+        Inventory.instance.hide()
+        this.isPaused.value = false
+      })
+      Inventory.instance.show()
+    })
+
+    // Make sure nothing can obstruct the settings and inventory buttons
     this.settingsButton.bringToTop()
+    this.inventoryButton.bringToTop()
+
     this.createGameObjects()
     this.lockInput()
 
@@ -155,12 +174,14 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     this.camera.flash(0x000000, 1000)
 
     this.settingsButton.isPaused.value = true
+    this.inventoryButton.isPaused.value = true
     this.camera.onFlashComplete.asPromise().then(() => {
       this.settingsButton.isPaused.value = false
+      this.inventoryButton.isPaused.value = false
     }).then(() => {
       this.settingsButton.interactionEnabled = true
+      this.inventoryButton.interactionEnabled = true
     })
-    this.tweens.create(Inventory.instance).to({ alpha: 1 }, 1000).start()
 
     this.onCreate.dispatch()
   }

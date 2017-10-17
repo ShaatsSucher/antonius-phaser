@@ -272,7 +272,7 @@ class CatFeast extends SceneStateTransition<BardScene> {
     await scene.characters.antonius.speech.say('Komm, hol dir einen leckeren Fisch!', null, 'lsssssssl')
     await scene.characters.cat.speech.say('...', 1, 'silent')
     await scene.wait(0.5)
-    Inventory.instance.item = ''
+    Inventory.instance.takeItem(Images.filet.key)
     await scene.wait(0.5)
     await scene.characters.cat.speech.say('... Angemessen.', 1, 'silent', Audio.catCatAccepts.key)
     await scene.characters.antonius.speech.say('...', null, '')
@@ -450,12 +450,14 @@ class CutFish extends SceneStateTransition<BardScene> {
     await scene.characters.antonius.speech.say('Ich hätte hier einen Fisch,\nden du vielleicht zerschneiden könntest.', null, 'ssssss')
     await scene.characters.meckie.speech.say('Ein Wasservieh, frisch aus der See,\nverwandle ich in Lachsfilet!', null, 'ilisi')
 
+    Inventory.instance.takeItem(Images.fish.key)
+
     scene.characters.meckie.setActiveState('swinging')
     await scene.wait(1)
 
     await scene.characters.antonius.speech.say('Toll! Willst du denn damit etwas kochen, oder…?', null, 'ssssl')
 
-    Inventory.instance.item = Images.filet.key
+    Inventory.instance.addItem(Images.filet.key, 2)
 
     await scene.characters.meckie.speech.say('Was ich tun wollt’ hab ich getan,\nich bin ja eigentlich vegan.', null, 'ssslsslsslsl')
     await scene.characters.antonius.speech.say('Praktisch!', null, 's')

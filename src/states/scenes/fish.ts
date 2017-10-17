@@ -191,7 +191,7 @@ class CollectFish extends SceneStateTransition<FishScene> {
     const scene = this.scene
     await scene.resetScene()
 
-    Inventory.instance.item = Images.fish.key
+    Inventory.instance.addItem(Images.fish.key)
     await scene.game.state.states.bard.stateManagers.meckie.setActiveState(AntoniusBroughtFish)
 
     return FishGone
