@@ -22,7 +22,8 @@ export default class TreeScene extends Scene {
 
   public interactiveObjects = {
     toBardArrow: null,
-    toConcertArrow: null
+    toConcertArrow: null,
+    toCanopyArrow: null
   }
 
   stateManagers = {
@@ -58,6 +59,15 @@ export default class TreeScene extends Scene {
     toConcertArrow.events.onInputDown.addOnce(() => {
       toBardArrow.interactionEnabled = false
       this.fadeTo('concert')
+    })
+
+    const toCanopyArrow = this.interactiveObjects.toCanopyArrow = new Arrow(this.game, 190, 20)
+    toCanopyArrow.rotation = - Math.PI / 2
+    toCanopyArrow.interactionEnabled = true
+    this.game.add.existing(toCanopyArrow)
+    toCanopyArrow.events.onInputDown.addOnce(() => {
+      toBardArrow.interactionEnabled = false
+      this.fadeTo('canopy')
     })
 
     const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 100, 100)
