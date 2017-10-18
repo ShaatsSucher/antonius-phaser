@@ -21,7 +21,8 @@ export default class KitchenScene extends Scene {
 
   public interactiveObjects = {
     toFishArrow: null,
-    toBardArrow: null
+    toBardArrow: null,
+    toConcertArrow: null
   }
 
   stateManagers = {
@@ -58,6 +59,14 @@ export default class KitchenScene extends Scene {
     toBardArrow.events.onInputDown.addOnce(() => {
       toBardArrow.interactionEnabled = false
       this.fadeTo('bard')
+    })
+
+    const toConcertArrow = this.interactiveObjects.toConcertArrow = new Arrow(this.game, 364, 108)
+    toConcertArrow.interactionEnabled = true
+    this.game.add.existing(toConcertArrow)
+    toConcertArrow.events.onInputDown.addOnce(() => {
+      toBardArrow.interactionEnabled = false
+      this.fadeTo('concert')
     })
 
     const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 270, 120)

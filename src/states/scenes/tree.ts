@@ -21,7 +21,8 @@ export default class TreeScene extends Scene {
   }
 
   public interactiveObjects = {
-    toBardArrow: null
+    toBardArrow: null,
+    toConcertArrow: null
   }
 
   stateManagers = {
@@ -48,6 +49,15 @@ export default class TreeScene extends Scene {
     toBardArrow.events.onInputDown.addOnce(() => {
       toBardArrow.interactionEnabled = false
       this.fadeTo('bard')
+    })
+
+    const toConcertArrow = this.interactiveObjects.toConcertArrow = new Arrow(this.game, 190, 200)
+    toConcertArrow.rotation = Math.PI / 2
+    toConcertArrow.interactionEnabled = true
+    this.game.add.existing(toConcertArrow)
+    toConcertArrow.events.onInputDown.addOnce(() => {
+      toBardArrow.interactionEnabled = false
+      this.fadeTo('concert')
     })
 
     const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 100, 100)
