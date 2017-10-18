@@ -4,6 +4,7 @@ import { SceneStateManager, SceneState, SceneStateTransition } from '../../utils
 import { Images, Audio } from '../../assets'
 
 import AntoniusCharacter from '../../characters/antonius'
+import OwlCharacter from '../../characters/owl'
 
 import Arrow from '../../gameObjects/arrow'
 
@@ -11,12 +12,13 @@ import Inventory from '../../overlays/inventory'
 
 export default class CanopyScene extends Scene {
   public characters = {
-    antonius: null
+    antonius: null,
+    owl: null
   }
 
   public interactiveObjects = {
     toTreeArrow: null,
-    // toForeheadArrow: null
+    toForeheadArrow: null
   }
 
   stateManagers = {
@@ -45,9 +47,22 @@ export default class CanopyScene extends Scene {
       this.fadeTo('tree')
     })
 
+    const toForeheadArrow = this.interactiveObjects.toForeheadArrow = new Arrow(this.game, 20, 108)
+    toForeheadArrow.rotation = Math.PI
+    toForeheadArrow.interactionEnabled = true
+    this.game.add.existing(toForeheadArrow)
+    toForeheadArrow.events.onInputDown.addOnce(() => {
+      toForeheadArrow.interactionEnabled = false
+      this.fadeTo('forehead')
+    })
+
     const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 100, 100)
     antonius.scale = new Phaser.Point(3, 3)
     this.game.add.existing(antonius)
+
+    const owl = this.characters.owl = new OwlCharacter(this.game, 150, 100)
+    owl.scale = new Phaser.Point(3, 3)
+    this.game.add.existing(owl)
   }
 
 }

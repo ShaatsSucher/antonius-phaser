@@ -65,7 +65,7 @@ export default class KitchenScene extends Scene {
     toConcertArrow.interactionEnabled = true
     this.game.add.existing(toConcertArrow)
     toConcertArrow.events.onInputDown.addOnce(() => {
-      toBardArrow.interactionEnabled = false
+      toConcertArrow.interactionEnabled = false
       this.fadeTo('concert')
     })
 
