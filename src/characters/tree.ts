@@ -6,7 +6,7 @@ import Scene from '../states/scenes/scene'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class TreeCharacter extends Character {
-  public readonly speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.random(
+  public readonly speech: SpeechHelper = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.random(
     ArrayUtils.range(1, 14).map(i =>
       // TODO: replace with correct sounds
       Assets.Audio[`goose${StringUtils.intToString(i, 3)}`].key
