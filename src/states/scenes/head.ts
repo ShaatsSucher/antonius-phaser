@@ -25,7 +25,8 @@ export default class HeadScene extends Scene {
 
   public interactiveObjects = {
     toBardArrow: null,
-    toFishArrow: null
+    toFishArrow: null,
+    toSeaArrow: null
   }
 
   stateManagers: { [name: string]: SceneStateManager<HeadScene> } = {
@@ -68,6 +69,14 @@ export default class HeadScene extends Scene {
       arrow2.interactionEnabled = false
       this.fadeTo('fish')
     })
+    const arrow3 = this.interactiveObjects.toSeaArrow = new Arrow(this.game, 20, 95)
+    arrow3.rotation = Math.PI
+    arrow3.interactionEnabled = true
+    this.game.add.existing(arrow3)
+    arrow3.events.onInputUp.addOnce(() => {
+      arrow3.interactionEnabled = false
+      this.fadeTo('sea')
+    })
 
     // Add hellmouth
     const hellmouth = this.characters.hellmouth = new HellmouthCharacter(this, 135, 40)
@@ -82,6 +91,7 @@ export default class HeadScene extends Scene {
   async resetScene(showArrows = false) {
     this.interactiveObjects.toBardArrow.visible = showArrows
     this.interactiveObjects.toFishArrow.visible = showArrows
+    this.interactiveObjects.toSeaArrow.visible = showArrows
 
     this.characters.hellmouth.interactionEnabled = false
     this.characters.antonius.interactionEnabled = false
