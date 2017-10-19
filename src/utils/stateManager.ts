@@ -86,7 +86,7 @@ export class TransitionCondition {
 }
 
 export class ConditionalStateTransition<T extends Scene> {
-  constructor(private readonly targetState: Extending<SceneState<T>>,
+  constructor(private readonly targetState: Extending<SceneState<T>>|Extending<SceneStateTransition<T>>,
               private readonly transitionCondition: TransitionCondition) { }
 
   get satisfied(): Phaser.Signal {
@@ -97,7 +97,7 @@ export class ConditionalStateTransition<T extends Scene> {
     return this.transitionCondition.isSatisfied
   }
 
-  get target(): Extending<SceneState<T>> {
+  get target(): Extending<SceneState<T>>|Extending<SceneStateTransition<T>> {
     return this.targetState
   }
 }
@@ -139,6 +139,7 @@ export class SceneStateManager<T extends Scene> {
   public registerConditionalTransitions(...transitions: ConditionalStateTransition<T>[]) {
     transitions.forEach(condition => {
       const validTarget = this.states.reduce((acc, state) => acc || (state.type === condition.target), false)
+        || this.transitions.reduce((acc, transition) => acc || (transition.type === condition.target), false)
       if (!validTarget) {
         return console.error('Invalid conditional target: ', condition.target)
       }
@@ -146,7 +147,7 @@ export class SceneStateManager<T extends Scene> {
       condition.satisfied
         .filter(v => v)
         .add(() => {
-          this.setActiveState(condition.target)
+          this.setStateOrTransition(condition.target)
         })
     })
   }
