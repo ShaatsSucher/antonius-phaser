@@ -151,6 +151,28 @@ export class SceneStateManager<T extends Scene> {
     })
   }
 
+  private async resetScene() {
+    console.log('resetting scene')
+    const allObjects = this.scene.allInteractiveObjects.concat(this.scene.allCharacters)
+
+    allObjects.forEach(obj => obj.visible = true)
+
+    // reset all characters in the scene to idle/non-interactive
+    await Promise.all(this.scene.allCharacters.map(char => char.resetState()))
+
+    // re-enter all active states in the scene except the current sm's one
+    await Promise.all(Object.keys(this.scene.stateManagers)
+      .map(key => this.scene.stateManagers[key])
+      .filter(sm => sm !== this)
+      .map(sm => sm.reenter(false)))
+
+    // disable all interactive objects
+    console.log('disabling all objects')
+    allObjects
+      .map(v => { console.log('disabling', v); return v})
+      .forEach(obj => obj.interactionEnabled = false)
+  }
+
   public async trigger(Transition: Extending<SceneStateTransition<T>>): Promise<void> {
     const transition = this.transitions.reduce((acc, trans) => {
       if (acc) return acc
@@ -159,7 +181,11 @@ export class SceneStateManager<T extends Scene> {
     }, null)
     if (!transition) throw `Invalid transition: ${Transition.toString()}`
 
+    await this.resetScene()
+
+    console.log('entering transition', transition)
     const NextStateOrTransition = await transition.enter(this.scene.isVisible)
+    console.log('setting next state or transition')
     await this.setStateOrTransition(NextStateOrTransition)
   }
 
@@ -230,15 +256,23 @@ export class SceneStateManager<T extends Scene> {
     await this.activeState.enter()
 
     if (this.scene.isVisible) {
+      console.log('showing state', this.activeState, new Error().stack)
       await this.activeState.show()
     }
 
     if (reenterAll) {
+      this.scene.allInteractiveObjects.forEach(obj => {
+        try {
+          obj.interactionEnabled = true
+        } catch (e) {
+          console.warn(e)
+        }
+      })
       await Promise.all(
         Object.keys(this.scene.stateManagers)
         .map(key => this.scene.stateManagers[key])
         .filter(sm => sm !== this)
-        .map(async sm => await sm.reenter(false))
+        .map(sm => sm.reenter(false))
       )
     }
   }

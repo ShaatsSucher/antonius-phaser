@@ -88,7 +88,7 @@ export default class KitchenScene extends Scene {
   }
 }
 
-class Initial extends SceneState<KitchenScene> {
+export class Initial extends SceneState<KitchenScene> {
   public async show() {
     const scene = this.scene
 

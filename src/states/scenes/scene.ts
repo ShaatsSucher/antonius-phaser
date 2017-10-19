@@ -30,7 +30,6 @@ export default abstract class Scene extends Phaser.State implements Pausable {
   public get allInteractiveObjects(): GameObject[] {
     return Object.keys(this.interactiveObjects)
       .map(key => this.interactiveObjects[key])
-      .concat(this.allCharacters)
   }
   private lastInteractiveObjects: GameObject[] = []
 
@@ -113,12 +112,12 @@ export default abstract class Scene extends Phaser.State implements Pausable {
   protected abstract createGameObjects(): void
 
   public lockInput() {
-    this.allInteractiveObjects
+    this.allInteractiveObjects.concat(this.allCharacters)
       .forEach(object => object.isPaused.value = true)
   }
 
   public releaseInput() {
-    this.allInteractiveObjects
+    this.allInteractiveObjects.concat(this.allCharacters)
       .forEach(object => object.isPaused.value = false)
   }
 

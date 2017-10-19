@@ -94,6 +94,7 @@ export default class BardScene extends Scene {
     goose.scale = new Phaser.Point(3, 3)
     goose.anchor.setTo(0.5, 0)
     goose.setActiveState('idle')
+    goose.inputEnabled = false
     this.add.existing(goose)
 
     const bard = this.characters.bard = new BardCharacter(this, 144, 10)
@@ -145,43 +146,11 @@ export default class BardScene extends Scene {
       this.fadeTo('tree')
     })
   }
-
-  async resetScene(showArrows = false) {
-    this.interactiveObjects.toHeadArrow.visible = showArrows
-
-    this.characters.antonius.interactionEnabled = false
-
-    await this.characters.antonius.setActiveState('idle')
-  }
-
-  async resetBardRelated() {
-    this.characters.goose.interactionEnabled = false
-    this.characters.bard.interactionEnabled = false
-    this.characters.cat.interactionEnabled = false
-
-    await this.characters.goose.setActiveState('idle')
-    await this.characters.bard.setActiveState('idle')
-    await this.characters.cat.setActiveState('idle')
-  }
-
-  async resetMeckieRelated() {
-    this.characters.meckie.interactionEnabled = false
-
-    await this.characters.meckie.setActiveState('idle')
-  }
-
-  async resetAll(showArrows = false) {
-    await this.resetScene(showArrows)
-    await this.resetBardRelated()
-    await this.resetMeckieRelated()
-  }
 }
 
 export class InitialBard extends SceneState<BardScene> {
   public async show() {
     const scene = this.scene
-    await scene.resetScene(true)
-    await scene.resetBardRelated()
 
     this.scene.setMusicClips([])
 
@@ -196,7 +165,6 @@ export class InitialBard extends SceneState<BardScene> {
 class BardConversation extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
-    await scene.resetAll()
 
     scene.characters.bard.setActiveState('singing')
     scene.characters.bard.interactionEnabled = true
@@ -226,8 +194,6 @@ class BardConversation extends SceneStateTransition<BardScene> {
 export class CatInTheWay extends SceneState<BardScene> {
   public async show() {
     const scene = this.scene
-    await scene.resetScene(true)
-    await scene.resetBardRelated()
 
     this.scene.setMusicClips(Audio.musicBard.key)
 
@@ -246,7 +212,6 @@ export class CatInTheWay extends SceneState<BardScene> {
 class AnnoyedCat extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
-    await scene.resetAll()
     await scene.characters.cat.speech.say('[genervtes Miauen]', 4.9)
     await scene.characters.antonius.speech.say('Das wird wohl schwieriger als gedacht...', null, 'sssssl')
 
@@ -257,7 +222,6 @@ class AnnoyedCat extends SceneStateTransition<BardScene> {
 class SadBard extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
-    await scene.resetAll()
     await scene.characters.bard.speech.say('*seufz*', 2, 'practice')
     await scene.characters.goose.speech.say(Phaser.ArrayUtils.getRandomItem([
       'Oh Mann...',
@@ -272,8 +236,6 @@ class SadBard extends SceneStateTransition<BardScene> {
 export class FiletInThePocket extends SceneState<BardScene> {
   public async show() {
     const scene = this.scene
-    await scene.resetScene(true)
-    await scene.resetBardRelated()
 
     scene.characters.cat.interactionEnabled = true
     this.clearListeners()
@@ -286,7 +248,6 @@ export class FiletInThePocket extends SceneState<BardScene> {
 class CatFeast extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
-    await scene.resetAll()
 
     await scene.characters.antonius.speech.say('Hier, Miez!\nIch hab einen Fisch für dich.', null, 'llsssslsl')
     await scene.characters.cat.speech.say('...', 1, 'silent')
@@ -316,8 +277,6 @@ class CatFeast extends SceneStateTransition<BardScene> {
 export class CatGone extends SceneState<BardScene> {
   public async show() {
     const scene = this.scene
-    await scene.resetScene(true)
-    await scene.resetBardRelated()
 
     scene.characters.cat.visible = false
     scene.characters.bard.interactionEnabled = true
@@ -330,7 +289,6 @@ export class CatGone extends SceneState<BardScene> {
 class HelloThere extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
-    await scene.resetAll()
 
     scene.characters.cat.visible = false
 
@@ -379,8 +337,6 @@ class HelloThere extends SceneStateTransition<BardScene> {
 export class BardGone extends SceneState<BardScene> {
   public async show() {
     const scene = this.scene
-    await scene.resetScene()
-    await scene.resetBardRelated()
 
     scene.characters.cat.visible = false
     scene.characters.goose.visible = false
@@ -393,8 +349,6 @@ export class BardGone extends SceneState<BardScene> {
 export class InitialMeckie extends SceneState<BardScene> {
   public async show() {
     const scene = this.scene
-    await scene.resetScene(true)
-    await scene.resetMeckieRelated()
 
     scene.characters.meckie.interactionEnabled = true
     this.listeners.push(scene.characters.meckie.events.onInputUp.addOnce(
@@ -406,7 +360,6 @@ export class InitialMeckie extends SceneState<BardScene> {
 class MeckieIntroduction extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
-    await scene.resetAll()
 
     await scene.characters.meckie.speech.say('Schnibbel schnabbel schnapp!\nIch schneid dir die Kapuze ab!', null, 'sssslsll')
     await scene.characters.antonius.speech.say('Immer mit der Ruhe!\nWas hast du denn mit dem Messer vor?', null, 'sslssl')
@@ -423,7 +376,6 @@ class MeckieIntroduction extends SceneStateTransition<BardScene> {
 class MeckieRequest extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
-    await scene.resetAll()
 
     await scene.characters.meckie.speech.say('Willst du nicht enden als Eingeweide,\nbring etwas, das ich zerschneide!', null, 'sslslsllslh')
 
@@ -434,8 +386,6 @@ class MeckieRequest extends SceneStateTransition<BardScene> {
 export class WaitingForFish extends SceneState<BardScene> {
   public async show() {
     const scene = this.scene
-    await scene.resetScene(true)
-    await scene.resetMeckieRelated()
 
     scene.characters.meckie.interactionEnabled = true
     this.listeners.push(scene.characters.meckie.events.onInputDown.addOnce(
@@ -447,8 +397,6 @@ export class WaitingForFish extends SceneState<BardScene> {
 export class AntoniusBroughtFish extends SceneState<BardScene> {
   public async show() {
     const scene = this.scene
-    await scene.resetScene(true)
-    await scene.resetMeckieRelated()
 
     scene.characters.meckie.interactionEnabled = true
     this.listeners.push(scene.characters.meckie.events.onInputUp.addOnce(
@@ -460,7 +408,6 @@ export class AntoniusBroughtFish extends SceneState<BardScene> {
 class CutFish extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
-    await scene.resetAll()
 
     await scene.characters.antonius.speech.say('Ich hätte hier einen Fisch,\nden du vielleicht zerschneiden könntest.', null, 'ssssss')
     await scene.characters.meckie.speech.say('Ein Wasservieh, frisch aus der See,\nverwandle ich in Lachsfilet!', null, 'ilisi')
@@ -495,8 +442,6 @@ class CutFish extends SceneStateTransition<BardScene> {
 export class FishCut extends SceneState<BardScene> {
   public async show() {
     const scene = this.scene
-    await scene.resetScene(true)
-    await scene.resetMeckieRelated()
     scene.characters.meckie.visible = false
   }
 }
