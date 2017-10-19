@@ -1,10 +1,18 @@
 import Scene from './scene'
-import { SceneStateManager, SceneState, SceneStateTransition } from '../../utils/stateManager'
+import { SceneStateManager
+       , SceneState
+       , SceneStateTransition
+       , ConditionalStateTransition
+       , TransitionCondition
+       } from '../../utils/stateManager'
 
 import { Images, Audio } from '../../assets'
 
 import HellmouthCharacter from '../../characters/hellmouth'
 import AntoniusCharacter from '../../characters/antonius'
+
+import { FishDead } from './fish'
+import { CatInTheWay, BardGone } from './bard'
 
 import Character from '../../characters/character'
 import BardCharacter from '../../characters/bard'
@@ -30,7 +38,7 @@ export default class HeadScene extends Scene {
   }
 
   stateManagers: { [name: string]: SceneStateManager<HeadScene> } = {
-    default: new SceneStateManager(this, [
+    head: new SceneStateManager(this, [
       Introduction,
       Silent,
       FishHintAvailable,
@@ -49,6 +57,23 @@ export default class HeadScene extends Scene {
       Images.backgroundsHead.key,
       Audio.soundscapesScene5.key,
       Audio.musicHeadScreen.key
+    )
+  }
+
+  protected registerConditionalStateTransitions(scenes: { [title: string]: Scene }) {
+    this.stateManagers.head.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        Silent,
+        TransitionCondition.reachedState(scenes.fish.stateManagers.fish, FishDead)
+      ),
+      new ConditionalStateTransition(
+        FishHintAvailable,
+        TransitionCondition.reachedState(scenes.bard.stateManagers.bard, CatInTheWay)
+      ),
+      new ConditionalStateTransition(
+        Suction,
+        TransitionCondition.reachedState(scenes.bard.stateManagers.bard, BardGone)
+      )
     )
   }
 
@@ -101,13 +126,13 @@ export default class HeadScene extends Scene {
   }
 }
 
-class Introduction extends SceneState<HeadScene> {
+export class Introduction extends SceneState<HeadScene> {
   public async show() {
     await this.scene.resetScene()
 
     this.scene.characters.hellmouth.interactionEnabled = true
     this.listeners.push(this.scene.characters.hellmouth.events.onInputDown.addOnce(
-      () => this.scene.defaultStateManager.trigger(IntroductionSpeech)
+      () => this.scene.stateManagers.head.trigger(IntroductionSpeech)
     ))
   }
 }
@@ -142,7 +167,7 @@ export class FishHintAvailable extends SceneState<HeadScene> {
 
     this.scene.characters.hellmouth.interactionEnabled = true
     this.listeners.push(this.scene.characters.hellmouth.events.onInputUp.addOnce(
-      () => this.scene.defaultStateManager.trigger(FishHintSpeech)
+      () => this.scene.stateManagers.head.trigger(FishHintSpeech)
     ))
   }
 }

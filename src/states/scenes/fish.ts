@@ -1,5 +1,10 @@
 import Scene from './scene'
-import { SceneStateManager, SceneState, SceneStateTransition } from '../../utils/stateManager'
+import { SceneStateManager
+       , SceneState
+       , SceneStateTransition
+       , ConditionalStateTransition
+       , TransitionCondition
+       } from '../../utils/stateManager'
 import { AntoniusBroughtFish } from './bard'
 import { Silent } from './head'
 
@@ -9,6 +14,8 @@ import AntoniusCharacter from '../../characters/antonius'
 import FishCharacter from '../../characters/fish'
 import AlphaPigCharacter from '../../characters/alphapig'
 import NailGooseCharacter from '../../characters/nailgoose'
+
+import { WaitingForFish, CatInTheWay } from './bard'
 
 import Arrow from '../../gameObjects/arrow'
 
@@ -29,8 +36,8 @@ export default class FishScene extends Scene {
   }
 
   stateManagers = {
-    default: new SceneStateManager<FishScene>(this, [
-      Initial,
+    fish: new SceneStateManager<FishScene>(this, [
+      InitialFish,
       FishAlive,
       FishDying,
       FishDead,
@@ -40,6 +47,11 @@ export default class FishScene extends Scene {
       ImFine,
       Suffocation,
       CollectFish
+    ]),
+    alphapig: new SceneStateManager<FishScene>(this, [
+      InitialAlphaPig
+    ], [
+      NotWithoutMyRudders
     ])
   }
 
@@ -49,6 +61,17 @@ export default class FishScene extends Scene {
       Images.backgroundsFish.key,
       Audio.soundscapesScene9.key,
       Audio.musicHeadScreen.key
+    )
+  }
+
+  protected registerConditionalStateTransitions(scenes: { [title: string]: Scene }) {
+    this.stateManagers.fish.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        FishDying,
+        TransitionCondition.isState(this.stateManagers.fish, FishAlive)
+        .and(TransitionCondition.reachedState(scenes.bard.stateManagers.meckie, WaitingForFish))
+        .and(TransitionCondition.reachedState(scenes.bard.stateManagers.bard, CatInTheWay))
+      )
     )
   }
 
@@ -101,7 +124,11 @@ export default class FishScene extends Scene {
   }
 }
 
-class Initial extends SceneState<FishScene> {
+// ---------------------------------------------------------------------------
+// Fish States
+// ---------------------------------------------------------------------------
+
+export class InitialFish extends SceneState<FishScene> {
   public async show() {
     const scene = this.scene
     await scene.resetScene(true)
@@ -186,13 +213,12 @@ class Suffocation extends SceneStateTransition<FishScene> {
     await soundDone
 
     await scene.characters.antonius.speech.say('Hmm… alles Teil von Gottes Plan. Ganz bestimmt.', null, 'sssssl')
-    await scene.game.state.states.head.defaultStateManager.setActiveState(Silent)
 
     return FishDead
   }
 }
 
-class FishDead extends SceneState<FishScene> {
+export class FishDead extends SceneState<FishScene> {
   public async show() {
     const scene = this.scene
     await scene.resetScene(true)
@@ -213,17 +239,44 @@ class CollectFish extends SceneStateTransition<FishScene> {
     await scene.resetScene()
 
     Inventory.instance.addItem(Images.fish.key)
-    await scene.game.state.states.bard.stateManagers.meckie.setActiveState(AntoniusBroughtFish)
 
     return FishGone
   }
 }
 
-class FishGone extends SceneState<FishScene> {
+export class FishGone extends SceneState<FishScene> {
   public async show() {
     const scene = this.scene
     await scene.resetScene(true)
 
     scene.characters.fish.visible = false
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Alpha pig States
+// ---------------------------------------------------------------------------
+
+export class InitialAlphaPig extends SceneState<FishScene> {
+  public async show() {
+    const scene = this.scene
+    await scene.resetScene(true)
+
+    scene.characters.alphapig.interactionEnabled = true
+
+    this.listeners.push(scene.characters.alphapig.events.onInputDown.addOnce(
+      () => this.stateManager.trigger(NotWithoutMyRudders)
+    ))
+  }
+}
+
+class NotWithoutMyRudders extends SceneStateTransition<FishScene> {
+  public async enter() {
+    const scene = this.scene
+    await scene.resetScene()
+
+    await scene.characters.alphapig.speech.say('Ich gehe hier nicht weg. Nicht ohne meine Ruder!')
+
+    return InitialAlphaPig
   }
 }

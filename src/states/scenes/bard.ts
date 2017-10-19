@@ -1,5 +1,10 @@
 import Scene from './scene'
-import { SceneStateManager, SceneState, SceneStateTransition } from '../../utils/stateManager'
+import { SceneStateManager
+       , SceneState
+       , SceneStateTransition
+       , ConditionalStateTransition
+       , TransitionCondition
+       } from '../../utils/stateManager'
 
 import { FishHintAvailable, Suction } from './head'
 import { FishAlive, FishDying } from './fish'
@@ -11,6 +16,8 @@ import BardCharacter from '../../characters/bard'
 import GooseCharacter from '../../characters/goose'
 import CatCharacter from '../../characters/cat'
 import MeckieCharacter from '../../characters/meckie'
+
+import { FishGone } from './fish'
 
 import Arrow from '../../gameObjects/arrow'
 
@@ -51,8 +58,8 @@ export default class BardScene extends Scene {
     ]),
     meckie: new SceneStateManager<BardScene>(this, [
       InitialMeckie,
-      AntoniusBroughtFish,
       WaitingForFish,
+      AntoniusBroughtFish,
       FishCut
     ], [
       MeckieIntroduction,
@@ -63,26 +70,23 @@ export default class BardScene extends Scene {
 
   constructor(game: Phaser.Game) {
     super(game, Images.backgroundsBard.key, Audio.soundscapesScene6.key, [])
+  }
 
-    function exceptFirst(closure: () => any) {
-      let first = true
-      return () => {
-        if (first) {
-          first = false
-          return
-        }
-        closure()
-      }
-    }
+  protected registerConditionalStateTransitions(scenes: { [title: string]: Scene }) {
+    this.stateManagers.meckie.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        AntoniusBroughtFish,
+        TransitionCondition.isState(this.stateManagers.meckie, WaitingForFish)
+        .and(TransitionCondition.reachedState(scenes.fish.stateManagers.fish, FishGone))
+      )
+    )
 
-    // Make sure the character of both statemachines are always displayed
-    // correctly.
-    this.stateManagers.bard.onActiveStateChanged.add(exceptFirst(() =>
-      this.stateManagers.meckie.reenter()
-    ))
-    this.stateManagers.meckie.onActiveStateChanged.add(exceptFirst(() =>
-      this.stateManagers.bard.reenter()
-    ))
+    this.stateManagers.bard.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        FiletInThePocket,
+        TransitionCondition.reachedState(this.stateManagers.meckie, FishCut)
+      )
+    )
   }
 
   protected createGameObjects() {
@@ -173,7 +177,7 @@ export default class BardScene extends Scene {
   }
 }
 
-class InitialBard extends SceneState<BardScene> {
+export class InitialBard extends SceneState<BardScene> {
   public async show() {
     const scene = this.scene
     await scene.resetScene(true)
@@ -215,13 +219,11 @@ class BardConversation extends SceneStateTransition<BardScene> {
     await scene.characters.bard.speech.say('Das geht nicht. Da ist etwas hinter mir!', 6)
     await scene.characters.antonius.speech.say('Ich sehe das Problem.\nVielleicht kann ich helfen.', null, 'ssssss')
 
-    await scene.game.state.states.head.defaultStateManager.setActiveState(FishHintAvailable)
-
     return CatInTheWay
   }
 }
 
-class CatInTheWay extends SceneState<BardScene> {
+export class CatInTheWay extends SceneState<BardScene> {
   public async show() {
     const scene = this.scene
     await scene.resetScene(true)
@@ -267,7 +269,7 @@ class SadBard extends SceneStateTransition<BardScene> {
   }
 }
 
-class FiletInThePocket extends SceneState<BardScene> {
+export class FiletInThePocket extends SceneState<BardScene> {
   public async show() {
     const scene = this.scene
     await scene.resetScene(true)
@@ -311,7 +313,7 @@ class CatFeast extends SceneStateTransition<BardScene> {
   }
 }
 
-class CatGone extends SceneState<BardScene> {
+export class CatGone extends SceneState<BardScene> {
   public async show() {
     const scene = this.scene
     await scene.resetScene(true)
@@ -374,7 +376,7 @@ class HelloThere extends SceneStateTransition<BardScene> {
   }
 }
 
-class BardGone extends SceneState<BardScene> {
+export class BardGone extends SceneState<BardScene> {
   public async show() {
     const scene = this.scene
     await scene.resetScene()
@@ -383,14 +385,12 @@ class BardGone extends SceneState<BardScene> {
     scene.characters.cat.visible = false
     scene.characters.goose.visible = false
     scene.characters.bard.visible = false
-
-    await scene.game.state.states.head.defaultStateManager.setActiveState(Suction)
   }
 }
 
 
 
-class InitialMeckie extends SceneState<BardScene> {
+export class InitialMeckie extends SceneState<BardScene> {
   public async show() {
     const scene = this.scene
     await scene.resetScene(true)
@@ -427,15 +427,11 @@ class MeckieRequest extends SceneStateTransition<BardScene> {
 
     await scene.characters.meckie.speech.say('Willst du nicht enden als Eingeweide,\nbring etwas, das ich zerschneide!', null, 'sslslsllslh')
 
-    if (scene.game.state.states.fish.defaultStateManager.getActiveState() === FishAlive) {
-      await scene.game.state.states.fish.defaultStateManager.setActiveState(FishDying)
-    }
-
     return WaitingForFish
   }
 }
 
-class WaitingForFish extends SceneState<BardScene> {
+export class WaitingForFish extends SceneState<BardScene> {
   public async show() {
     const scene = this.scene
     await scene.resetScene(true)
@@ -490,13 +486,13 @@ class CutFish extends SceneStateTransition<BardScene> {
       x: -Math.abs(scene.characters.meckie.width * scene.characters.meckie.anchor.x)
     }, 3000).start().onComplete.asPromise()
 
-    this.scene.stateManagers.bard.setActiveState(FiletInThePocket)
+    // this.scene.stateManagers.bard.setActiveState(FiletInThePocket)
 
     return FishCut
   }
 }
 
-class FishCut extends SceneState<BardScene> {
+export class FishCut extends SceneState<BardScene> {
   public async show() {
     const scene = this.scene
     await scene.resetScene(true)

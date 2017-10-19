@@ -60,6 +60,11 @@ export default class Preloader extends Phaser.State {
     this.state.add('cave', CaveScene)
     this.state.add('end', EndScene)
 
+    Object.keys(this.state.states)
+      .map(key => this.state.states[key])
+      .filter(scene => scene && scene.registerConditionalStateTransitions)
+      .forEach(scene => scene.registerConditionalStateTransitions(this.state.states))
+
     SettingsOverlay.init(this.game)
     Inventory.init(this.game)
     AudioManager.init(this.game.sound)
