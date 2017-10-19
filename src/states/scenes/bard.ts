@@ -482,6 +482,8 @@ class CuttingVeggies extends SceneStateTransition<BardScene> {
     scene.characters.meckie.setActiveState('swinging')
     await scene.wait(1)
 
+    Inventory.instance.addItem(Images.slicedVeggies.key)
+
     await scene.characters.meckie.speech.say('Danke für den Proviant,\ndas ist wie im Schlaraffenland!', null, 'sslslslsllslssl')
     await scene.characters.meckie.speech.say('Das war jetzt auch mein letzter Reim,\nden Rest zerschnibbel ich daheim.', null, 'slsslsslslssl')
     await scene.characters.antonius.speech.say('Tschüss!', null, 'l')
