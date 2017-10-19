@@ -11,6 +11,7 @@ import ForeheadScene from './scenes/forehead'
 import ConcertScene from './scenes/concert'
 import CanopyScene from './scenes/canopy'
 import SeaScene from './scenes/sea'
+import CaveScene from './scenes/cave'
 import EndScene from './scenes/end'
 
 import SettingsOverlay from '../overlays/settings'
@@ -56,6 +57,7 @@ export default class Preloader extends Phaser.State {
     this.state.add('concert', ConcertScene)
     this.state.add('canopy', CanopyScene)
     this.state.add('sea', SeaScene)
+    this.state.add('cave', CaveScene)
     this.state.add('end', EndScene)
 
     SettingsOverlay.init(this.game)
