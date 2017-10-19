@@ -18,6 +18,7 @@ import CatCharacter from '../../characters/cat'
 import MeckieCharacter from '../../characters/meckie'
 
 import { FishGone } from './fish'
+import { VeggiesPickedUp } from './concert'
 
 import Arrow from '../../gameObjects/arrow'
 
@@ -28,13 +29,13 @@ import Inventory from '../../overlays/inventory'
 import { ArrayUtils, StringUtils } from '../../utils/utils'
 
 export default class BardScene extends Scene {
-  public characters = {
-    antonius: null,
-    goose: null,
-    bard: null,
-    cat: null,
-    meckie: null
-  }
+  public characters: {
+    antonius: AntoniusCharacter,
+    goose: GooseCharacter,
+    bard: BardCharacter,
+    cat: CatCharacter,
+    meckie: MeckieCharacter
+  } = <any>{}
 
   public interactiveObjects = {
     toHeadArrow: null,
@@ -60,11 +61,15 @@ export default class BardScene extends Scene {
       InitialMeckie,
       WaitingForFish,
       AntoniusBroughtFish,
-      FishCut
+      WaitingForVeggies,
+      AntoniusBroughtVeggies,
+      MeckieGone
     ], [
       MeckieIntroduction,
       MeckieRequest,
-      CutFish
+      CutFish,
+      RequestingVeggies,
+      CuttingVeggies
     ])
   }
 
@@ -73,18 +78,23 @@ export default class BardScene extends Scene {
   }
 
   protected registerConditionalStateTransitions(scenes: { [title: string]: Scene }) {
+    this.stateManagers.bard.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        FiletInThePocket,
+        TransitionCondition.reachedState(this.stateManagers.meckie, WaitingForVeggies)
+      )
+    )
+
     this.stateManagers.meckie.registerConditionalTransitions(
       new ConditionalStateTransition(
         AntoniusBroughtFish,
         TransitionCondition.isState(this.stateManagers.meckie, WaitingForFish)
         .and(TransitionCondition.reachedState(scenes.fish.stateManagers.fish, FishGone))
-      )
-    )
-
-    this.stateManagers.bard.registerConditionalTransitions(
+      ),
       new ConditionalStateTransition(
-        FiletInThePocket,
-        TransitionCondition.reachedState(this.stateManagers.meckie, FishCut)
+        AntoniusBroughtVeggies,
+        TransitionCondition.reachedState(this.stateManagers.meckie, WaitingForVeggies)
+        .and(TransitionCondition.reachedState(scenes.concert.stateManagers.veggies, VeggiesPickedUp))
       )
     )
   }
@@ -423,6 +433,56 @@ class CutFish extends SceneStateTransition<BardScene> {
 
     await scene.characters.meckie.speech.say('Was ich tun wollt’ hab ich getan,\nich bin ja eigentlich vegan.', null, 'ssslsslsslsl')
     await scene.characters.antonius.speech.say('Praktisch!', null, 's')
+
+    return WaitingForVeggies
+  }
+}
+
+class WaitingForVeggies extends SceneState<BardScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.characters.meckie.interactionEnabled = true
+    this.listeners.push(scene.characters.meckie.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(RequestingVeggies)
+    ))
+  }
+}
+
+class RequestingVeggies extends SceneStateTransition<BardScene> {
+  public async enter() {
+    const scene = this.scene
+
+    await scene.characters.meckie.speech.say('[placeholder]', null, 'i')
+
+    return WaitingForVeggies
+  }
+}
+
+class AntoniusBroughtVeggies extends SceneState<BardScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.characters.meckie.interactionEnabled = true
+    this.listeners.push(scene.characters.meckie.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(CuttingVeggies)
+    ))
+  }
+}
+
+class CuttingVeggies extends SceneStateTransition<BardScene> {
+  public async enter() {
+    const scene = this.scene
+
+    await scene.characters.meckie.speech.say('Ah, du bringst mir Kraut und Rüben,\nda kann ich noch mehr Schneiden üben!', null, 'isslslssllsi')
+    await scene.characters.antonius.speech.say('Bedien\' dich ruhig an dem Gemüse,\nes ist genug für Alle da!', null, 'sllslssllsssl')
+
+    Inventory.instance.takeItem(Images.veggies.key)
+
+    scene.characters.meckie.setActiveState('swinging')
+    await scene.wait(1)
+
+    await scene.characters.meckie.speech.say('Danke für den Proviant,\ndas ist wie im Schlaraffenland!', null, 'sslslslsllslssl')
     await scene.characters.meckie.speech.say('Das war jetzt auch mein letzter Reim,\nden Rest zerschnibbel ich daheim.', null, 'slsslsslslssl')
     await scene.characters.antonius.speech.say('Tschüss!', null, 'l')
 
@@ -433,13 +493,11 @@ class CutFish extends SceneStateTransition<BardScene> {
       x: -Math.abs(scene.characters.meckie.width * scene.characters.meckie.anchor.x)
     }, 3000).start().onComplete.asPromise()
 
-    // this.scene.stateManagers.bard.setActiveState(FiletInThePocket)
-
-    return FishCut
+    return MeckieGone
   }
 }
 
-export class FishCut extends SceneState<BardScene> {
+export class MeckieGone extends SceneState<BardScene> {
   public async show() {
     const scene = this.scene
     scene.characters.meckie.visible = false
