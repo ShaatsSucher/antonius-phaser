@@ -2,6 +2,7 @@ import * as Assets from '../assets'
 import Character from './character'
 import CharacterState from './characterState'
 import { ArrayUtils, StringUtils } from '../utils/utils'
+import Scene from '../states/scenes/scene'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class WomanCharacter extends Character {
@@ -18,8 +19,8 @@ export default class WomanCharacter extends Character {
     )}
   ))
 
-  constructor(game: Phaser.Game, x: number, y: number) {
-    super(game, x, y, Assets.Spritesheets.lady.key)
+  constructor(scene: Scene, x: number, y: number) {
+    super(scene, x, y, Assets.Spritesheets.lady.key)
 
     this.animations.add('idle', [2, 3, 4], 2, true)
     this.animations.add('talking', [0, 1], 4, true)

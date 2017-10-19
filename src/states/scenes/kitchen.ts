@@ -69,20 +69,20 @@ export default class KitchenScene extends Scene {
       this.fadeTo('concert')
     })
 
-    const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 270, 120)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 270, 120)
     antonius.scale = new Phaser.Point(3, 3)
     antonius.setActiveState('idle')
     this.game.add.existing(antonius)
 
-    const eggwoman = this.characters.eggwoman = new EggWomanCharacter(this.game, 200, 100)
+    const eggwoman = this.characters.eggwoman = new EggWomanCharacter(this, 200, 100)
     eggwoman.scale = new Phaser.Point(3, 3)
     this.game.add.existing(eggwoman)
 
-    const cook1 = this.characters.cook1 = new Cook1Character(this.game, 100, 100)
+    const cook1 = this.characters.cook1 = new Cook1Character(this, 100, 100)
     cook1.scale = new Phaser.Point(2, 2)
     this.game.add.existing(cook1)
 
-    const cook2 = this.characters.cook2 = new Cook2Character(this.game, 130, 100)
+    const cook2 = this.characters.cook2 = new Cook2Character(this, 130, 100)
     cook2.scale = new Phaser.Point(2, 2)
     this.game.add.existing(cook2)
   }

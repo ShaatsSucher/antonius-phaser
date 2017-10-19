@@ -2,6 +2,7 @@ import * as Assets from '../assets'
 import Character from './character'
 import CharacterState from './characterState'
 import { ArrayUtils, StringUtils } from '../utils/utils'
+import Scene from '../states/scenes/scene'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class SwanCharacter extends Character {
@@ -11,8 +12,8 @@ export default class SwanCharacter extends Character {
     )
   ))
 
-  constructor(game: Phaser.Game, x: number, y: number) {
-    super(game, x, y, Assets.Spritesheets.stuckswan.key)
+  constructor(scene: Scene, x: number, y: number) {
+    super(scene, x, y, Assets.Spritesheets.stuckswan.key)
 
     // TODO: correct animations?
     this.animations.add('idle', [0], 0, false)

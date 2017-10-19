@@ -2,6 +2,7 @@ import * as Assets from '../assets'
 import Character from './character'
 import CharacterState from './characterState'
 import { ArrayUtils, StringUtils } from '../utils/utils'
+import Scene from '../states/scenes/scene'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class BucketheadCharacter extends Character {
@@ -14,8 +15,8 @@ export default class BucketheadCharacter extends Character {
     )
   }))
 
-  constructor(game: Phaser.Game, x: number, y: number) {
-    super(game, x, y, Assets.Spritesheets.bucketman.key)
+  constructor(scene: Scene, x: number, y: number) {
+    super(scene, x, y, Assets.Spritesheets.bucketman.key)
 
     this.animations.add('idleBucket', ArrayUtils.range(2, 13), 8, true)
     this.animations.add('idleHat', ArrayUtils.range(16, 27), 8, true)

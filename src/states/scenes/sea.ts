@@ -42,7 +42,7 @@ export default class SeaScene extends Scene {
       this.fadeTo('head')
     })
 
-    const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 300, 100)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 300, 100)
     antonius.scale = new Phaser.Point(3, 3)
     this.game.add.existing(antonius)
 

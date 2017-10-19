@@ -2,6 +2,7 @@ import * as Assets from '../assets'
 import Character from './character'
 import CharacterState from './characterState'
 import { ArrayUtils, StringUtils } from '../utils/utils'
+import Scene from '../states/scenes/scene'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class NailGooseCharacter extends Character {
@@ -11,8 +12,8 @@ export default class NailGooseCharacter extends Character {
     )
   ))
 
-  constructor(game: Phaser.Game, x: number, y: number) {
-    super(game, x, y, Assets.Spritesheets.nailgoose.key)
+  constructor(scene: Scene, x: number, y: number) {
+    super(scene, x, y, Assets.Spritesheets.nailgoose.key)
 
     this.animations.add('idle', [1], 0, false)
     this.animations.add('talking', [0, 1], 8, true)

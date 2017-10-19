@@ -72,20 +72,20 @@ export default class FishScene extends Scene {
     })
 
     // Add antonius
-    const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 280, 110)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 280, 110)
     antonius.scale = new Phaser.Point(3, 3)
     antonius.setActiveState('idle')
     this.game.add.existing(antonius)
 
-    const fish = this.characters.fish = new FishCharacter(this.game, 200, 120)
+    const fish = this.characters.fish = new FishCharacter(this, 200, 120)
     fish.scale = new Phaser.Point(3, 3)
     this.game.add.existing(fish)
 
-    const pig = this.characters.alphapig = new AlphaPigCharacter(this.game, 105, 130)
+    const pig = this.characters.alphapig = new AlphaPigCharacter(this, 105, 130)
     pig.scale = new Phaser.Point(3, 3)
     this.game.add.existing(pig)
 
-    const goose = this.characters.nailgoose = new NailGooseCharacter(this.game, 160, 80)
+    const goose = this.characters.nailgoose = new NailGooseCharacter(this, 160, 80)
     goose.scale = new Phaser.Point(3, 3)
     this.game.add.existing(goose)
   }
@@ -212,7 +212,7 @@ class CollectFish extends SceneStateTransition<FishScene> {
     const scene = this.scene
     await scene.resetScene()
 
-    Inventory.instance.item = Images.fish.key
+    Inventory.instance.addItem(Images.fish.key)
     await scene.game.state.states.bard.stateManagers.meckie.setActiveState(AntoniusBroughtFish)
 
     return FishGone

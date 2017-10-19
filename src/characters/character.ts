@@ -1,3 +1,4 @@
+import Scene from '../states/scenes/scene'
 import CharacterState from './characterState'
 import GameObject from '../gameObjects/gameObject'
 import SpeechHelper from '../utils/speechHelper'
@@ -7,10 +8,10 @@ export default abstract class Character extends GameObject {
   private _activeState: string = null
   public abstract readonly speech: SpeechHelper
 
-  constructor(game: Phaser.Game, x: number, y: number,
+  constructor(public readonly scene: Scene, x: number, y: number,
               key?: string | Phaser.RenderTexture | Phaser.BitmapData | PIXI.Texture,
               frame?: string | number) {
-    super(game, x, y, key, frame)
+    super(scene.game, x, y, key, frame)
 
     this.isPaused.onValueChanged.add(isPaused => {
       this.animations.paused = isPaused

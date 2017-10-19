@@ -2,6 +2,7 @@ import * as Assets from '../assets'
 import Character from './character'
 import CharacterState from './characterState'
 import { ArrayUtils, StringUtils } from '../utils/utils'
+import Scene from '../states/scenes/scene'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class BardCharacter extends Character {
@@ -19,8 +20,8 @@ export default class BardCharacter extends Character {
   }))
   public characterHead: Phaser.Sprite
 
-  constructor(game: Phaser.Game, x: number, y: number) {
-    super(game, x, y, Assets.Spritesheets.bard.key)
+  constructor(scene: Scene, x: number, y: number) {
+    super(scene, x, y, Assets.Spritesheets.bard.key)
 
     this.characterHead = new Phaser.Sprite(this.game, 0, 0, Assets.Spritesheets.bardHead.key)
     this.characterHead.position.setTo(-this.width / 2, 0)

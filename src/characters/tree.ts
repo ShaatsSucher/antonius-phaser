@@ -2,6 +2,7 @@ import * as Assets from '../assets'
 import Character from './character'
 import CharacterState from './characterState'
 import { ArrayUtils, StringUtils } from '../utils/utils'
+import Scene from '../states/scenes/scene'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class TreeCharacter extends Character {
@@ -12,9 +13,9 @@ export default class TreeCharacter extends Character {
     )
   ))
 
-  constructor(game: Phaser.Game, x: number, y: number) {
+  constructor(scene: Scene, x: number, y: number) {
     // TODO: replace with correct spritesheet
-    super(game, x, y, Assets.Spritesheets.treelowerNew.key)
+    super(scene, x, y, Assets.Spritesheets.treelowerNew.key)
 
     this.animations.add('idle', [0, 1], 2, true)
     this.animations.add('opening', ArrayUtils.range(2, 10), 8, false)
@@ -43,7 +44,7 @@ class TalkingState implements CharacterState<TreeCharacter> {
   }
 }
 
-class openingState implements CharacterState<TreeCharacter> {
+class OpeningState implements CharacterState<TreeCharacter> {
   constructor(public character: TreeCharacter) {}
 
   async enter() {

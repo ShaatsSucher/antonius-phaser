@@ -79,11 +79,11 @@ export default class HeadScene extends Scene {
     })
 
     // Add hellmouth
-    const hellmouth = this.characters.hellmouth = new HellmouthCharacter(this.game, 135, 40)
+    const hellmouth = this.characters.hellmouth = new HellmouthCharacter(this, 135, 40)
     this.game.add.existing(hellmouth)
 
     // Add antonius
-    const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 258, 120)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 258, 120)
     antonius.scale = new Phaser.Point(2, 2)
     this.game.add.existing(antonius)
   }
@@ -216,13 +216,13 @@ class Credits extends SceneStateTransition<HeadScene> {
         await scene.characters.hellmouth.setActiveState('close mouth')
       }
 
-      await swallow(new MeckieCharacter(scene.game, 0, 0), 0.3)
-      await swallow(new CatCharacter(scene.game, 0, 0), 0)
-      const bard = new BardCharacter(scene.game, 0, 0)
+      await swallow(new MeckieCharacter(scene, 0, 0), 0.3)
+      await swallow(new CatCharacter(scene, 0, 0), 0)
+      const bard = new BardCharacter(scene, 0, 0)
       bard.anchor.setTo(0, 0)
       bard.scale.x *= -1
       await swallow([
-        new GooseCharacter(scene.game, 0, 0),
+        new GooseCharacter(scene, 0, 0),
         bard
       ], 0.4, 150)
 

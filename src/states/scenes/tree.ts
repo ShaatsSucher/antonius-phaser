@@ -44,19 +44,19 @@ export default class TreeScene extends Scene {
   }
 
   protected createGameObjects() {
-    const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 100, 100)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 100, 100)
     antonius.scale = new Phaser.Point(-3, 3)
     this.game.add.existing(antonius)
 
-    const tree = this.characters.tree = new TreeCharacter(this.game, 150, 0)
+    const tree = this.characters.tree = new TreeCharacter(this, 150, 0)
     tree.scale = new Phaser.Point(2, 2)
     this.game.add.existing(tree)
 
-    const woman = this.characters.woman = new WomanCharacter(this.game, 250, 120)
+    const woman = this.characters.woman = new WomanCharacter(this, 250, 120)
     woman.scale = new Phaser.Point(3, 3)
     this.game.add.existing(woman)
 
-    const goat = this.characters.goat = new GoatCharacter(this.game, 280, 70)
+    const goat = this.characters.goat = new GoatCharacter(this, 280, 70)
     goat.scale = new Phaser.Point(3, 3)
     this.game.add.existing(goat)
 

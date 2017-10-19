@@ -2,6 +2,7 @@ import * as Assets from '../assets'
 import Character from './character'
 import CharacterState from './characterState'
 import { ArrayUtils, StringUtils } from '../utils/utils'
+import Scene from '../states/scenes/scene'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class AlphaPigCharacter extends Character {
@@ -11,8 +12,8 @@ export default class AlphaPigCharacter extends Character {
     )
   ))
 
-  constructor(game: Phaser.Game, x: number, y: number) {
-    super(game, x, y, Assets.Spritesheets.alphapig.key)
+  constructor(scene: Scene, x: number, y: number) {
+    super(scene, x, y, Assets.Spritesheets.alphapig.key)
 
     this.animations.add('idle', [0], 0, false)
     this.animations.add('talking', [0, 1], 8, true)

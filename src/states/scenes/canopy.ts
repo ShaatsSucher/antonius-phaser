@@ -56,11 +56,11 @@ export default class CanopyScene extends Scene {
       this.fadeTo('forehead')
     })
 
-    const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 100, 100)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 100, 100)
     antonius.scale = new Phaser.Point(3, 3)
     this.game.add.existing(antonius)
 
-    const owl = this.characters.owl = new OwlCharacter(this.game, 150, 100)
+    const owl = this.characters.owl = new OwlCharacter(this, 150, 100)
     owl.scale = new Phaser.Point(3, 3)
     this.game.add.existing(owl)
   }

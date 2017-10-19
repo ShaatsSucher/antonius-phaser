@@ -86,31 +86,31 @@ export default class BardScene extends Scene {
   }
 
   protected createGameObjects() {
-    const goose = this.characters.goose = new GooseCharacter(this.game, 144, 10)
+    const goose = this.characters.goose = new GooseCharacter(this, 144, 10)
     goose.scale = new Phaser.Point(3, 3)
     goose.anchor.setTo(0.5, 0)
     goose.setActiveState('idle')
     this.add.existing(goose)
 
-    const bard = this.characters.bard = new BardCharacter(this.game, 144, 10)
+    const bard = this.characters.bard = new BardCharacter(this, 144, 10)
     bard.scale = new Phaser.Point(3, 3)
     bard.anchor.setTo(0.5, 0)
     bard.setActiveState('idle')
     this.add.existing(bard)
 
-    const cat = this.characters.cat = new CatCharacter(this.game, 144, 64)
+    const cat = this.characters.cat = new CatCharacter(this, 144, 64)
     cat.scale = new Phaser.Point(3, 3)
     cat.anchor.setTo(0.5, 0)
     cat.setActiveState('idle')
     this.add.existing(cat)
 
-    const meckie = this.characters.meckie = new MeckieCharacter(this.game, 78, 120)
+    const meckie = this.characters.meckie = new MeckieCharacter(this, 78, 120)
     meckie.scale = new Phaser.Point(3, 3)
     meckie.anchor.setTo(0.5, 0)
     meckie.setActiveState('idle')
     this.add.existing(meckie)
 
-    const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 292, 120)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 292, 120)
     antonius.scale = new Phaser.Point(3, 3)
     antonius.setActiveState('idle')
     this.add.existing(antonius)
@@ -199,27 +199,7 @@ class BardConversation extends SceneStateTransition<BardScene> {
     const bardSong = scene.sound.play(Audio.bardSongShort.key)
     bardSong.onStop.addOnce(() => { scene.characters.bard.setActiveState('idle') })
 
-    const clickedAnywhere = new Promise<void>(resolve => {
-      this.scene.game.input.mouse.capture = true
-      let mouseWasUp = false
-      let mouseWasDown = false
-      let handle: Phaser.SignalBinding
-      handle = this.scene.onUpdate.add(() => {
-        if (!this.scene.game.input.activePointer.leftButton.isDown) {
-          mouseWasUp = true
-        }
-        if (mouseWasUp && this.scene.game.input.activePointer.leftButton.isDown) {
-          mouseWasDown = true
-        }
-        if (mouseWasDown && !this.scene.game.input.activePointer.leftButton.isDown) {
-          this.scene.game.input.mouse.capture = false
-          handle.detach()
-          resolve()
-        }
-      })
-    })
-
-    await clickedAnywhere
+    await scene.clickedAnywhere()
     bardSong.stop()
     scene.characters.bard.setInteractionEnabled(false)
 
@@ -311,7 +291,7 @@ class CatFeast extends SceneStateTransition<BardScene> {
     await scene.characters.antonius.speech.say('Komm, hol dir einen leckeren Fisch!', null, 'lsssssssl')
     await scene.characters.cat.speech.say('...', 1, 'silent')
     await scene.wait(0.5)
-    Inventory.instance.item = ''
+    Inventory.instance.takeItem(Images.filet.key)
     await scene.wait(0.5)
     await scene.characters.cat.speech.say('... Angemessen.', 1, 'silent', Audio.catCatAccepts.key)
     await scene.characters.antonius.speech.say('...', null, '')
@@ -489,12 +469,14 @@ class CutFish extends SceneStateTransition<BardScene> {
     await scene.characters.antonius.speech.say('Ich hätte hier einen Fisch,\nden du vielleicht zerschneiden könntest.', null, 'ssssss')
     await scene.characters.meckie.speech.say('Ein Wasservieh, frisch aus der See,\nverwandle ich in Lachsfilet!', null, 'ilisi')
 
+    Inventory.instance.takeItem(Images.fish.key)
+
     scene.characters.meckie.setActiveState('swinging')
     await scene.wait(1)
 
     await scene.characters.antonius.speech.say('Toll! Willst du denn damit etwas kochen, oder…?', null, 'ssssl')
 
-    Inventory.instance.item = Images.filet.key
+    Inventory.instance.addItem(Images.filet.key, 2)
 
     await scene.characters.meckie.speech.say('Was ich tun wollt’ hab ich getan,\nich bin ja eigentlich vegan.', null, 'ssslsslsslsl')
     await scene.characters.antonius.speech.say('Praktisch!', null, 's')

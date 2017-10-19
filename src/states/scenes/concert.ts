@@ -61,16 +61,16 @@ export default class ConcertScene extends Scene {
       this.fadeTo('tree')
     })
 
-    const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 80, 120)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 80, 120)
     antonius.scale = new Phaser.Point(-3, 3)
     antonius.setActiveState('idle')
     this.game.add.existing(antonius)
 
-    const swan = this.characters.swan = new SwanCharacter(this.game, 270, 120)
+    const swan = this.characters.swan = new SwanCharacter(this, 270, 120)
     swan.scale = new Phaser.Point(3, 3)
     this.game.add.existing(swan)
 
-    const musicians = this.characters.musicians = new MusiciansCharacter(this.game, 130, 10)
+    const musicians = this.characters.musicians = new MusiciansCharacter(this, 130, 10)
     musicians.scale = new Phaser.Point(3, 3)
     this.game.add.existing(musicians)
 

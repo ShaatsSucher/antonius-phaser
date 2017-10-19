@@ -2,6 +2,7 @@ import * as Assets from '../assets'
 import Character from './character'
 import CharacterState from './characterState'
 import { ArrayUtils, StringUtils } from '../utils/utils'
+import Scene from '../states/scenes/scene'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class Cook2Character extends Character {
@@ -11,8 +12,8 @@ export default class Cook2Character extends Character {
     )
   ))
 
-  constructor(game: Phaser.Game, x: number, y: number) {
-    super(game, x, y, Assets.Spritesheets.cook2.key)
+  constructor(scene: Scene, x: number, y: number) {
+    super(scene, x, y, Assets.Spritesheets.cook2.key)
 
     this.animations.add('idle', ArrayUtils.range(1, 14), 8, true)
     this.animations.add('talking', [0, 1], 8, true)

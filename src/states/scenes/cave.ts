@@ -43,7 +43,7 @@ export default class CaveScene extends Scene {
       this.fadeTo('tree')
     })
 
-    const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 100, 100)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 100, 100)
     antonius.scale = new Phaser.Point(-3, 3)
     this.game.add.existing(antonius)
   }
