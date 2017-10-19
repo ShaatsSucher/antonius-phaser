@@ -9,28 +9,37 @@ import MusiciansCharacter from '../../characters/musicians'
 import SnakesCharacter from '../../characters/snakes'
 
 import Arrow from '../../gameObjects/arrow'
+import GameObject from '../../gameObjects/gameObject'
 
 import Inventory from '../../overlays/inventory'
 
 
 export default class ConcertScene extends Scene {
-  public characters = {
-    antonius: null,
-    swan: null,
-    musicians: null
-    // snakes: null
-  }
+  public characters: {
+    antonius: AntoniusCharacter,
+    swan: SwanCharacter,
+    musicians: MusiciansCharacter
+    // snakes: SnakesCharacter
+  } = <any>{}
 
   public interactiveObjects = {
     toKitchenArrow: null,
     toTreeArrow: null
   }
 
+  veggieItem: GameObject
+
   stateManagers = {
     default: new SceneStateManager<ConcertScene>(this, [
       Initial
     ], [
 
+    ]),
+    veggies: new SceneStateManager<ConcertScene>(this, [
+      VeggiesPresent,
+      VeggiesPickedUp
+    ], [
+      VeggiesBeingPickedUp
     ])
   }
 
@@ -66,23 +75,50 @@ export default class ConcertScene extends Scene {
     antonius.setActiveState('idle')
     this.game.add.existing(antonius)
 
-    const swan = this.characters.swan = new SwanCharacter(this, 270, 120)
+    const swan = this.characters.swan = new SwanCharacter(this, 270, 70)
     swan.scale = new Phaser.Point(3, 3)
     this.game.add.existing(swan)
 
-    const musicians = this.characters.musicians = new MusiciansCharacter(this, 130, 10)
+    const musicians = this.characters.musicians = new MusiciansCharacter(this, 110, 30)
     musicians.scale = new Phaser.Point(3, 3)
     this.game.add.existing(musicians)
 
     // const snakes = this.characters.snakes = new SnakesCharacter(this.game, 60, 180)
     // snakes.scale = new Phaser.Point(0.5, 0.2)
     // this.game.add.existing(snakes)
+
+    this.veggieItem = new GameObject(this.game, 255, 135, Images.veggies.key)
+    this.veggieItem.scale.setTo(2)
+    this.game.add.existing(this.veggieItem)
   }
 }
 
 export class Initial extends SceneState<ConcertScene> {
   public async show() {
     const scene = this.scene
+  }
+}
 
+class VeggiesPresent extends SceneState<ConcertScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.veggieItem.interactionEnabled = true
+    this.listeners.push(scene.veggieItem.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(VeggiesBeingPickedUp)
+    ))
+  }
+}
+
+class VeggiesBeingPickedUp extends SceneStateTransition<ConcertScene> {
+  public async enter() {
+    Inventory.instance.addItem(Images.veggies.key)
+    return VeggiesPickedUp
+  }
+}
+
+export class VeggiesPickedUp extends SceneState<ConcertScene> {
+  public async show() {
+    this.scene.veggieItem.visible = false
   }
 }
