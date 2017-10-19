@@ -35,11 +35,6 @@ export default class TreeScene extends Scene {
   }
 
   stateManagers: { [name: string]: SceneStateManager<TreeScene> } = {
-    default: new SceneStateManager<TreeScene>(this, [
-      Initial
-    ], [
-
-    ]),
     tree: new SceneStateManager<TreeScene>(this, [
       TreeWaitingForMeckieGone,
       TreeReadyToTalk,
@@ -151,11 +146,9 @@ export default class TreeScene extends Scene {
   }
 }
 
-export class Initial extends SceneState<TreeScene> {
-  public async show() {
-    const scene = this.scene
-  }
-}
+// ---------------------------------------------------------------------------
+// Tree States
+// ---------------------------------------------------------------------------
 
 class TreeWaitingForMeckieGone extends SceneState<TreeScene> {
   public async show() {
