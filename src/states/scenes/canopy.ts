@@ -32,7 +32,7 @@ export default class CanopyScene extends Scene {
   constructor(game: Phaser.Game) {
     super(
       game,
-      Images.backgroundsBackgroundTree, // TODO: replace with correct backgroundsHead
+      Images.backgroundsBackgroundTree.key, // TODO: replace with correct backgroundsHead
       Audio.soundscapesScene3.key
     )
   }

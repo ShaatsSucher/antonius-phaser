@@ -4,6 +4,8 @@ import { SceneStateManager, SceneState, SceneStateTransition } from '../../utils
 import { Images, Audio } from '../../assets'
 
 import AntoniusCharacter from '../../characters/antonius'
+import PainterCharacter from '../../characters/painter'
+import BucketheadCharacter from '../../characters/buckethead'
 
 import Arrow from '../../gameObjects/arrow'
 
@@ -11,7 +13,9 @@ import Inventory from '../../overlays/inventory'
 
 export default class ForeheadScene extends Scene {
   public characters = {
-    antonius: null
+    antonius: null,
+    painter: null,
+    buckethead: null
   }
 
   public interactiveObjects = {
@@ -46,6 +50,14 @@ export default class ForeheadScene extends Scene {
     const antonius = this.characters.antonius = new AntoniusCharacter(this.game, 100, 100)
     antonius.scale = new Phaser.Point(3, 3)
     this.game.add.existing(antonius)
+
+    const painter = this.characters.painter = new PainterCharacter(this.game, 200, 100)
+    painter.scale = new Phaser.Point(3, 3)
+    this.game.add.existing(painter)
+
+    const bucket = this.characters.buckethead = new BucketheadCharacter(this.game, 250, 100)
+    bucket.scale = new Phaser.Point(0.5, 0.5)
+    this.game.add.existing(bucket)
   }
 
 }
