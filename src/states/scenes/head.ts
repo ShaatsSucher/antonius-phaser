@@ -12,7 +12,7 @@ import HellmouthCharacter from '../../characters/hellmouth'
 import AntoniusCharacter from '../../characters/antonius'
 
 import { FishDead } from './fish'
-import { CatInTheWay, BardGone } from './bard'
+import { CatInTheWay, BardGone, MeckieGone } from './bard'
 
 import Character from '../../characters/character'
 import BardCharacter from '../../characters/bard'
@@ -73,6 +73,7 @@ export default class HeadScene extends Scene {
       new ConditionalStateTransition(
         Suction,
         TransitionCondition.reachedState(scenes.bard.stateManagers.bard, BardGone)
+        .and(TransitionCondition.reachedState(scenes.bard.stateManagers.meckie, MeckieGone))
       )
     )
   }
