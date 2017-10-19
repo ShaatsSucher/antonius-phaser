@@ -196,8 +196,8 @@ class BardConversation extends SceneStateTransition<BardScene> {
 
     scene.characters.bard.setActiveState('singing')
     scene.characters.bard.interactionEnabled = true
-    const bardSong = scene.sound.play(Audio.bardSongShort.key)
-    bardSong.onStop.addOnce(() => { scene.characters.bard.setActiveState('idle') })
+    const bardSong = AudioManager.instance.tracks.speech.addClip(Audio.bardSongShort.key)
+    bardSong.stopped.then(() => { scene.characters.bard.setActiveState('idle') })
 
     await scene.clickedAnywhere()
     bardSong.stop()
