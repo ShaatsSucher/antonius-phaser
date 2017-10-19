@@ -97,7 +97,7 @@ export default class TreeScene extends Scene {
   }
 }
 
-class Initial extends SceneState<TreeScene> {
+export class Initial extends SceneState<TreeScene> {
   public async show() {
     const scene = this.scene
   }

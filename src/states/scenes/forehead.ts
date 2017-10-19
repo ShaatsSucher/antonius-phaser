@@ -62,7 +62,7 @@ export default class ForeheadScene extends Scene {
 
 }
 
-class Initial extends SceneState<ForeheadScene> {
+export class Initial extends SceneState<ForeheadScene> {
   public async show() {
     const scene = this.scene
 

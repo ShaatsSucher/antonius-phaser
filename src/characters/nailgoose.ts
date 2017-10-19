@@ -20,6 +20,11 @@ export default class NailGooseCharacter extends Character {
     this.animations.add('walking', ArrayUtils.range(13, 18), 8, true)
     this.animations.add('smelling', ArrayUtils.range(2, 12).concat([4, 3, 2, 1]), 8, false)
 
+    this.addCharacterState('idle', new IdleState(this))
+    this.addCharacterState('talking', new TalkingState(this))
+    this.addCharacterState('walking', new WalkingState(this))
+    this.addCharacterState('smelling', new SmellingState(this))
+
     this.play('smelling')
   }
 }

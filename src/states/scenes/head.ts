@@ -1,10 +1,18 @@
 import Scene from './scene'
-import { SceneStateManager, SceneState, SceneStateTransition } from '../../utils/stateManager'
+import { SceneStateManager
+       , SceneState
+       , SceneStateTransition
+       , ConditionalStateTransition
+       , TransitionCondition
+       } from '../../utils/stateManager'
 
 import { Images, Audio } from '../../assets'
 
 import HellmouthCharacter from '../../characters/hellmouth'
 import AntoniusCharacter from '../../characters/antonius'
+
+import { FishDead } from './fish'
+import { CatInTheWay, BardGone } from './bard'
 
 import Character from '../../characters/character'
 import BardCharacter from '../../characters/bard'
@@ -30,7 +38,7 @@ export default class HeadScene extends Scene {
   }
 
   stateManagers: { [name: string]: SceneStateManager<HeadScene> } = {
-    default: new SceneStateManager(this, [
+    head: new SceneStateManager(this, [
       Introduction,
       Silent,
       FishHintAvailable,
@@ -49,6 +57,23 @@ export default class HeadScene extends Scene {
       Images.backgroundsHead.key,
       Audio.soundscapesScene5.key,
       Audio.musicHeadScreen.key
+    )
+  }
+
+  protected registerConditionalStateTransitions(scenes: { [title: string]: Scene }) {
+    this.stateManagers.head.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        Silent,
+        TransitionCondition.reachedState(scenes.fish.stateManagers.fish, FishDead)
+      ),
+      new ConditionalStateTransition(
+        FishHintAvailable,
+        TransitionCondition.reachedState(scenes.bard.stateManagers.bard, CatInTheWay)
+      ),
+      new ConditionalStateTransition(
+        Suction,
+        TransitionCondition.reachedState(scenes.bard.stateManagers.bard, BardGone)
+      )
     )
   }
 
@@ -87,27 +112,13 @@ export default class HeadScene extends Scene {
     antonius.scale = new Phaser.Point(2, 2)
     this.game.add.existing(antonius)
   }
-
-  async resetScene(showArrows = false) {
-    this.interactiveObjects.toBardArrow.visible = showArrows
-    this.interactiveObjects.toFishArrow.visible = showArrows
-    this.interactiveObjects.toSeaArrow.visible = showArrows
-
-    this.characters.hellmouth.interactionEnabled = false
-    this.characters.antonius.interactionEnabled = false
-
-    await this.characters.hellmouth.setActiveState('idle')
-    await this.characters.antonius.setActiveState('idle')
-  }
 }
 
-class Introduction extends SceneState<HeadScene> {
+export class Introduction extends SceneState<HeadScene> {
   public async show() {
-    await this.scene.resetScene()
-
     this.scene.characters.hellmouth.interactionEnabled = true
     this.listeners.push(this.scene.characters.hellmouth.events.onInputDown.addOnce(
-      () => this.scene.defaultStateManager.trigger(IntroductionSpeech)
+      () => this.scene.stateManagers.head.trigger(IntroductionSpeech)
     ))
   }
 }
@@ -116,8 +127,6 @@ class IntroductionSpeech extends SceneStateTransition<HeadScene> {
   public async enter(visible: boolean) {
     if (visible) {
       const scene = this.scene
-
-      await scene.resetScene()
 
       await scene.characters.hellmouth.speech.say('Um Gottes Willen...', 3)
       await scene.characters.hellmouth.speech.say('Es toben ganz schön viele\ndieser Dämonen herum!!', 6)
@@ -132,17 +141,14 @@ class IntroductionSpeech extends SceneStateTransition<HeadScene> {
 
 export class Silent extends SceneState<HeadScene> {
   public async show() {
-    await this.scene.resetScene(true)
   }
 }
 
 export class FishHintAvailable extends SceneState<HeadScene> {
   public async show() {
-    await this.scene.resetScene(true)
-
     this.scene.characters.hellmouth.interactionEnabled = true
     this.listeners.push(this.scene.characters.hellmouth.events.onInputUp.addOnce(
-      () => this.scene.defaultStateManager.trigger(FishHintSpeech)
+      () => this.scene.stateManagers.head.trigger(FishHintSpeech)
     ))
   }
 }
@@ -150,8 +156,6 @@ export class FishHintAvailable extends SceneState<HeadScene> {
 class FishHintSpeech extends SceneStateTransition<HeadScene> {
   public async enter(visible: boolean) {
     if (visible) {
-      await this.scene.resetScene()
-
       const scene = this.scene
       await scene.characters.hellmouth.speech.say('Hmmm...\nAus dem Süden kommt ein merkwürdiger Geruch!', 4)
     }
@@ -161,7 +165,6 @@ class FishHintSpeech extends SceneStateTransition<HeadScene> {
 
 export class Suction extends SceneState<HeadScene> {
   public async show() {
-    await this.scene.resetScene()
     this.stateManager.trigger(Credits)
   }
 }
@@ -170,7 +173,6 @@ class Credits extends SceneStateTransition<HeadScene> {
   public async enter(visible: boolean) {
     if (visible) {
       const scene = this.scene
-      await scene.resetScene()
 
       scene.settingsButton.visible = false
       Inventory.instance.visible = false
@@ -181,7 +183,7 @@ class Credits extends SceneStateTransition<HeadScene> {
         let chars = characters instanceof Character ? [characters] : characters
 
         await Promise.all(chars.map(async character => {
-          // Flip  + sclale characters
+          // Flip  + scale characters
           character.scale.x *= -2
           character.scale.y *= 2
 

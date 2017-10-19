@@ -80,7 +80,7 @@ export default class ConcertScene extends Scene {
   }
 }
 
-class Initial extends SceneState<ConcertScene> {
+export class Initial extends SceneState<ConcertScene> {
   public async show() {
     const scene = this.scene
 

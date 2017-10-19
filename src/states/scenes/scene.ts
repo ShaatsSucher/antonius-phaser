@@ -20,9 +20,6 @@ export default abstract class Scene extends Phaser.State implements Pausable {
   public readonly tweens: Phaser.TweenManager
 
   abstract stateManagers: { [name: string]: SceneStateManager<Scene> }
-  public get defaultStateManager(): SceneStateManager<Scene> {
-    return this.stateManagers.default
-  }
 
   public abstract characters: { [name: string]: Character }
   public get allCharacters(): Character[] {
@@ -33,7 +30,6 @@ export default abstract class Scene extends Phaser.State implements Pausable {
   public get allInteractiveObjects(): GameObject[] {
     return Object.keys(this.interactiveObjects)
       .map(key => this.interactiveObjects[key])
-      .concat(this.allCharacters)
   }
   private lastInteractiveObjects: GameObject[] = []
 
@@ -112,15 +108,16 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     AudioManager.instance.tracks.music.fadeAll(targetScene.musicClips, 1, 2, true)
   }
 
+  protected registerConditionalStateTransitions(scenes: { [title: string]: Scene}): void { }
   protected abstract createGameObjects(): void
 
   public lockInput() {
-    this.allInteractiveObjects
+    this.allInteractiveObjects.concat(this.allCharacters)
       .forEach(object => object.isPaused.value = true)
   }
 
   public releaseInput() {
-    this.allInteractiveObjects
+    this.allInteractiveObjects.concat(this.allCharacters)
       .forEach(object => object.isPaused.value = false)
   }
 

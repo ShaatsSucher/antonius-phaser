@@ -10,7 +10,8 @@ export default abstract class Character extends GameObject {
 
   constructor(public readonly scene: Scene, x: number, y: number,
               key?: string | Phaser.RenderTexture | Phaser.BitmapData | PIXI.Texture,
-              frame?: string | number) {
+              frame?: string | number,
+              private defaultState: string = 'idle') {
     super(scene.game, x, y, key, frame)
 
     this.isPaused.onValueChanged.add(isPaused => {
@@ -33,6 +34,7 @@ export default abstract class Character extends GameObject {
 
   public async setActiveState(newState: string) {
     if (!this.states[newState]) {
+      console.log('Resetting state of', this)
       throw `'${newState}' is not a valid state`
     }
 
@@ -45,5 +47,9 @@ export default abstract class Character extends GameObject {
     if (this.states[newState].enter) {
       await this.states[newState].enter()
     }
+  }
+
+  public async resetState() {
+    this.setActiveState(this.defaultState)
   }
 }

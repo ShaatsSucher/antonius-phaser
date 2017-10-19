@@ -67,7 +67,7 @@ export default class CanopyScene extends Scene {
 
 }
 
-class Initial extends SceneState<CanopyScene> {
+export class Initial extends SceneState<CanopyScene> {
   public async show() {
     const scene = this.scene
 
