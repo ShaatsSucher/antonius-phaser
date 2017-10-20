@@ -21,6 +21,7 @@ import CatCharacter from '../../characters/cat'
 import MeckieCharacter from '../../characters/meckie'
 import Cook1Character from '../../characters/cook1'
 import Cook2Character from '../../characters/cook2'
+import WomanCharacter from '../../characters/woman'
 
 import Arrow from '../../gameObjects/arrow'
 import Inventory from '../../overlays/inventory'
@@ -234,6 +235,7 @@ class Credits extends SceneStateTransition<HeadScene> {
       const cook1 = new Cook2Character(scene, 0, 0)
       cook1.scale.x *= -1
       await swallow(cook1, 0)
+      await swallow(new WomanCharacter(scene, 0, 0), 0)
 
       return TheEnd
     }

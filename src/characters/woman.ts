@@ -7,7 +7,7 @@ import SpeechHelper from '../utils/speechHelper'
 
 export default class WomanCharacter extends Character {
   public readonly speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.combine({
-    drunk: SpeechHelper.Generators.random(
+    default: SpeechHelper.Generators.random(
       ArrayUtils.range(1, 27).map(i =>
         Assets.Audio[`womanDrunk${StringUtils.intToString(i, 3)}`].key
       )
@@ -27,6 +27,8 @@ export default class WomanCharacter extends Character {
     this.animations.add('walking', ArrayUtils.range(5, 11), 8, true)
 
     this.addCharacterState('idle', new IdleState(this))
+    this.addCharacterState('talking', new TalkingState(this))
+    this.addCharacterState('walking', new WalkingState(this))
 
     this.play('idle')
   }
