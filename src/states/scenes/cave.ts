@@ -6,6 +6,8 @@ import { Images, Audio } from '../../assets'
 import AntoniusCharacter from '../../characters/antonius'
 
 import Arrow from '../../gameObjects/arrow'
+import GameObject from '../../gameObjects/gameObject'
+
 import Inventory from '../../overlays/inventory'
 
 export default class CaveScene extends Scene {
@@ -18,12 +20,15 @@ export default class CaveScene extends Scene {
   }
 
   stateManagers = {
-    default: new SceneStateManager<CaveScene>(this, [
-      Initial
+    color: new SceneStateManager<CaveScene>(this, [
+      ColorPresent,
+      ColorPickedUp
     ], [
-
+      ColorBeingPickedUp
     ])
   }
+
+  color: GameObject
 
   constructor(game: Phaser.Game) {
     super(
@@ -46,6 +51,10 @@ export default class CaveScene extends Scene {
     const antonius = this.characters.antonius = new AntoniusCharacter(this, 100, 100)
     antonius.scale = new Phaser.Point(-3, 3)
     this.game.add.existing(antonius)
+
+    this.color = new GameObject(this.game, 330, 110, Images.colour.key)
+    this.color.scale.setTo(2)
+    this.game.add.existing(this.color)
   }
 }
 
@@ -53,5 +62,33 @@ class Initial extends SceneState<CaveScene> {
   public async show() {
     const scene = this.scene
 
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Color States
+// ---------------------------------------------------------------------------
+
+class ColorPresent extends SceneState<CaveScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.color.interactionEnabled = true
+    this.listeners.push(scene.color.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(ColorBeingPickedUp)
+    ))
+  }
+}
+
+class ColorBeingPickedUp extends SceneStateTransition<CaveScene> {
+  public async enter() {
+    Inventory.instance.addItem(Images.colour.key)
+    return ColorPickedUp
+  }
+}
+
+export class ColorPickedUp extends SceneState<CaveScene> {
+  public async show() {
+    this.scene.color.visible = false
   }
 }
