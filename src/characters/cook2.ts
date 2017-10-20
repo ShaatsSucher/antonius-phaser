@@ -19,6 +19,10 @@ export default class Cook2Character extends Character {
     this.animations.add('talking', [0, 1], 8, true)
     this.animations.add('walking', ArrayUtils.range(15, 20), 8, true)
 
+    this.addCharacterState('idle', new IdleState(this))
+    this.addCharacterState('talking', new TalkingState(this))
+    this.addCharacterState('walking', new WalkingState(this))
+
     this.play('idle')
   }
 }
