@@ -25,6 +25,7 @@ import WomanCharacter from '../../characters/woman'
 
 import Arrow from '../../gameObjects/arrow'
 import Inventory from '../../overlays/inventory'
+import { AudioManager } from '../../utils/audioManager'
 
 import { ArrayUtils, StringUtils } from '../../utils/utils'
 
@@ -210,7 +211,7 @@ class Credits extends SceneStateTransition<HeadScene> {
         }))
 
         scene.characters.hellmouth.setActiveState('open mouth')
-        scene.sound.play(Audio.hellmouthWhirlwind001.key)
+        AudioManager.instance.tracks.speech.playClip(Audio.hellmouthWhirlwind001.key)
 
         await Promise.all(chars.map(async character => {
           await Promise.all([
