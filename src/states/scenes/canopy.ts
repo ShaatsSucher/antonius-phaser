@@ -1,11 +1,18 @@
 import Scene from './scene'
-import { SceneStateManager, SceneState, SceneStateTransition } from '../../utils/stateManager'
+import { SceneStateManager
+       , SceneState
+       , SceneStateTransition
+       , ConditionalStateTransition
+       , TransitionCondition
+       } from '../../utils/stateManager'
 
 import { Images, Audio } from '../../assets'
 
 import AntoniusCharacter from '../../characters/antonius'
 import OwlCharacter from '../../characters/owl'
 import UpperTreeCharacter from '../../characters/upperTree'
+
+import { BucketheadIsStealthy } from './forehead'
 
 import GameObject from '../../gameObjects/gameObject'
 import Arrow from '../../gameObjects/arrow'
@@ -49,6 +56,15 @@ export default class CanopyScene extends Scene {
       game,
       Images.backgroundsBackgroundTree.key,
       Audio.soundscapesScene3.key
+    )
+  }
+
+  protected registerConditionalStateTransitions(scenes: { [title: string]: Scene }) {
+    this.stateManagers.owl.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        OwlWillPeeInBucket,
+        TransitionCondition.reachedState(scenes.forehead.stateManagers.buckethead, BucketheadIsStealthy)
+      )
     )
   }
 
