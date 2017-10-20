@@ -7,7 +7,9 @@ import AntoniusCharacter from '../../characters/antonius'
 import EggWomanCharacter from '../../characters/eggwoman'
 import Cook1Character from '../../characters/cook1'
 import Cook2Character from '../../characters/cook2'
+
 import Arrow from '../../gameObjects/arrow'
+import GameObject from '../../gameObjects/gameObject'
 
 import Inventory from '../../overlays/inventory'
 
@@ -25,7 +27,7 @@ export default class KitchenScene extends Scene {
     toConcertArrow: null
   }
 
-  readonly stateManagers: {[name: string]: SceneStateManager<KitchenScene>} = {
+  stateManagers: {[name: string]: SceneStateManager<KitchenScene>} = {
     cooks: new SceneStateManager<KitchenScene>(this, [
       InitialCooks,
       WaitingForWater,
@@ -138,7 +140,7 @@ class WeNeedWater extends SceneStateTransition<KitchenScene> {
 export class WaitingForWater extends SceneState<KitchenScene> {
   public async show() {
     const c = this.scene.characters
-
+    
     c.cook1.interactionEnabled = true
     c.cook2.interactionEnabled = true
 
@@ -311,6 +313,9 @@ class FinishCooking extends SceneStateTransition<KitchenScene> {
       this.scene.tweens.create(c.cook1).to({x: xmin}, 3000).start().onComplete.asPromise(),
       this.scene.tweens.create(c.cook2).to({x: xmin}, 3000).start().onComplete.asPromise()
     ])
+
+    // TODO: make it so you have to click the soup pot, to obtain soup
+    Inventory.instance.addItem(Images.cupSoup.key)
 
     return DoneCooking
   }
