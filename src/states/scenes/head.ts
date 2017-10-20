@@ -25,6 +25,7 @@ import WomanCharacter from '../../characters/woman'
 
 import Arrow from '../../gameObjects/arrow'
 import Inventory from '../../overlays/inventory'
+import { AudioManager } from '../../utils/audioManager'
 
 import { ArrayUtils, StringUtils } from '../../utils/utils'
 
@@ -120,6 +121,8 @@ export default class HeadScene extends Scene {
 
 export class Introduction extends SceneState<HeadScene> {
   public async show() {
+    this.scene.allInteractiveObjects.forEach(obj => obj.visible = false)
+
     this.scene.characters.hellmouth.interactionEnabled = true
     this.listeners.push(this.scene.characters.hellmouth.events.onInputDown.addOnce(
       () => this.scene.stateManagers.head.trigger(IntroductionSpeech)
@@ -131,6 +134,8 @@ class IntroductionSpeech extends SceneStateTransition<HeadScene> {
   public async enter(visible: boolean) {
     if (visible) {
       const scene = this.scene
+
+      scene.allInteractiveObjects.forEach(obj => obj.visible = false)
 
       await scene.characters.hellmouth.speech.say('Um Gottes Willen...', 3)
       await scene.characters.hellmouth.speech.say('Es toben ganz schön viele\ndieser Dämonen herum!!', 6)
@@ -145,11 +150,13 @@ class IntroductionSpeech extends SceneStateTransition<HeadScene> {
 
 export class Silent extends SceneState<HeadScene> {
   public async show() {
+    this.scene.allInteractiveObjects.forEach(obj => obj.visible = true)
   }
 }
 
 export class FishHintAvailable extends SceneState<HeadScene> {
   public async show() {
+    this.scene.allInteractiveObjects.forEach(obj => obj.visible = true)
     this.scene.characters.hellmouth.interactionEnabled = true
     this.listeners.push(this.scene.characters.hellmouth.events.onInputUp.addOnce(
       () => this.scene.stateManagers.head.trigger(FishHintSpeech)
@@ -169,12 +176,15 @@ class FishHintSpeech extends SceneStateTransition<HeadScene> {
 
 export class Suction extends SceneState<HeadScene> {
   public async show() {
+    this.scene.allInteractiveObjects.forEach(obj => obj.visible = false)
     this.stateManager.trigger(Credits)
   }
 }
 
 class Credits extends SceneStateTransition<HeadScene> {
   public async enter(visible: boolean) {
+    this.scene.allInteractiveObjects.forEach(obj => obj.visible = false)
+
     if (visible) {
       const scene = this.scene
 
@@ -210,7 +220,7 @@ class Credits extends SceneStateTransition<HeadScene> {
         }))
 
         scene.characters.hellmouth.setActiveState('open mouth')
-        scene.sound.play(Audio.hellmouthWhirlwind001.key)
+        AudioManager.instance.tracks.speech.playClip(Audio.hellmouthWhirlwind001.key)
 
         await Promise.all(chars.map(async character => {
           await Promise.all([
@@ -244,6 +254,7 @@ class Credits extends SceneStateTransition<HeadScene> {
 
 export class TheEnd extends SceneState<HeadScene> {
   public async show() {
+    this.scene.allInteractiveObjects.forEach(obj => obj.visible = false)
     this.scene.fadeTo('end')
   }
 }

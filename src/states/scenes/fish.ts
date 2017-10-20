@@ -21,6 +21,7 @@ import Arrow from '../../gameObjects/arrow'
 
 import Inventory from '../../overlays/inventory'
 import { ArrayUtils, StringUtils } from '../../utils/utils'
+import { AudioManager } from '../../utils/audioManager'
 
 export default class FishScene extends Scene {
   public characters: {
@@ -201,13 +202,7 @@ class Suffocation extends SceneStateTransition<FishScene> {
     await scene.characters.fish.speech.say('... Moment, hab ich eigentlich eine Lunge?', 5)
 
     await scene.characters.fish.setActiveState('dying')
-    const deathSound = scene.sound.play(Audio.fishFishDiesFishDies.key)
-
-    let soundDoneCallback: () => void
-    const soundDone = new Promise<void>(resolve => { soundDoneCallback = resolve })
-    deathSound.onStop.addOnce(soundDoneCallback)
-
-    await soundDone
+    await AudioManager.instance.tracks.speech.playClip(Audio.fishFishDiesFishDies.key)
 
     await scene.characters.antonius.speech.say('Hmm… alles Teil von Gottes Plan. Ganz bestimmt.', null, 'sssssl')
 
