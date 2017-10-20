@@ -14,6 +14,7 @@ import WomanCharacter from '../../characters/woman'
 import GoatCharacter from '../../characters/goat'
 
 import { BardGone, MeckieGone } from './bard'
+import { OwlPeeingInBucket } from './canopy'
 
 import Arrow from '../../gameObjects/arrow'
 
@@ -72,6 +73,10 @@ export default class TreeScene extends Scene {
       new ConditionalStateTransition(
         TreeReadyToTalk,
         TransitionCondition.reachedState(scenes.bard.stateManagers.meckie, MeckieGone)
+      ),
+      new ConditionalStateTransition(
+        TreeWaitingForAllGone,
+        TransitionCondition.reachedState(scenes.canopy.stateManagers.owl, OwlPeeingInBucket)
       ),
       new ConditionalStateTransition(
         TreeDeniesEntry,
