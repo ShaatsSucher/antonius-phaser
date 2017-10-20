@@ -6,12 +6,23 @@ import Scene from '../states/scenes/scene'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class TreeCharacter extends Character {
-  public readonly speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.random(
-    ArrayUtils.range(1, 14).map(i =>
-      // TODO: replace with correct sounds
-      Assets.Audio[`goose${StringUtils.intToString(i, 3)}`].key
+  public readonly speech: SpeechHelper = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.combine({
+    disgusted: SpeechHelper.Generators.random(
+      ArrayUtils.range(1, 14).map(i =>
+        Assets.Audio[`treeDisgusted${StringUtils.intToString(i, 3)}`].key
+      )
+    ),
+    scared: SpeechHelper.Generators.random(
+      ArrayUtils.range(1, 12).map(i =>
+        Assets.Audio[`treeScared${StringUtils.intToString(i, 3)}`].key
+      )
+    ),
+    shy: SpeechHelper.Generators.random(
+      ArrayUtils.range(1, 12).map(i =>
+        Assets.Audio[`treeShy${StringUtils.intToString(i, 3)}`].key
+      )
     )
-  ))
+  }), false, 'idle', 'idle')
 
   constructor(scene: Scene, x: number, y: number) {
     // TODO: replace with correct spritesheet
@@ -22,7 +33,8 @@ export default class TreeCharacter extends Character {
     this.animations.add('idleOpen', [11, 12], 2, true)
 
     this.addCharacterState('idle', new IdleState(this))
-    this.addCharacterState('talking', new TalkingState(this))
+    this.addCharacterState('opening', new OpeningState(this))
+    this.addCharacterState('idleOpen', new IdleOpenState(this))
 
     this.play('idle')
   }
@@ -36,19 +48,19 @@ class IdleState implements CharacterState<TreeCharacter> {
   }
 }
 
-class TalkingState implements CharacterState<TreeCharacter> {
-  constructor(public character: TreeCharacter) {}
-
-  async enter() {
-    this.character.play('idle')
-  }
-}
-
 class OpeningState implements CharacterState<TreeCharacter> {
   constructor(public character: TreeCharacter) {}
 
   async enter() {
     this.character.animations.stop()
     this.character.play('opening')
+  }
+}
+
+class IdleOpenState implements CharacterState<TreeCharacter> {
+  constructor(public character: TreeCharacter) {}
+
+  async enter() {
+    this.character.play('idleOpen')
   }
 }

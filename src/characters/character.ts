@@ -34,8 +34,9 @@ export default abstract class Character extends GameObject {
 
   public async setActiveState(newState: string) {
     if (!this.states[newState]) {
-      console.log('Resetting state of', this)
-      throw `'${newState}' is not a valid state`
+      const error = new Error(`'${newState}' is not a valid state`)
+      error['character'] = this
+      throw error
     }
 
     if (this.activeState && this.states[this.activeState].exit) {

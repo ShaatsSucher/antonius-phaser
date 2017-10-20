@@ -7,12 +7,12 @@ import SpeechHelper from '../utils/speechHelper'
 
 export default class PainterCharacter extends Character {
   public readonly speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.combine({
-    u: SpeechHelper.Generators.random(
+    unsatisfied: SpeechHelper.Generators.random(
       ArrayUtils.range(1, 33).map(i =>
         Assets.Audio[`painter${StringUtils.intToString(i, 3)}`].key
       )
     ),
-    s: SpeechHelper.Generators.random(
+    satisfied: SpeechHelper.Generators.random(
       ArrayUtils.range(1, 19).map(i =>
         Assets.Audio[`painterSatisfied${StringUtils.intToString(i, 3)}`].key
       )
@@ -30,7 +30,7 @@ export default class PainterCharacter extends Character {
     this.addCharacterState('talking', new TalkingState(this))
     this.addCharacterState('painting', new PaintingState(this))
 
-    this.play('talking')
+    this.play('idle')
   }
 }
 

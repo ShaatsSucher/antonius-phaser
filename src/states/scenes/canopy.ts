@@ -1,20 +1,30 @@
 import Scene from './scene'
-import { SceneStateManager, SceneState, SceneStateTransition } from '../../utils/stateManager'
+import { SceneStateManager
+       , SceneState
+       , SceneStateTransition
+       , ConditionalStateTransition
+       , TransitionCondition
+       } from '../../utils/stateManager'
 
 import { Images, Audio } from '../../assets'
 
 import AntoniusCharacter from '../../characters/antonius'
 import OwlCharacter from '../../characters/owl'
+import UpperTreeCharacter from '../../characters/upperTree'
 
+import { BucketheadIsStealthy } from './forehead'
+
+import GameObject from '../../gameObjects/gameObject'
 import Arrow from '../../gameObjects/arrow'
 
 import Inventory from '../../overlays/inventory'
 
 export default class CanopyScene extends Scene {
-  public characters = {
-    antonius: null,
-    owl: null
-  }
+  public characters: {
+    antonius: AntoniusCharacter,
+    owl: OwlCharacter,
+    tree: UpperTreeCharacter
+  } = <any>{}
 
   public interactiveObjects = {
     toTreeArrow: null,
@@ -22,12 +32,24 @@ export default class CanopyScene extends Scene {
   }
 
   stateManagers = {
-    default: new SceneStateManager<CanopyScene>(this, [
-      Initial
+    owl: new SceneStateManager<CanopyScene>(this, [
+      OwlPeeingOnTree,
+      OwlWillPeeInBucket,
+      OwlPeeingInBucket
     ], [
-
+      AntoniusBeingDisgusted,
+      BucketBeingPutUnderOwl
+    ]),
+    hat: new SceneStateManager<CanopyScene>(this, [
+      HatPresent,
+      HatPickedUp
+    ], [
+      HatBeingPickedUp
     ])
   }
+
+  bucket: GameObject
+  hat: GameObject
 
   constructor(game: Phaser.Game) {
     super(
@@ -37,8 +59,37 @@ export default class CanopyScene extends Scene {
     )
   }
 
+  protected registerConditionalStateTransitions(scenes: { [title: string]: Scene }) {
+    this.stateManagers.owl.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        OwlWillPeeInBucket,
+        TransitionCondition.reachedState(scenes.forehead.stateManagers.buckethead, BucketheadIsStealthy)
+      )
+    )
+  }
+
   protected createGameObjects() {
-    const toTreeArrow = this.interactiveObjects.toTreeArrow = new Arrow(this.game, 190, 200)
+    const tree = this.characters.tree = new UpperTreeCharacter(this, 0, 54)
+    tree.scale.setTo(3)
+    this.game.add.existing(tree)
+
+    this.bucket = new GameObject(this.game, 255, 180, Images.bucket.key)
+    this.bucket.scale.setTo(2)
+    this.game.add.existing(this.bucket)
+
+    this.hat = new GameObject(this.game, 74, 167, Images.hat.key)
+    this.hat.scale.setTo(2)
+    this.game.add.existing(this.hat)
+
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 100, 100)
+    antonius.scale.setTo(3)
+    this.game.add.existing(antonius)
+
+    const owl = this.characters.owl = new OwlCharacter(this, 260, 100)
+    owl.scale.setTo(3)
+    this.game.add.existing(owl)
+
+    const toTreeArrow = this.interactiveObjects.toTreeArrow = new Arrow(this.game, 240, 200)
     toTreeArrow.rotation = Math.PI / 2
     toTreeArrow.interactionEnabled = true
     this.game.add.existing(toTreeArrow)
@@ -55,21 +106,88 @@ export default class CanopyScene extends Scene {
       toForeheadArrow.interactionEnabled = false
       this.fadeTo('forehead')
     })
-
-    const antonius = this.characters.antonius = new AntoniusCharacter(this, 100, 100)
-    antonius.scale = new Phaser.Point(3, 3)
-    this.game.add.existing(antonius)
-
-    const owl = this.characters.owl = new OwlCharacter(this, 150, 100)
-    owl.scale = new Phaser.Point(3, 3)
-    this.game.add.existing(owl)
   }
-
 }
 
-export class Initial extends SceneState<CanopyScene> {
+// ---------------------------------------------------------------------------
+// Owl States
+// ---------------------------------------------------------------------------
+
+class OwlPeeingOnTree extends SceneState<CanopyScene> {
   public async show() {
     const scene = this.scene
 
+    scene.bucket.visible = false
+    // TODO: play peeing sound
+
+    scene.characters.owl.interactionEnabled = true
+    this.listeners.push(scene.characters.owl.events.onInputUp.add(
+      () => this.stateManager.trigger(AntoniusBeingDisgusted)
+    ))
+  }
+}
+
+class AntoniusBeingDisgusted extends SceneStateTransition<CanopyScene> {
+  public async enter() {
+    const scene = this.scene
+
+    await scene.characters.antonius.speech.say('So eine Sauerei.', null, 'lsssl')
+
+    return OwlPeeingOnTree
+  }
+}
+
+class OwlWillPeeInBucket extends SceneState<CanopyScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.bucket.visible = false
+
+    scene.characters.owl.interactionEnabled = true
+    this.listeners.push(scene.characters.owl.events.onInputUp.add(
+      () => this.stateManager.trigger(BucketBeingPutUnderOwl)
+    ))
+  }
+}
+
+class BucketBeingPutUnderOwl extends SceneStateTransition<CanopyScene> {
+  public async enter() {
+    Inventory.instance.takeItem(Images.bucket.key)
+    return OwlPeeingInBucket
+  }
+}
+
+export class OwlPeeingInBucket extends SceneState<CanopyScene> {
+  public async show() {
+    this.scene.bucket.visible = true
+    // TODO: play peeing in bucket sound
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Hat States
+// ---------------------------------------------------------------------------
+
+class HatPresent extends SceneState<CanopyScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.hat.interactionEnabled = true
+    this.listeners.push(scene.hat.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(HatBeingPickedUp)
+    ))
+  }
+}
+
+class HatBeingPickedUp extends SceneStateTransition<CanopyScene> {
+  public async enter() {
+    Inventory.instance.addItem(Images.hat.key)
+    return HatPickedUp
+  }
+}
+
+export class HatPickedUp extends SceneState<CanopyScene> {
+  public async show() {
+    this.scene.hat.visible = false
   }
 }
