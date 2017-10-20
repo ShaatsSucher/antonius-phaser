@@ -5,6 +5,7 @@ import { SceneStateManager
        , ConditionalStateTransition
        , TransitionCondition
        } from '../../utils/stateManager'
+import WaitingForWater from './kitchen'
 
 import { Images, Audio } from '../../assets'
 
@@ -52,6 +53,19 @@ export default class TreeScene extends Scene {
       TreeDeniesEntry,
       AntoniusRequestsEntry,
       TreeOpeningUp
+    ]),
+    woman: new SceneStateManager(this, [
+      InitialWoman,
+      HungryWoman,
+      NewKnowledge,
+      ImaptientWoman,
+      SatisfiedWoman
+    ], [
+      IAmHungry,
+      StillHungry,
+      TakeMyCup,
+      StillWaitig,
+      Eating
     ])
   }
 
@@ -93,6 +107,13 @@ export default class TreeScene extends Scene {
         TreeWillAllowEntry,
         TransitionCondition.reachedState(this.stateManagers.tree, TreeDeniedEntry)
           .and(allGoneExceptTreeAndAntonius)
+      )
+    )
+
+    this.stateManagers.woman.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        NewKnowledge,
+        TransitionCondition.reachedState(scenes.kitchen.stateManagers.cooks, WaitingForWater)
       )
     )
   }
@@ -307,5 +328,147 @@ class TreeOpeningUp extends SceneStateTransition<TreeScene> {
 class TreeAllowedEntry extends SceneState<TreeScene> {
   public async show() {
     // No need to do anything, all arrows are automatically enabled
+  }
+}
+
+
+
+// ---------------------------------------------------------------------------
+// Woman States
+// ---------------------------------------------------------------------------
+
+export class InitialWoman extends SceneState<TreeScene> {
+  public async show() {
+    const c = this.scene.characters
+
+    c.woman.interactionEnabled = true
+
+    this.listeners.push(c.woman.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(IAmHungry)
+    ))
+  }
+}
+
+class IAmHungry extends SceneStateTransition<TreeScene> {
+  async enter() {
+    const c = this.scene.characters
+
+    await c.antonius.speech.say('Seid gegruesst, holde Maid!', null, 'ssls')
+    await c.woman.speech.say('Redest du mit mir?\n*hicks*', 5)
+    await c.antonius.speech.say('Ja', null, 'l')
+    await c.woman.speech.say('Wo du schon mal hier bist:', 5)
+    await c.woman.speech.say('Hast du auf dem weg hierher\nwas zu Essen gesehen?', 8)
+    await c.antonius.speech.say('Nein, aber ich werde\ndie Augen offen halten', null, 'lsslsss')
+
+    return HungryWoman
+  }
+}
+
+export class HungryWoman extends SceneState<TreeScene> {
+  public async show() {
+      const c = this.scene.characters
+
+      c.woman.interactionEnabled = true
+
+      this.listeners.push(c.woman.events.onInputUp.addOnce(
+        () => this.stateManager.trigger(StillHungry)
+      ))
+    }
+  }
+
+class StillHungry extends SceneStateTransition<TreeScene> {
+  async enter() {
+    const c = this.scene.characters
+
+    await c.woman.speech.say('Hast du inzwischen\nwas zu Essen gefunden?', 7)
+    await c.antonius.speech.say('Nein, noch nicht', null, 'lss')
+
+    return HungryWoman
+  }
+}
+
+export class NewKnowledge extends SceneState<TreeScene> {
+  public async show() {
+    const c = this.scene.characters
+
+    console.log('KNEW KNOWLEDGE AQUIRED!')
+
+    c.woman.interactionEnabled = true
+
+    this.listeners.push(c.woman.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(TakeMyCup)
+    ))
+  }
+}
+
+class TakeMyCup extends SceneStateTransition<TreeScene> {
+  async enter() {
+    const c = this.scene.characters
+
+    await c.woman.speech.say('Hast du inzwischen\nwas zu Essen gefunden?', 7)
+    await c.antonius.speech.say('Ja, die Koeche da hinten\nwollen eine Suppe zubereiten', null, 'lsssls')
+    await c.antonius.speech.say('Kann ich denen Kelch zum\nWasser schoepfen ausleihen?', null, 'sslsssl')
+    await c.woman.speech.say('Okay, aber wehe die\nSuppe schmeckt nicht!', 7)
+    await c.antonius.speech.say('Keine Sorge, die Koeche\ngeben sich sicher Muehe', null, 'slssssl')
+
+    Inventory.instance.addItem(Images.cupEmpty.key)
+
+    return ImaptientWoman
+  }
+}
+
+export class ImaptientWoman extends SceneState<TreeScene> {
+  public async show() {
+    const c = this.scene.characters
+
+    c.woman.interactionEnabled = true
+
+    this.listeners.push(c.woman.events.onInputUp.addOnce(() => {
+      if (Inventory.instance.hasItem(Images.cupSoup.key)) {
+        Inventory.instance.takeItem(Images.cupSoup.key)
+        this.stateManager.trigger(Eating)
+      } else {
+        this.stateManager.trigger(StillWaitig)
+      }
+    }))
+  }
+}
+
+class StillWaitig extends SceneStateTransition<TreeScene> {
+  async enter() {
+    const c = this.scene.characters
+
+    await c.woman.speech.say('Ist die Suppe bald fertig?', 5)
+    await c.antonius.speech.say('Du musst dich leider\nnoch ein wenig gedulden', null, 'sslssl')
+
+    return ImaptientWoman
+  }
+}
+
+class Eating extends SceneStateTransition<TreeScene> {
+  async enter() {
+    const c = this.scene.characters
+
+    await c.antonius.speech.say('Hier, die versprochene Suppe', null, 'lsss')
+    await c.woman.speech.say('Das wurde aber auch Zeit.\nIch bin hier fast vor Hunger gestorben', 10)
+    await c.woman.speech.say('*schluerp*\nJetzt geht es mir besser!', 4, 'sober')
+    await c.woman.speech.say('Was mache ich eigentlich noch\nan diesem oeden Ort?', 5, 'sober')
+    await c.woman.speech.say('Bsuch mich doch,\nwenn du mal in der Gegend bist', 5, 'sober')
+
+    c.woman.setActiveState('walking')
+
+    await this.scene.tweens.create(c.woman).to({
+      x: -Math.abs(c.woman.width * c.woman.anchor.x)
+    }, 3000).start().onComplete.asPromise()
+
+    await c.antonius.speech.say('Hat die mich eben in die Hoelle eingeladen?', null, 'ssslsl')
+
+    return SatisfiedWoman
+  }
+}
+
+export class SatisfiedWoman extends SceneState<TreeScene> {
+  public async show() {
+    this.scene.characters.woman.visible = false
   }
 }

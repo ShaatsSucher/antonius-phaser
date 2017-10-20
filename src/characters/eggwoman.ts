@@ -16,5 +16,15 @@ export default class EggWomanCharacter extends Character {
     super(scene, x, y, Assets.Spritesheets.eggwoman.key)
 
     this.animations.add('idle', [0], 0, false)
+
+    this.addCharacterState('idle', new IdleState(this))
+  }
+}
+
+class IdleState implements CharacterState<EggWomanCharacter> {
+  constructor(public character: EggWomanCharacter) {}
+
+  async enter() {
+    this.character.play('idle')
   }
 }
