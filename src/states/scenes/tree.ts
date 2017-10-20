@@ -1,5 +1,12 @@
 import Scene from './scene'
-import { SceneStateManager, SceneState, SceneStateTransition } from '../../utils/stateManager'
+import { SceneStateManager
+       , SceneState
+       , SceneStateTransition
+       , ConditionalStateTransition
+       , TransitionCondition
+       } from '../../utils/stateManager'
+
+import WaitingForWater from './kitchen'
 
 import { Images, Audio } from '../../assets'
 
@@ -48,6 +55,15 @@ export default class TreeScene extends Scene {
       game,
       Images.backgroundsWoman.key,
       Audio.soundscapesScene7.key
+    )
+  }
+
+  protected registerConditionalStateTransitions(scenes: { [title: string]: Scene }) {
+    this.stateManagers.woman.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        NewKnowledge,
+        TransitionCondition.reachedState(scenes.kitchen.stateManagers.cooks, WaitingForWater)
+      )
     )
   }
 
@@ -159,10 +175,12 @@ export class NewKnowledge extends SceneState<TreeScene> {
   public async show() {
     const c = this.scene.characters
 
+    console.log('KNEW KNOWLEDGE AQUIRED!')
+
     c.woman.interactionEnabled = true
 
     this.listeners.push(c.woman.events.onInputUp.addOnce(
-      () => this.stateManager.trigger(StillHungry)
+      () => this.stateManager.trigger(TakeMyCup)
     ))
   }
 }
