@@ -5,7 +5,8 @@ import { SceneStateManager
        , ConditionalStateTransition
        , TransitionCondition
        } from '../../utils/stateManager'
-import WaitingForWater from './kitchen'
+
+import { WaitingForWater } from './kitchen'
 
 import { Images, Audio } from '../../assets'
 

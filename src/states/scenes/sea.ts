@@ -6,6 +6,8 @@ import { Images, Audio } from '../../assets'
 import AntoniusCharacter from '../../characters/antonius'
 
 import Arrow from '../../gameObjects/arrow'
+import gameObject from '../../gameObjects/gameObject'
+
 import Inventory from '../../overlays/inventory'
 
 export default class SeaScene extends Scene {
@@ -14,7 +16,8 @@ export default class SeaScene extends Scene {
   }
 
   public interactiveObjects = {
-    toHeadArrow: null
+    toHeadArrow: null,
+    seaClickBox: null
   }
 
   stateManagers = {
@@ -46,6 +49,19 @@ export default class SeaScene extends Scene {
     antonius.scale = new Phaser.Point(3, 3)
     this.game.add.existing(antonius)
 
+    const seaClickBox = this.interactiveObjects.seaClickBox = new gameObject(this.game, 10, 100, Images.water.key)
+    seaClickBox.scale = new Phaser.Point(3, 3)
+    seaClickBox.interactionEnabled = true
+    seaClickBox.input.pixelPerfectOver = false
+    seaClickBox.input.pixelPerfectClick = false
+    this.game.add.existing(seaClickBox)
+    seaClickBox.events.onInputUp.add(() => {
+      if (Inventory.instance.hasItem(Images.cupEmpty.key)) {
+        Inventory.instance.takeItem(Images.cupEmpty.key)
+        Inventory.instance.addItem(Images.cupWater.key)
+      }
+    })
+
     // TODO: add ships
 
   }
@@ -54,6 +70,10 @@ export default class SeaScene extends Scene {
 class Initial extends SceneState<SeaScene> {
   public async show() {
     const scene = this.scene
+
+
+    scene.interactiveObjects.seaClickBox.input.pixelPerfectOver = false
+    scene.interactiveObjects.seaClickBox.input.pixelPerfectClick = false
 
   }
 }
