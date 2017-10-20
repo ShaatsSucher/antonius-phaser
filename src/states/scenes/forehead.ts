@@ -13,6 +13,7 @@ import PainterCharacter from '../../characters/painter'
 import BucketheadCharacter from '../../characters/buckethead'
 
 import { HatPickedUp } from './canopy'
+import { ColorPickedUp } from './cave'
 
 import Arrow from '../../gameObjects/arrow'
 
@@ -77,6 +78,10 @@ export default class ForeheadScene extends Scene {
       new ConditionalStateTransition(
         PainterNeedsColor,
         TransitionCondition.reachedState(this.stateManagers.buckethead, BucketheadIsStealthy)
+      ),
+      new ConditionalStateTransition(
+        AntoniusBroughtColor,
+        TransitionCondition.reachedState(scenes.cave.stateManagers.color, ColorPickedUp)
       )
     )
   }
