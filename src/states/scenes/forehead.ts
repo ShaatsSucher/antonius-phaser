@@ -95,16 +95,16 @@ export default class ForeheadScene extends Scene {
       this.fadeTo('canopy')
     })
 
-    const antonius = this.characters.antonius = new AntoniusCharacter(this, 100, 100)
-    antonius.scale = new Phaser.Point(3, 3)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 240, 100)
+    antonius.scale.setTo(4)
     this.game.add.existing(antonius)
 
-    const painter = this.characters.painter = new PainterCharacter(this, 200, 100)
-    painter.scale = new Phaser.Point(3, 3)
+    const painter = this.characters.painter = new PainterCharacter(this, 45, 105)
+    painter.scale.setTo(4)
     this.game.add.existing(painter)
 
-    const bucket = this.characters.buckethead = new BucketheadCharacter(this, 50, 80)
-    bucket.scale = new Phaser.Point(3, 3)
+    const bucket = this.characters.buckethead = new BucketheadCharacter(this, 150, 84)
+    bucket.scale.setTo(4)
     this.game.add.existing(bucket)
   }
 
