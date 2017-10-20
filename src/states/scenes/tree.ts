@@ -199,16 +199,16 @@ class TreeAllowingAscend extends SceneStateTransition<TreeScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.tree.speech.say('Endlich ist der Verrückte mit dem Messer weg!', 1)
-    await scene.characters.tree.speech.say('Ich hatte solche Angst um meine Rinde!', 1)
+    await scene.characters.tree.speech.say('Endlich ist der Verrückte mit dem Messer weg!', 3, 'scared')
+    await scene.characters.tree.speech.say('Ich hatte solche Angst um meine Rinde!', 3, 'scared')
     await scene.characters.antonius.speech.say('Deine Rinde ist unversehrt.', null, 'sssllssl')
-    await scene.characters.tree.speech.say('Aber sie ist sowas von schrumpelig...', 1)
+    await scene.characters.tree.speech.say('Aber sie ist sowas von schrumpelig...', 3, 'shy')
     await scene.characters.antonius.speech.say('Überhaupt nicht.', null, 'ssll')
     await scene.characters.antonius.speech.say('Ich wollte fragen, ob ich\nin deine Baumhöhle darf.', null, 'ssslssslslslls')
-    await scene.characters.tree.speech.say('Ach... Eher nicht.', 1)
-    await scene.characters.tree.speech.say('Das wäre mir doch ein bisschen unangenehm...', 1)
+    await scene.characters.tree.speech.say('Ach... Eher nicht.', 2, 'shy')
+    await scene.characters.tree.speech.say('Das wäre mir doch ein bisschen unangenehm...', 3, 'shy')
     await scene.characters.antonius.speech.say('Kann ich verstehen.', null, 'slssl')
-    await scene.characters.tree.speech.say('Aber... Ich könnte deine Hilfe gebrauchen...', 1)
+    await scene.characters.tree.speech.say('Aber... Ich könnte deine Hilfe gebrauchen...', 2, 'shy')
 
     return TreeStillWaitingForOwlGone
   }
@@ -218,7 +218,7 @@ class TreeStillWaitingForOwlGone extends SceneStateTransition<TreeScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.tree.speech.say('Die Eule da oben...\nPisst mich einfach an.', 1)
+    await scene.characters.tree.speech.say('Die Eule da oben...\nPisst mich einfach an.', 3, 'disgusted')
     await scene.characters.antonius.speech.say('Ich schaue mal, was ich da tun kann.', null, 'sslllssls')
 
     return TreeWaitingForOwlGone
@@ -252,11 +252,11 @@ class AntoniusRequestsEntryForTheFirstTime extends SceneStateTransition<TreeScen
     const scene = this.scene
 
     await scene.characters.antonius.speech.say('Das Eulen-Problem ist gelöst.', null, 'sslslssl')
-    await scene.characters.tree.speech.say('Antonius, mir fällt ein Stein vom Herzen!', 1)
+    await scene.characters.tree.speech.say('Antonius, mir fällt ein Stein vom Herzen!', 3, 'shy')
     await scene.characters.antonius.speech.say('Ach, das hab ich doch gerne gemacht.', null, 'ssslsslsl')
-    await scene.characters.tree.speech.say('Du hast so viel für mich getan.\nWie kann ich dir danken?', 1)
+    await scene.characters.tree.speech.say('Du hast so viel für mich getan.\nWie kann ich dir danken?', 3, 'shy')
     await scene.characters.antonius.speech.say('Dürfte ich jetzt vielleicht\ndeine Baumhöhle betreten?', null, 'ssllslssslsssl')
-    await scene.characters.tree.speech.say('Warum möchtest du das denn?', 1)
+    await scene.characters.tree.speech.say('Warum möchtest du das denn?', 2, 'shy')
     await scene.characters.antonius.speech.say('Ich würde wirklich gerne\nmal eine von innen sehen.', null, 'lslslslssllsssl')
 
     return AntoniusRequestedEntryForTheFirstTime
@@ -273,7 +273,7 @@ class TreeDeniesEntry extends SceneStateTransition<TreeScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.tree.speech.say('Ich würde dir ja gerne diesen Gefallen tun,\naber mir ist das schrecklich unangenehm,\nwenn mich jeder dabei sieht.', 1)
+    await scene.characters.tree.speech.say('Ich würde dir ja gerne diesen Gefallen tun,\naber mir ist das schrecklich unangenehm,\nwenn mich jeder dabei sieht.', 5, 'shy')
     await scene.characters.antonius.speech.say('Oh, verstehe.\nVielleicht später!', null, 'lsslsssl')
 
     return TreeDeniedEntry
@@ -317,9 +317,12 @@ class TreeOpeningUp extends SceneStateTransition<TreeScene> {
     const scene = this.scene
 
     await scene.characters.antonius.speech.say('Dürfte ich jetzt vielleicht\ndeine Baumhöhle betreten?', null, 'ssllslssslsssl')
-    await scene.characters.tree.speech.say('Wenn du das unbedingt möchtest...', 1)
-    await scene.characters.tree.speech.say('Aber ich habe nicht aufgeräumt!', 1)
+    await scene.characters.tree.speech.say('Wenn du das unbedingt möchtest...', 2, 'shy')
+    await scene.characters.tree.speech.say('Aber ich habe nicht aufgeräumt!', 2, 'shy')
     await scene.characters.antonius.speech.say('Danke für dein Vertrauen.', null, 'ssslssl')
+
+    await scene.characters.tree.setActiveState('opening')
+    await scene.wait(1)
 
     return TreeAllowedEntry
   }
@@ -327,7 +330,7 @@ class TreeOpeningUp extends SceneStateTransition<TreeScene> {
 
 class TreeAllowedEntry extends SceneState<TreeScene> {
   public async show() {
-    // No need to do anything, all arrows are automatically enabled
+    await this.scene.characters.tree.setActiveState('idleOpen')
   }
 }
 
