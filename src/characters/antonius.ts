@@ -8,7 +8,7 @@ import SpeechHelper from '../utils/speechHelper'
 export default class AntoniusCharacter extends Character {
   public readonly speech: SpeechHelper = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.pattern(
     {
-      l: ArrayUtils.range(1, 30).map(i =>
+      l: ArrayUtils.range(1, 29).map(i =>
         Assets.Audio[`antoniusLong${StringUtils.intToString(i, 3)}`].key
       ),
       s: ArrayUtils.range(1, 100).map(i =>
