@@ -130,7 +130,7 @@ class WeNeedWater extends SceneStateTransition<KitchenScene> {
     await scene.characters.cook2.speech.say('Wir brauchen noch Wasser fuer unsere Suppe', 6)
     await scene.characters.cook1.speech.say('Wolltest du das nicht holen?', 5)
     await scene.characters.cook2.speech.say('Nein. Mein Bein ist verrenkt', 5)
-    await scene.characters.cook1.speech.say('Stimmt, mein bein ist ja auch\naeh verrenkt', 6)
+    await scene.characters.cook1.speech.say('Stimmt, mein Bein ist ja auch\naeh verrenkt', 6)
     await scene.characters.antonius.speech.say('Ich kuemmere mich darum', null, 'slss')
 
     return WaitingForWater
@@ -180,7 +180,7 @@ class WeNeedFish extends SceneStateTransition<KitchenScene> {
   async enter() {
     const c = this.scene.characters
 
-    await c.antonius.speech.say('Ich habe hier etwas Wasser.\nWollt ihr das haben', null, 'ssslsss')
+    await c.antonius.speech.say('Ich habe hier etwas Wasser.\nWollt ihr das haben?', null, 'ssslsss')
     await c.cook1.speech.say('Ja, das sollte reichen', 4)
     await c.cook2.speech.say('Aber fuer die Suppe brauchen wir noch Fisch', 5)
     await c.antonius.speech.say('Fisch? Kein Problem', null, 'lss')
@@ -300,9 +300,9 @@ class FinishCooking extends SceneStateTransition<KitchenScene> {
 
     await c.antonius.speech.say('Fehlt sonst noch etwas?', null, 'ssl')
     await c.cook1.speech.say('Toll gemacht, Bruder', 3)
-    await c.cook2.speech.say('Sehr gute Zutaten die wir da gesammelt haben', 5)
-    await c.cook1.speech.say('Wir koenne stolz auf uns sein', 4)
-    await c.antonius.speech.say('Na dann guen Appetit!', null, 'lsss')
+    await c.cook2.speech.say('Sehr gute Zutaten, die wir da gesammelt haben', 5)
+    await c.cook1.speech.say('Wir koennen stolz auf uns sein', 4)
+    await c.antonius.speech.say('Na dann guten Appetit!', null, 'lsss')
 
     c.cook1.scale.x = -3
     c.cook1.setActiveState('walking')
