@@ -191,9 +191,9 @@ class BardConversation extends SceneStateTransition<BardScene> {
     await scene.characters.antonius.speech.say('Ihr da, auf dem fantastischen Reitwesen!', null, 'slssls')
     await scene.characters.antonius.speech.say('Dieses Lied klingt so unendlich einsam,\nwarum seid Ihr so traurig?', null, 'ssssssss')
     await scene.characters.bard.speech.say('Hört mir denn keiner zu?\nIch vermisse meine Freundin,\ndie Reitgans, sehr!', 10)
-    await scene.characters.goose.speech.say('So weit sind wir ja nicht von einander entfernt...', 6)
+    await scene.characters.goose.speech.say('So weit sind wir ja nicht voneinander entfernt...', 6)
     await scene.characters.antonius.speech.say('Stimmt, soweit seid ihr doch\nnicht voneinander entfernt.', null, 'sssssss')
-    await scene.characters.antonius.speech.say('Dreht euch doch ein mal um.', null, 'ssl')
+    await scene.characters.antonius.speech.say('Dreht euch doch einmal um.', null, 'ssl')
     await scene.characters.bard.speech.say('Das geht nicht. Da ist etwas hinter mir!', 6)
     await scene.characters.antonius.speech.say('Ich sehe das Problem.\nVielleicht kann ich helfen.', null, 'ssssss')
 
