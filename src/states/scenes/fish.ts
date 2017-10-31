@@ -152,7 +152,7 @@ class FishConversation extends SceneStateTransition<FishScene> {
     await scene.characters.fish.speech.say('Ent-schul-di-gung, aber was so "fischig"\nriecht ist ein Canal No. 5!', 10)
     await scene.characters.antonius.speech.say('Oh, du sprichst!', null, 'lss')
     await scene.characters.fish.speech.say('Nicht nur spreche ich, ich atme Luft!\nWasser ist ja *schnauf* so was von altmodisch.', 8)
-    await scene.characters.fish.speech.say('Frischluft, *röchel* das atmet man heutzutage!', 6)
+    await scene.characters.fish.speech.say('Frischluft, *röchel* die atmet man heutzutage!', 6)
     await scene.characters.antonius.speech.say('Sicher, dass es dir gut geht?\nDu siehst ein bisschen blass um die Kiemen aus...', null, 'ssslsls')
 
     return ImFine
