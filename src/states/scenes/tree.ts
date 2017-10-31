@@ -364,7 +364,7 @@ class IAmHungry extends SceneStateTransition<TreeScene> {
     await c.woman.speech.say('Redest du mit mir?\n*hicks*', 5)
     await c.antonius.speech.say('Ja', null, 'l')
     await c.woman.speech.say('Wo du schon mal hier bist:', 5)
-    await c.woman.speech.say('Hast du auf dem weg hierher\nwas zu Essen gesehen?', 8)
+    await c.woman.speech.say('Hast du auf dem Weg hierher\nwas zu Essen gesehen?', 8)
     await c.antonius.speech.say('Nein, aber ich werde\ndie Augen offen halten', null, 'lsslsss')
 
     return HungryWoman
@@ -414,7 +414,7 @@ class TakeMyCup extends SceneStateTransition<TreeScene> {
 
     await c.woman.speech.say('Hast du inzwischen\nwas zu Essen gefunden?', 7)
     await c.antonius.speech.say('Ja, die Koeche da hinten\nwollen eine Suppe zubereiten', null, 'lsssls')
-    await c.antonius.speech.say('Kann ich denen Kelch zum\nWasser schoepfen ausleihen?', null, 'sslsssl')
+    await c.antonius.speech.say('Kann ich deinen Kelch zum\nWasserschoepfen ausleihen?', null, 'sslsssl')
     await c.woman.speech.say('Okay, aber wehe die\nSuppe schmeckt nicht!', 7)
     await c.antonius.speech.say('Keine Sorge, die Koeche\ngeben sich sicher Muehe', null, 'slssssl')
 
@@ -458,9 +458,9 @@ class Eating extends SceneStateTransition<TreeScene> {
 
     await c.antonius.speech.say('Hier, die versprochene Suppe', null, 'lsss')
     await c.woman.speech.say('Das wurde aber auch Zeit.\nIch bin hier fast vor Hunger gestorben', 10)
-    await c.woman.speech.say('*schluerp*\nJetzt geht es mir besser!', 4, 'sober')
+    await c.woman.speech.say('*schluerf*\nJetzt geht es mir besser!', 4, 'sober')
     await c.woman.speech.say('Was mache ich eigentlich noch\nan diesem oeden Ort?', 5, 'sober')
-    await c.woman.speech.say('Bsuch mich doch,\nwenn du mal in der Gegend bist', 5, 'sober')
+    await c.woman.speech.say('Besuch mich doch,\nwenn du mal in der Gegend bist', 5, 'sober')
 
     c.woman.setActiveState('walking')
 
