@@ -40,6 +40,7 @@ export default class TreeScene extends Scene {
 
   stateManagers: { [name: string]: SceneStateManager<TreeScene> } = {
     tree: new SceneStateManager<TreeScene>(this, [
+      InitialTree,
       TreeWaitingForMeckieGone,
       TreeReadyToTalk,
       TreeWaitingForOwlGone,
@@ -49,6 +50,8 @@ export default class TreeScene extends Scene {
       TreeWillAllowEntry,
       TreeAllowedEntry
     ], [
+      TreeScaredOfMeckie,
+      TreeStillWaitingForMeckieGone,
       TreeAllowingAscend,
       TreeStillWaitingForOwlGone,
       AntoniusRequestsEntryForTheFirstTime,
@@ -180,10 +183,59 @@ export default class TreeScene extends Scene {
 // Tree States
 // ---------------------------------------------------------------------------
 
+class InitialTree extends SceneState<TreeScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.characters.tree.interactionEnabled = true
+
+    scene.interactiveObjects.toCanopyArrow.visible = false
+    scene.interactiveObjects.toCaveArrow.visible = false
+
+    this.listeners.push(scene.characters.tree.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(TreeScaredOfMeckie)
+    ))
+  }
+}
+
+class TreeScaredOfMeckie extends SceneStateTransition<TreeScene> {
+  public async enter() {
+    const scene = this.scene
+
+    await scene.characters.tree.speech.say('So ein riesiges Messer...', 2, 'scared')
+    await scene.characters.antonius.speech.say('Ein sprechender Baum?\nMich wundert gar nichts mehr', null, 'ssslssss')
+    await scene.characters.tree.speech.say('\"seufz\"', 1, 'scared')
+    await scene.characters.antonius.speech.say('Was liegt dir auf dem Herzen?', null, 'sssl')
+    await scene.characters.tree.speech.say('Ich hab so Angst um meine Rinde!', 2, 'scared')
+    await scene.characters.tree.speech.say('Dieser Mann da vorne fuchtelt so wild mit seinem Messer herum', 3, 'scared')
+    await scene.characters.tree.speech.say('er wird bestimmt mit einer Liebesbotschaft meinen schönen Teint ruinieren!', 3, 'scared')
+    await scene.characters.antonius.speech.say('Ja das hat schon eine stattliche Größe, dieses Messer!', null, 'lssslsl')
+
+    return TreeWaitingForMeckieGone
+  }
+}
+
 class TreeWaitingForMeckieGone extends SceneState<TreeScene> {
   public async show() {
-    this.scene.interactiveObjects.toCanopyArrow.visible = false
-    this.scene.interactiveObjects.toCaveArrow.visible = false
+    const scene = this.scene
+
+    scene.interactiveObjects.toCanopyArrow.visible = false
+    scene.interactiveObjects.toCaveArrow.visible = false
+
+    scene.characters.tree.interactionEnabled = true
+    this.listeners.push(scene.characters.tree.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(TreeStillWaitingForMeckieGone)
+    ))
+  }
+}
+
+class TreeStillWaitingForMeckieGone extends SceneStateTransition<TreeScene> {
+  public async enter() {
+    const scene = this.scene
+
+    await scene.characters.tree.speech.say('Bitte mach, dass dieser Messermann verschwindet', 3, 'scared')
+
+    return TreeWaitingForMeckieGone
   }
 }
 
