@@ -1,5 +1,5 @@
 import { Button } from '../../gameObjects/button'
-import { Atlases } from '../../assets'
+import { Atlases, Json } from '../../assets'
 import Character from '../../characters/character'
 import GameObject from '../../gameObjects/gameObject'
 
@@ -36,6 +36,8 @@ export default abstract class Scene extends Phaser.State implements Pausable {
   private atmoKeys: string[]
   private musicKeys: string[]
 
+  private dialogs: { [name: string]: [string, string | string[] | string[][], any | any[]][] } = {}
+
   private backgroundImage: Phaser.Sprite
 
   public settingsButton: Button
@@ -46,7 +48,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
   public onShutdown = new Phaser.Signal()
 
   constructor(game: Phaser.Game, private backgroundKey,
-              atmoKeys: string | string[] = [], musicKeys: string | string[] = []) {
+              atmoKeys: string | string[] = [], musicKeys: string | string[] = [], dialogJsonKey?: string) {
     super()
 
     this.tweens = new Phaser.TweenManager(game)
@@ -65,6 +67,10 @@ export default abstract class Scene extends Phaser.State implements Pausable {
       this.settingsButton.isPaused.value = isPaused
       this.inventoryButton.isPaused.value = isPaused
     })
+
+    if (dialogJsonKey) {
+      this.dialogs = game.cache.getJSON(dialogJsonKey)
+    }
   }
 
   public getScene<T extends Scene>(name: string): T {
@@ -191,6 +197,38 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     this._isVisible = false
 
     this.onShutdown.dispatch()
+  }
+
+  public async playDialogJson(key: string) {
+    const dialog = this.dialogs[key]
+    if (dialog) {
+      await this.playDialog.apply(this, dialog)
+    }
+  }
+
+  public async playDialog(...lines: [string, string | string[] | string[][], any | any[]][]) {
+    for (const line of lines) {
+      const character = this.characters[line[0]]
+
+      const rawParams = line[2]
+      const speechParams = Array.isArray(rawParams) ? rawParams : [rawParams]
+
+      const rawText: string | string[] | string[][] = line[1]
+      let lines: string[]
+      if (Array.isArray(rawText)) {
+        if (Array.isArray(rawText[1])) {
+          lines = Phaser.ArrayUtils.getRandomItem(<string[][]>rawText)
+        } else {
+          lines = <string[]>rawText
+        }
+      } else {
+        lines = [rawText]
+      }
+      const text = lines.join('\n')
+
+      speechParams.unshift(text)
+      await character.speech.say.apply(character.speech, speechParams)
+    }
   }
 
   public clickedAnywhere(ignorePause: boolean = false): Promise<void> {
