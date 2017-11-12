@@ -37,51 +37,77 @@ export abstract class SceneStateTransition<T extends Scene> {
 }
 
 export class TransitionCondition {
-  private _isSatisfied = false
-
-  private constructor(public readonly satisfied: Phaser.Signal) {
-    satisfied.add(value => this._isSatisfied = value)
-  }
+  private constructor(
+    public readonly satisfied: Property<boolean>,
+    private readonly ancestors: TransitionCondition[] = [],
+    private readonly defaultValue = false
+  ) { }
 
   public get isSatisfied(): boolean {
-    return this._isSatisfied
+    return this.satisfied.value
+  }
+
+  public reset() {
+    // If the condition is derived of a combination of other conditions, it
+    // should be enough to reset the ancestors and not the actual condition itself.
+    if (Array.isArray(this.ancestors) && this.ancestors.length > 0) {
+      this.ancestors.forEach(ancestor => ancestor.reset())
+    } else {
+      this.satisfied.value = this.defaultValue
+    }
   }
 
   public static reachedState<T extends Scene>(
       stateManager: SceneStateManager<T>,
       targetState: Extending<SceneState<T>>): TransitionCondition {
-    let stateReached = false
+    let stateReached = new Property(false)
 
-    return new TransitionCondition(stateManager.onActiveStateChanged
-      .map(newState => stateReached = stateReached || newState instanceof targetState)
+    stateManager.onActiveStateChanged
+      .map(newState => stateReached.value = stateReached.value || newState instanceof targetState)
       .discardDuplicates()
-    )
+      .add(value => stateReached.value = value)
+
+    return new TransitionCondition(stateReached)
   }
 
   public static isState<T extends Scene>(
       stateManager: SceneStateManager<T>,
       targetState: Extending<SceneState<T>>): TransitionCondition {
-    return new TransitionCondition(stateManager.onActiveStateChanged
+    let isState = new Property(false)
+
+    stateManager.onActiveStateChanged
       .map(state => state instanceof targetState)
-    )
+      .add(value => isState.value = value)
+
+    return new TransitionCondition(isState)
   }
 
   public and(other: TransitionCondition): TransitionCondition {
-    return new TransitionCondition(this.satisfied.combineWith(
-      other.satisfied,
-      (l, r) => l && r
-    ))
+    let and = new Property(false)
+
+    this.satisfied.onValueChanged
+      .combineWith(other.satisfied.onValueChanged, (l, r) => l && r)
+      .add(value => and.value = value)
+
+    return new TransitionCondition(and, [this, other])
   }
 
   public or(other: TransitionCondition): TransitionCondition {
-    return new TransitionCondition(this.satisfied.combineWith(
-      other.satisfied,
-      (l, r) => l || r
-    ))
+    let or = new Property(false)
+
+    this.satisfied.onValueChanged
+      .combineWith(other.satisfied.onValueChanged, (l, r) => l || r)
+      .add(value => or.value = value)
+
+    return new TransitionCondition(or, [this, other])
   }
 
   public not(): TransitionCondition {
-    return new TransitionCondition(this.satisfied.map(value => !value))
+    let not = new Property(true)
+
+    this.satisfied.onValueChanged.add(value => not.value = !value)
+
+    return new TransitionCondition(not, [this], true)
   }
 }
 
@@ -90,7 +116,7 @@ export class ConditionalStateTransition<T extends Scene> {
               private readonly transitionCondition: TransitionCondition) { }
 
   get satisfied(): Phaser.Signal {
-    return this.transitionCondition.satisfied
+    return this.transitionCondition.satisfied.onValueChanged
   }
 
   get isSatisfied(): boolean {
@@ -100,6 +126,10 @@ export class ConditionalStateTransition<T extends Scene> {
   get target(): Extending<SceneState<T>>|Extending<SceneStateTransition<T>> {
     return this.targetState
   }
+
+  reset() {
+    this.transitionCondition.reset()
+  }
 }
 
 export class SceneStateManager<T extends Scene> {
@@ -108,6 +138,8 @@ export class SceneStateManager<T extends Scene> {
   private activeState: SceneState<T>
 
   private transitions: { type: Extending<SceneStateTransition<T>>, instance: SceneStateTransition<T> }[] = []
+
+  private conditionalTransitions: ConditionalStateTransition<T>[] = []
 
   public onActiveStateChanged = new Phaser.Signal()
 
@@ -136,7 +168,14 @@ export class SceneStateManager<T extends Scene> {
     scene.onShutdown.add(() => this.onSceneShutDown())
   }
 
+  public resetStates(): Promise<void> {
+    this.conditionalTransitions.forEach(transition => transition.reset())
+    return this._setActiveState(this.defaultState)
+  }
+
   public registerConditionalTransitions(...transitions: ConditionalStateTransition<T>[]) {
+    this.conditionalTransitions = this.conditionalTransitions.concat(transitions)
+
     transitions.forEach(condition => {
       const validTarget = this.states.reduce((acc, state) => acc || (state.type === condition.target), false)
         || this.transitions.reduce((acc, transition) => acc || (transition.type === condition.target), false)
