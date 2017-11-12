@@ -226,8 +226,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
       }
       const text = lines.join('\n')
 
-      speechParams.unshift(text)
-      await character.speech.say.apply(character.speech, speechParams)
+      await character.speech.say.apply(character.speech, [text].concat(speechParams))
     }
   }
 
