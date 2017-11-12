@@ -6,7 +6,7 @@ import { SceneStateManager
        , TransitionCondition
        } from '../../utils/stateManager'
 
-import { Images, Audio } from '../../assets'
+import { Audio, Images, Json } from '../../assets'
 
 import AntoniusCharacter from '../../characters/antonius'
 import OwlCharacter from '../../characters/owl'
@@ -55,7 +55,9 @@ export default class CanopyScene extends Scene {
     super(
       game,
       Images.backgroundsBackgroundTree.key,
-      Audio.soundscapesScene3.key
+      Audio.soundscapesScene3.key,
+      [],
+      Json.dialogsCanopy.key
     )
   }
 
@@ -131,7 +133,7 @@ class AntoniusBeingDisgusted extends SceneStateTransition<CanopyScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.antonius.speech.say('So eine Sauerei.', null, 'lsssl')
+    await scene.playDialogJson('antoniusBeingDisgusted')
 
     return OwlPeeingOnTree
   }

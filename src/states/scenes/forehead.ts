@@ -6,7 +6,7 @@ import { SceneStateManager
        , TransitionCondition
        } from '../../utils/stateManager'
 
-import { Images, Audio } from '../../assets'
+import { Audio, Images, Json } from '../../assets'
 
 import AntoniusCharacter from '../../characters/antonius'
 import PainterCharacter from '../../characters/painter'
@@ -57,7 +57,9 @@ export default class ForeheadScene extends Scene {
     super(
       game,
       Images.backgroundsBackgroundStirn.key,
-      Audio.soundscapesScene3.key // TODO: replace with soundscape for scene 2
+      Audio.soundscapesScene3.key, // TODO: replace with soundscape for scene 2
+      [],
+      Json.dialogsForehead.key
     )
   }
 
@@ -129,9 +131,7 @@ class PainterComplains extends SceneStateTransition<ForeheadScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.antonius.speech.say('Was malt Ihr da?', null, 'sssl')
-    await scene.characters.painter.speech.say('Wie soll ich hier malen\nmit diesem Kerl neben mir?', 4, 'unsatisfied')
-    await scene.characters.painter.speech.say('Kann dem nicht mal jemand\nden Eimer wegnehmen?', 4, 'unsatisfied')
+    await scene.playDialogJson('painterComplains')
 
     return PainterIsComplaining
   }
@@ -163,7 +163,7 @@ class PainterAsksForColor extends SceneStateTransition<ForeheadScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.painter.speech.say('Ach, mit so wenigen Farben\nmacht das Malen keinen Spaß.', 4, 'unsatisfied')
+    await scene.playDialogJson('painterAsksForColor')
 
     return PainterNeedsColor
   }
@@ -184,18 +184,17 @@ class PainterPaints extends SceneStateTransition<ForeheadScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.antonius.speech.say('Mit diesen leuchtenden Farben\ngelingt es bestimmt besser!', null, 'ssslsslslssslss')
-    await scene.characters.painter.speech.say('Ich kann\'s ja mal probieren...', 3, 'unsatisfied')
+    await scene.playDialogJson('painterBeforePainting')
 
     await scene.characters.painter.setActiveState('painting')
     await scene.wait(1)
-    await scene.characters.painter.speech.say('Oh, so bunt!', 2, 'satisfied')
+    await scene.playDialogJson('painterPaintingStage1')
     await scene.characters.painter.setActiveState('painting')
     await scene.wait(1)
-    await scene.characters.painter.speech.say('Wow!', 2, 'satisfied')
+    await scene.playDialogJson('painterPaintingStage2')
     await scene.characters.painter.setActiveState('painting')
     await scene.wait(1)
-    await scene.characters.painter.speech.say('Ausgezeichnet!', 2, 'satisfied')
+    await scene.playDialogJson('painterPaintingStage3')
 
     return PainterIsDoneWithPainting
   }
@@ -230,8 +229,7 @@ class BucketheadAsksForHelp extends SceneStateTransition<ForeheadScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.antonius.speech.say('Ist das nicht unbequem mit\ndem Eimer auf dem Kopf?', null, 'slssslssslssl')
-    await scene.characters.buckethead.speech.say('Ja, aber ich habe nichts anderes,\num mich vor dem Löffel zu schützen!', 5)
+    await scene.playDialogJson('bucketheadAsksForHelp')
 
     return BucketheadIsAnnoying
   }
@@ -252,9 +250,9 @@ class BucketheadGetsAHat extends SceneStateTransition<ForeheadScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.antonius.speech.say('Wie wäre es denn hiermit?', null, 'slssssl')
+    await scene.playDialogJson('antoniusBringsHat')
     Inventory.instance.takeItem(Images.hat.key)
-    await scene.characters.buckethead.hatSpeech.say('Ja, der Hut sieht deutlich\nbesser aus!', 3)
+    await scene.playDialogJson('bucketheadTakesHat')
     Inventory.instance.addItem(Images.bucket.key)
 
     return BucketheadIsStealthy

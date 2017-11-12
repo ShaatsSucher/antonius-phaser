@@ -1,7 +1,7 @@
 import Scene from './scene'
 import { SceneStateManager, SceneState, SceneStateTransition } from '../../utils/stateManager'
 
-import { Images, Audio } from '../../assets'
+import { Audio, Images, Json } from '../../assets'
 
 import AntoniusCharacter from '../../characters/antonius'
 import EggWomanCharacter from '../../characters/eggwoman'
@@ -50,7 +50,9 @@ export default class KitchenScene extends Scene {
     super(
       game,
       Images.backgroundsBackgroundChef.key,
-      Audio.soundscapesScene10.key
+      Audio.soundscapesScene10.key,
+      [],
+      Json.dialogsKitchen.key
     )
   }
 
@@ -122,16 +124,7 @@ class WeNeedWater extends SceneStateTransition<KitchenScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.antonius.speech.say('Ähhh ... Hallo', null, 'lss')
-    await scene.characters.cook1.speech.say('Was will den der da von uns?', 4)
-    await scene.characters.cook2.speech.say('Frag ihn doch', 2)
-    await scene.characters.cook1.speech.say('Frag du ihn doch', 3)
-    await scene.characters.antonius.speech.say('Kann ich euch irgendwie helfen?', null, 'sssls')
-    await scene.characters.cook2.speech.say('Wir brauchen noch Wasser fuer unsere Suppe', 6)
-    await scene.characters.cook1.speech.say('Wolltest du das nicht holen?', 5)
-    await scene.characters.cook2.speech.say('Nein. Mein Bein ist verrenkt', 5)
-    await scene.characters.cook1.speech.say('Stimmt, mein Bein ist ja auch\naeh verrenkt', 6)
-    await scene.characters.antonius.speech.say('Ich kuemmere mich darum', null, 'slss')
+    await scene.playDialogJson('cooksNeedWater')
 
     return WaitingForWater
   }
@@ -140,7 +133,7 @@ class WeNeedWater extends SceneStateTransition<KitchenScene> {
 export class WaitingForWater extends SceneState<KitchenScene> {
   public async show() {
     const c = this.scene.characters
-    
+
     c.cook1.interactionEnabled = true
     c.cook2.interactionEnabled = true
 
@@ -167,10 +160,9 @@ export class WaitingForWater extends SceneState<KitchenScene> {
 
 class StillNeedWater extends SceneStateTransition<KitchenScene> {
   async enter() {
-    const c = this.scene.characters
+    const scene = this.scene
 
-    await c.cook2.speech.say('Ach, meine Beine\nquaelen mich so sehr', 5)
-    await c.cook1.speech.say('Mich auch', 2)
+    await scene.playDialogJson('cooksWaitingForWater')
 
     return WaitingForWater
   }
@@ -178,12 +170,9 @@ class StillNeedWater extends SceneStateTransition<KitchenScene> {
 
 class WeNeedFish extends SceneStateTransition<KitchenScene> {
   async enter() {
-    const c = this.scene.characters
+    const scene = this.scene
 
-    await c.antonius.speech.say('Ich habe hier etwas Wasser.\nWollt ihr das haben?', null, 'ssslsss')
-    await c.cook1.speech.say('Ja, das sollte reichen', 4)
-    await c.cook2.speech.say('Aber fuer die Suppe brauchen wir noch Fisch', 5)
-    await c.antonius.speech.say('Fisch? Kein Problem', null, 'lss')
+    await scene.playDialogJson('cooksNeedFish')
 
     return WaitingForFish
   }
@@ -219,10 +208,9 @@ export class WaitingForFish extends SceneState<KitchenScene> {
 
 class StillNeedFish extends SceneStateTransition<KitchenScene> {
   async enter() {
-    const c = this.scene.characters
+    const scene = this.scene
 
-    await c.cook2.speech.say('Ach, meine Beine\nquaelen mich so sehr', 5)
-    await c.cook1.speech.say('Mich auch', 2)
+    await scene.playDialogJson('cooksWaitingForFish')
 
     return WaitingForFish
   }
@@ -230,11 +218,9 @@ class StillNeedFish extends SceneStateTransition<KitchenScene> {
 
 class WeNeedVeggies extends SceneStateTransition<KitchenScene> {
   async enter() {
-    const c = this.scene.characters
+    const scene = this.scene
 
-    await c.cook1.speech.say('Jetzt fehlt nur noch Gemuese', 4)
-    await c.cook2.speech.say('Waere mein Bein nicht so verrenkt,\nwuerde ich sofort welches holen', 7)
-    await c.antonius.speech.say('Schon unterwegs', null, 'ls')
+    await scene.playDialogJson('cooksNeedVeggies')
 
     return WaitingForVeggies
   }
@@ -274,10 +260,9 @@ export class WaitingForVeggies extends SceneState<KitchenScene> {
 
 class StillNeedVeggies extends SceneStateTransition<KitchenScene> {
   async enter() {
-    const c = this.scene.characters
+    const scene = this.scene
 
-    await c.cook2.speech.say('Ach, meine Beine\nquaelen mich so sehr', 5)
-    await c.cook1.speech.say('Mich auch', 2)
+    await scene.playDialogJson('cooksWaitingForVeggies')
 
     return WaitingForVeggies
   }
@@ -285,10 +270,9 @@ class StillNeedVeggies extends SceneStateTransition<KitchenScene> {
 
 class VeggiesNotCut extends SceneStateTransition<KitchenScene> {
   async enter() {
-    const c = this.scene.characters
+    const scene = this.scene
 
-    await c.cook1.speech.say('Das ist ja noch gar nicht geschnitten!', 5)
-    await c.cook2.speech.say('Damit koennen wir keine Suppe machen', 5)
+    await scene.playDialogJson('cooksWantVeggiesCut')
 
     return WaitingForVeggies
   }
@@ -296,13 +280,10 @@ class VeggiesNotCut extends SceneStateTransition<KitchenScene> {
 
 class FinishCooking extends SceneStateTransition<KitchenScene> {
   async enter() {
-    const c = this.scene.characters
+    const scene = this.scene
+    const c = scene.characters
 
-    await c.antonius.speech.say('Fehlt sonst noch etwas?', null, 'ssl')
-    await c.cook1.speech.say('Toll gemacht, Bruder', 3)
-    await c.cook2.speech.say('Sehr gute Zutaten, die wir da gesammelt haben', 5)
-    await c.cook1.speech.say('Wir koennen stolz auf uns sein', 4)
-    await c.antonius.speech.say('Na dann guten Appetit!', null, 'lsss')
+    await scene.playDialogJson('cooksCooking')
 
     c.cook1.scale.x = -3
     c.cook1.setActiveState('walking')
@@ -310,8 +291,8 @@ class FinishCooking extends SceneStateTransition<KitchenScene> {
 
     const xmin = -Math.abs(c.cook1.width * c.cook1.anchor.x)
     await Promise.all([
-      this.scene.tweens.create(c.cook1).to({x: xmin}, 3000).start().onComplete.asPromise(),
-      this.scene.tweens.create(c.cook2).to({x: xmin}, 3000).start().onComplete.asPromise()
+      scene.tweens.create(c.cook1).to({x: xmin}, 3000).start().onComplete.asPromise(),
+      scene.tweens.create(c.cook2).to({x: xmin}, 3000).start().onComplete.asPromise()
     ])
 
     // TODO: make it so you have to click the soup pot, to obtain soup

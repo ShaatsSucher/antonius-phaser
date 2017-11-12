@@ -1,7 +1,7 @@
 import Scene from './scene'
 import { SceneStateManager, SceneState, SceneStateTransition } from '../../utils/stateManager'
 
-import { Images, Audio } from '../../assets'
+import { Audio, Images, Json } from '../../assets'
 
 import AntoniusCharacter from '../../characters/antonius'
 
@@ -32,7 +32,9 @@ export default class SeaScene extends Scene {
     super(
       game,
       Images.backgroundsBackgroundAussichtUntenVersion2.key,
-      Audio.soundscapesScene9.key // TODO: replace with correct soundscape
+      Audio.soundscapesScene9.key, // TODO: replace with correct soundscape
+      [],
+      Json.dialogsSea.key
     )
   }
 

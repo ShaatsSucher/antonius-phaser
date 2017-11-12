@@ -6,7 +6,7 @@ import { SceneStateManager
        , TransitionCondition
        } from '../../utils/stateManager'
 
-import { Images, Audio } from '../../assets'
+import { Audio, Images, Json } from '../../assets'
 
 import HellmouthCharacter from '../../characters/hellmouth'
 import AntoniusCharacter from '../../characters/antonius'
@@ -60,7 +60,8 @@ export default class HeadScene extends Scene {
       game,
       Images.backgroundsHead.key,
       Audio.soundscapesScene5.key,
-      Audio.musicHeadScreen.key
+      Audio.musicHeadScreen.key,
+      Json.dialogsHead.key
     )
   }
 
@@ -137,12 +138,7 @@ class IntroductionSpeech extends SceneStateTransition<HeadScene> {
 
       scene.allInteractiveObjects.forEach(obj => obj.visible = false)
 
-      await scene.characters.hellmouth.speech.say('Um Gottes Willen...', 3)
-      await scene.characters.hellmouth.speech.say('Es toben ganz schön viele\ndieser Dämonen herum!!', 6)
-      await scene.characters.hellmouth.speech.say('Wenn du irgendwelche Fragen hast,\nkannst du dich jederzeit an mich wenden!', 6)
-      await scene.characters.hellmouth.speech.say('Du schaffst das, Antonius!', 3)
-      await scene.characters.hellmouth.speech.say('Wenn nicht du, wer dann?', 3)
-      await scene.characters.hellmouth.speech.say('Nun geh und leg los...', 3)
+      await scene.playDialogJson('headIntro')
     }
     return Silent
   }
@@ -168,7 +164,7 @@ class FishHintSpeech extends SceneStateTransition<HeadScene> {
   public async enter(visible: boolean) {
     if (visible) {
       const scene = this.scene
-      await scene.characters.hellmouth.speech.say('Hmmm...\nAus dem Süden kommt ein merkwürdiger Geruch!', 4)
+      await scene.playDialogJson('fishHint')
     }
     return FishHintAvailable
   }
