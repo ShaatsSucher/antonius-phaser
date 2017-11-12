@@ -15,7 +15,11 @@ export default class EggWomanCharacter extends Character {
   constructor(scene: Scene, x: number, y: number) {
     super(scene, x, y, Assets.Spritesheets.eggwoman.key)
 
-    this.animations.add('idle', [0], 0, false)
+    this.animations.add('idle', ArrayUtils.range(2, 12), 8, false)
+    this.animations.add('talking', [0, 1], 8, true)
+    this.animations.add('walking', ArrayUtils.range(17, 28), 8, true)
+    this.animations.add('enter_walking', [13, 14, 15, 16], 8, false)
+    this.animations.add('exit_walking', [16, 15, 14, 13], 8, false)
 
     this.addCharacterState('idle', new IdleState(this))
   }
@@ -26,5 +30,41 @@ class IdleState implements CharacterState<EggWomanCharacter> {
 
   async enter() {
     this.character.play('idle')
+  }
+}
+
+class TalkingState implements CharacterState<EggWomanCharacter> {
+  constructor(public character: EggWomanCharacter) {}
+
+  async enter() {
+    this.character.animations.stop()
+    this.character.play('talking')
+  }
+}
+
+class WalkingState implements CharacterState<EggWomanCharacter> {
+  constructor(public character: EggWomanCharacter) {}
+
+  async enter() {
+    this.character.animations.stop()
+    this.character.play('walking')
+  }
+}
+
+class EnterWalkingState implements CharacterState<EggWomanCharacter> {
+  constructor(public character: EggWomanCharacter) {}
+
+  async enter() {
+    this.character.animations.stop()
+    this.character.play('enter_walking')
+  }
+}
+
+class ExitWalkingState implements CharacterState<EggWomanCharacter> {
+  constructor(public character: EggWomanCharacter) {}
+
+  async enter() {
+    this.character.animations.stop()
+    this.character.play('exit_walking')
   }
 }
