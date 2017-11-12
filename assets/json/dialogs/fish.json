@@ -1,0 +1,49 @@
+{
+  "fishIntro": [
+    [ "antonius", [ "Ach, ich dachte doch",
+                    "irgendwas riecht hier fischig."
+                  ], [null, "ssslsss"] ],
+
+    [ "fish",     [ "Ent-schul-di-gung, aber was so \"fischig\"",
+                    "riecht ist ein Canal No. 5!"
+                  ], 10 ],
+
+    [ "antonius",   "Oh, du sprichst!", [null, "lss"] ],
+
+    [ "fish",     [ "Nicht nur spreche ich, ich atme Luft!",
+                    "Wasser ist ja *schnauf* so was von altmodisch."
+                  ], 8],
+    [ "fish",       "Frischluft, *röchel* die atmet man heutzutage!", 6 ],
+
+    [ "antonius", [ "Sicher, dass es dir gut geht?",
+                    "Du siehst ein bisschen blass um die Kiemen aus..."
+                  ], [null, "ssslsls"] ]
+  ],
+  "fishIsFine": [
+    [ "fish",       "Mir geht es *keuch* BLEN-DEND!", 5 ]
+  ],
+  "fishSuffocates": [
+    [ "fish",       "Lust atmen ist *japs* gesund!", 4 ],
+    [ "fish",     [ "Es verjüngt die Haut, es reinigt die Poren,",
+                    "alles dank der Lunge!"
+                  ], 6 ],
+    [ "fish",        "... Moment, habe ich eigentlich eine Lunge?", 5 ]
+  ],
+  "fishSuffocated": [
+    [ "antonius", [ "Hmm... alles Teil von Gottes Plan.",
+                    "Ganz bestimmt."
+                  ], [null, "sssssl"] ]
+  ],
+  "pigWontGo": [
+    [ "alphapig", [ "Ich gehe hier nicht weg.",
+                    "Nicht ohne meine Ruder!"
+                  ], [null, 4] ]
+  ],
+  "pigLeaves": [
+    [ "alphapig",   "Oh, meine Ruder sind wieder frei!", 3 ],
+
+    [ "antonius",   "Wolltest du denn wegfahren?", [null, "slslsl"] ],
+
+    [ "alphapig",   "Nein, ich wollte nur meine Ruder!", 3 ]
+  ]
+}

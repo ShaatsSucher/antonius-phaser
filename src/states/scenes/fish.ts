@@ -8,7 +8,7 @@ import { SceneStateManager
 import { AntoniusBroughtFish } from './bard'
 import { Silent } from './head'
 
-import { Images, Audio } from '../../assets'
+import { Audio, Images, Json } from '../../assets'
 
 import AntoniusCharacter from '../../characters/antonius'
 import FishCharacter from '../../characters/fish'
@@ -67,7 +67,8 @@ export default class FishScene extends Scene {
       game,
       Images.backgroundsFish.key,
       Audio.soundscapesScene9.key,
-      Audio.musicHeadScreen.key
+      Audio.musicHeadScreen.key,
+      Json.dialogsFish.key
     )
   }
 
@@ -148,12 +149,7 @@ class FishConversation extends SceneStateTransition<FishScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.antonius.speech.say('Ach, ich dachte doch\nirgendwas riecht hier fischig', null, 'ssslsss')
-    await scene.characters.fish.speech.say('Ent-schul-di-gung, aber was so "fischig"\nriecht ist ein Canal No. 5!', 10)
-    await scene.characters.antonius.speech.say('Oh, du sprichst!', null, 'lss')
-    await scene.characters.fish.speech.say('Nicht nur spreche ich, ich atme Luft!\nWasser ist ja *schnauf* so was von altmodisch.', 8)
-    await scene.characters.fish.speech.say('Frischluft, *röchel* die atmet man heutzutage!', 6)
-    await scene.characters.antonius.speech.say('Sicher, dass es dir gut geht?\nDu siehst ein bisschen blass um die Kiemen aus...', null, 'ssslsls')
+    await scene.playDialogJson('fishIntro')
 
     return ImFine
   }
@@ -163,7 +159,7 @@ class ImFine extends SceneStateTransition<FishScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.fish.speech.say('Mir geht es *keuch* BLEN-DEND!', 5)
+    await scene.playDialogJson('fishIsFine')
 
     return FishAlive
   }
@@ -197,14 +193,12 @@ class Suffocation extends SceneStateTransition<FishScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.fish.speech.say('Luft atmen ist *japs* gesund!', 4)
-    await scene.characters.fish.speech.say('Es verjüngt die Haut, es reinigt die Poren,\nalles dank der Lunge!', 6)
-    await scene.characters.fish.speech.say('... Moment, hab ich eigentlich eine Lunge?', 5)
+    await scene.playDialogJson('fishSuffocates')
 
     await scene.characters.fish.setActiveState('dying')
     await AudioManager.instance.tracks.speech.playClip(Audio.fishFishDiesFishDies.key)
 
-    await scene.characters.antonius.speech.say('Hmm… alles Teil von Gottes Plan. Ganz bestimmt.', null, 'sssssl')
+    await scene.playDialogJson('fishSuffocated')
 
     return FishDead
   }
@@ -262,7 +256,7 @@ class NotWithoutMyRudders extends SceneStateTransition<FishScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.alphapig.speech.say('Ich gehe hier nicht weg.\nNicht ohne meine Ruder!', null, 4)
+    await scene.playDialogJson('pigWontGo')
 
     return AlphaPigWaiting
   }
@@ -293,9 +287,7 @@ class AlphaPigJourney extends SceneStateTransition<FishScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.alphapig.speech.say('Oh, meine Ruder sind wieder frei!', 3)
-    await scene.characters.antonius.speech.say('Wolltest du denn wegfahren?', null, 'slslsl')
-    await scene.characters.alphapig.speech.say('Nein, ich wollte nur meine Ruder!', 3)
+    await scene.playDialogJson('pigLeaves')
 
     scene.characters.alphapig.setActiveState('walking')
 
