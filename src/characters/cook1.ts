@@ -8,7 +8,7 @@ import SpeechHelper from '../utils/speechHelper'
 export default class Cook1Character extends Character {
   public readonly speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.random(
     ArrayUtils.range(1, 21).map(i =>
-      Assets.Audio[`cook2${StringUtils.intToString(i, 3)}`].key
+      Assets.Audio[`cook1${StringUtils.intToString(i, 3)}`].key
     )
   ))
 
