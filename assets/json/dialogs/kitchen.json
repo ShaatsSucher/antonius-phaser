@@ -1,0 +1,84 @@
+{
+  "cooksNeedWater": [
+    [ "antonius",   "Ähhh ... Hallo.", [null, "lss"] ],
+
+    [ "cook1",      "Was will denn der da von uns?", 4 ],
+
+    [ "cook2",      "Frag' ihn doch.", 2 ],
+
+    [ "cook1",      "Frag' du ihn doch!", 3 ],
+
+    [ "antonius",   "Kann ich euch irgendwie helfen?", [null, "sssls"] ],
+
+    [ "cook2",      "Wir brauchen noch Wasser für unsere Suppe.", 6 ],
+
+    [ "cook1",      "Wolltest du das nicht holen?", 5 ],
+
+    [ "cook2",      "Nein. Mein Bein ist verrenkt.", 5 ],
+
+    [ "cook1",    [ "Stimmt, mein Bein ist ja auch",
+                    "äh verrenkt."
+                  ], 5 ],
+
+    [ "antonius",   "Ich kümmere mich darum.", [null, "slss"] ]
+  ],
+  "cooksWaitingForWater": [
+    [ "cook2",    [ "Ach, meine Beine",
+                    "quälen mich so sehr."
+                  ], 5 ],
+
+    [ "cook1",      "Mich auch.", 2 ]
+  ],
+  "cooksNeedFish": [
+    [ "antonius", [ "Ich habe hier etwas Wasser.",
+                    "Wollt ihr das haben?"
+                  ], [null, "ssslsss"] ],
+
+    [ "cook1",      "Ja, das sollte reichen.", 4 ],
+
+    [ "cook2",      "Aber für die Suppe brauchen wir noch Fisch!", 5 ],
+
+    [ "antonius",   "Fisch? Kein Problem.", [null, "lss"] ]
+  ],
+  "cooksWaitingForFish": [
+    [ "cook2",    [ "Ach, meine Beine",
+                    "quälen mich so sehr."
+                  ], 5 ],
+
+    [ "cook1",      "Mich auch.", 2 ]
+  ],
+  "cooksNeedVeggies": [
+    [ "cook1",      "Jetzt fehlt nurnoch Gemüse!", 4 ],
+
+    [ "cook2",    [ "Wäre mein Bein nicht so verrenkt,",
+                    "würde ich sofort welches holen."
+                  ], 7 ],
+
+    [ "antonius",   "Schon unterwegs.", [null, "ls"] ]
+  ],
+  "cooksWaitingForVeggies": [
+    [ "cook2",    [ "Ach, meine Beine",
+                    "quälen mich so sehr."
+                  ], 5 ],
+
+    [ "cook1",      "Mich auch.", 2 ]
+  ],
+  "cooksWantVeggiesCut": [
+    [ "cook1",      "Das ist ja noch gar nicht geschnitten!", 5 ],
+
+    [ "cook2",      "Damit können wir keine Suppe machen.", 5 ]
+  ],
+  "cooksCooking": [
+    [ "antonius",   "Fehlt sonst noch etwas?", [null, "ssl"] ],
+
+    [ "cook1",      "Toll gemacht, Bruder!", 3 ],
+
+    [ "cook2",    [ "Seht gute Zutaten, die",
+                    "wir da gesammelt haben."
+                  ], 5 ],
+
+    [ "cook1",      "Wir können stolz auf uns sein!", 4 ],
+
+    [ "antonius",   "Na dann guten Appetit!", [null, "lsss"] ]
+  ]
+}
