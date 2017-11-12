@@ -199,6 +199,13 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     this.onShutdown.dispatch()
   }
 
+  public async resetStates() {
+    await Promise.all(
+      Object.keys(this.stateManagers)
+        .map(key => this.stateManagers[key])
+        .map(sm => sm.resetStates()))
+  }
+
   public async playDialogJson(key: string) {
     const dialog = this.dialogs[key]
     if (dialog) {
