@@ -1,7 +1,7 @@
 import Scene from './scene'
 import { SceneStateManager, SceneState, SceneStateTransition } from '../../utils/stateManager'
 
-import { Images, Audio } from '../../assets'
+import { Audio, Images, Json } from '../../assets'
 
 import AntoniusCharacter from '../../characters/antonius'
 import SwanCharacter from '../../characters/swan'
@@ -47,7 +47,9 @@ export default class ConcertScene extends Scene {
     super(
       game,
       Images.backgroundsBackgroundBremerStadtmusikanten.key, // same as bard ???
-      Audio.soundscapesScene3.key // TODO: replace with correct soundscape
+      Audio.soundscapesScene3.key, // TODO: replace with correct soundscape
+      [],
+      Json.dialogsConcert.key
     )
   }
 
