@@ -170,6 +170,8 @@ export class SceneStateManager<T extends Scene> {
 
   public resetStates(): Promise<void> {
     this.conditionalTransitions.forEach(transition => transition.reset())
+
+    this.isFirstTimeSettingState = true
     return this._setActiveState(this.defaultState)
   }
 

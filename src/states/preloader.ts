@@ -1,6 +1,8 @@
 import * as Assets from '../assets'
 import * as AssetUtils from '../utils/assetUtils'
 
+import Reset from './reset'
+
 import IntroScene from './scenes/intro'
 import HeadScene from './scenes/head'
 import BardScene from './scenes/bard'
@@ -47,6 +49,8 @@ export default class Preloader extends Phaser.State {
   }
 
   private startGame(): void {
+    this.state.add('reset', Reset)
+
     this.state.add('intro', IntroScene)
     this.state.add('head', HeadScene)
     this.state.add('bard', BardScene)

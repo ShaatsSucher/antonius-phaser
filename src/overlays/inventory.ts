@@ -111,6 +111,10 @@ export default class Inventory extends Phaser.Group {
       slotsWithItem.splice(slotId, 1)[0].clear()
     }
   }
+
+  public clear() {
+    this.slots.forEach(slot => slot.clear())
+  }
 }
 
 class InventorySlot {
