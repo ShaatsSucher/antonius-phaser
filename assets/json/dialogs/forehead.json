@@ -1,0 +1,50 @@
+{
+  "painterComplains": [
+    [ "antonius",   "Was malt Ihr da?", [null, "sssl"] ],
+
+    [ "painter",  [ "Wie soll ich hier malen",
+                    "mit diesem Kerl neben mir?"
+                  ], [4, "unsatisfied"] ],
+    [ "painter",  [ "Kann dem nicht mal jemand",
+                    "den Eimer wegnehmen?"
+                  ], [4, "unsatisfied"] ]
+  ],
+  "painterAsksForColor": [
+    [ "painter",  [ "Ach, mit so wenigen Farben",
+                    "macht das Malen keinen Spaß."
+                  ], [4, "unsatisfied"] ]
+  ],
+  "painterBeforePainting": [
+    [ "antonius", [ "Mit diesen leuchtenden Farben",
+                    "gelingt es bestimmt besser!"
+                  ], [null, "ssslsslslssslss"] ],
+
+    [ "painter",    "Ich kann's ja mal probieren...", [3, "unsatisfied"] ]
+  ],
+  "painterPaintingStage1": [
+    [ "painter",    "Oh, so bunt!", [2, "satisfied"] ]
+  ],
+  "painterPaintingStage2": [
+    [ "painter",    "Wow!", [2, "satisfied"] ]
+  ],
+  "painterPaintingStage3": [
+    [ "painter",    "Ausgezeichnet!", [2, "satisfied"] ]
+  ],
+  "bucketheadAsksForHelp": [
+    [ "antonius",   [ "Ist das nicht unbequem mit",
+                      "dem Eimer auf dem Kopf?"
+                    ], [null, "slssslssslssl"] ],
+
+    [ "buckethead", [ "Ja, aber ich habe nichts anderes,",
+                      "um mich vor dem Löffel zu schützen!"
+                    ], 5]
+  ],
+  "antoniusBringsHat": [
+    [ "antonius",     "Wie wäre es denn hiermit?", [null, "slssssl"] ]
+  ],
+  "bucketheadTakesHat": [
+    [ "buckethead", [ "Ja, der Hut sieht deutlich",
+                      "besser aus!"
+                    ], 3 ]
+  ]
+}
