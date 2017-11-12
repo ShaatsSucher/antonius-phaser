@@ -9,7 +9,7 @@ import { SceneStateManager
 import { FishHintAvailable, Suction } from './head'
 import { FishAlive, FishDying } from './fish'
 
-import { Audio, Images } from '../../assets'
+import { Audio, Images, Json } from '../../assets'
 
 import AntoniusCharacter from '../../characters/antonius'
 import BardCharacter from '../../characters/bard'
@@ -74,7 +74,7 @@ export default class BardScene extends Scene {
   }
 
   constructor(game: Phaser.Game) {
-    super(game, Images.backgroundsBard.key, Audio.soundscapesScene6.key, [])
+    super(game, Images.backgroundsBard.key, Audio.soundscapesScene6.key, [], Json.dialogsBard.key)
   }
 
   protected registerConditionalStateTransitions(scenes: { [title: string]: Scene }) {
@@ -187,15 +187,7 @@ class BardConversation extends SceneStateTransition<BardScene> {
 
     this.scene.setMusicClips(Audio.musicBard.key)
 
-    await scene.characters.goose.speech.say('Ach du meine Güte.\n Wie theatralisch!', 3)
-    await scene.characters.antonius.speech.say('Ihr da, auf dem fantastischen Reitwesen!', null, 'slssls')
-    await scene.characters.antonius.speech.say('Dieses Lied klingt so unendlich einsam,\nwarum seid Ihr so traurig?', null, 'ssssssss')
-    await scene.characters.bard.speech.say('Hört mir denn keiner zu?\nIch vermisse meine Freundin,\ndie Reitgans, sehr!', 10)
-    await scene.characters.goose.speech.say('So weit sind wir ja nicht voneinander entfernt...', 6)
-    await scene.characters.antonius.speech.say('Stimmt, soweit seid ihr doch\nnicht voneinander entfernt.', null, 'sssssss')
-    await scene.characters.antonius.speech.say('Dreht euch doch einmal um.', null, 'ssl')
-    await scene.characters.bard.speech.say('Das geht nicht. Da ist etwas hinter mir!', 6)
-    await scene.characters.antonius.speech.say('Ich sehe das Problem.\nVielleicht kann ich helfen.', null, 'ssssss')
+    await scene.playDialogJson('bardIntro')
 
     return CatInTheWay
   }
@@ -222,8 +214,8 @@ export class CatInTheWay extends SceneState<BardScene> {
 class AnnoyedCat extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
-    await scene.characters.cat.speech.say('[genervtes Miauen]', 4.9)
-    await scene.characters.antonius.speech.say('Das wird wohl schwieriger als gedacht...', null, 'sssssl')
+
+    await scene.playDialogJson('annoyedCat')
 
     return CatInTheWay
   }
@@ -232,12 +224,8 @@ class AnnoyedCat extends SceneStateTransition<BardScene> {
 class SadBard extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
-    await scene.characters.bard.speech.say('*seufz*', 2, 'practice')
-    await scene.characters.goose.speech.say(Phaser.ArrayUtils.getRandomItem([
-      'Oh Mann...',
-      'Wann hört das auf?',
-      'Meine Nerven!'
-    ]), 2)
+
+    await scene.playDialogJson('sadBard')
 
     return CatInTheWay
   }
@@ -259,16 +247,13 @@ class CatFeast extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.antonius.speech.say('Hier, Miez!\nIch hab einen Fisch für dich.', null, 'llsssslsl')
-    await scene.characters.cat.speech.say('...', 1, 'silent')
-    await scene.characters.antonius.speech.say('Komm, hol dir einen leckeren Fisch!', null, 'lsssssssl')
-    await scene.characters.cat.speech.say('...', 1, 'silent')
+    await scene.playDialogJson('catFeastBeforeAccepted')
+
     await scene.wait(0.5)
     Inventory.instance.takeItem(Images.filet.key)
     await scene.wait(0.5)
-    await scene.characters.cat.speech.say('... Angemessen.', 1, 'silent', Audio.catCatAccepts.key)
-    await scene.characters.antonius.speech.say('...', null, '')
-    await scene.characters.antonius.speech.say('Was?', null, 'l')
+
+    await scene.playDialogJson('catFeastAfterAccepted')
 
     await scene.tweens.create(scene.characters.cat).to({
       y: 150
@@ -302,18 +287,15 @@ class HelloThere extends SceneStateTransition<BardScene> {
 
     scene.characters.cat.visible = false
 
-    await scene.characters.bard.speech.say('Oh! Was für ein sonderbares Gefühl!', 3)
-    await scene.characters.bard.speech.say('Als hätte sich eine Blockade\nvon meinem Rücken gelöst!', 5)
-    await scene.characters.bard.speech.say('Was war das für eine schreckliche Last,\ndie soeben verschwunden ist?', 5)
+    await scene.playDialogJson('catGoneBeforeReversal')
+
     scene.characters.bard.scale.x = -3
     scene.characters.bard.x = 124
     scene.characters.bard.y = 7
     await scene.wait(0.5)
-    await scene.characters.bard.speech.say('Ach da bist du ja, Reitgans!', 3)
-    await scene.characters.goose.speech.say('... Ja, da bin ich.\nSchon die ganze Zeit.', 4)
-    await scene.characters.bard.speech.say('Oh, du wirst nicht glauben,\nwie lange ich nach dir gesucht habe!', 5)
-    await scene.characters.goose.speech.say('Ich kann\'s mir vorstellen.', 3)
-    await scene.characters.bard.speech.say('Komm, lass uns nach Hause gehen!', 3)
+
+    await scene.playDialogJson('catGoneAfterReversal')
+
     scene.characters.bard.scale.x = 3
     scene.characters.bard.x = 164
     scene.characters.goose.scale.x = -3
@@ -371,13 +353,7 @@ class MeckieIntroduction extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.meckie.speech.say('Schnibbel schnabbel schnapp!\nIch schneid dir die Kapuze ab!', null, 'sssslsll')
-    await scene.characters.antonius.speech.say('Immer mit der Ruhe!\nWas hast du denn mit dem Messer vor?', null, 'sslssl')
-    await scene.characters.meckie.speech.say('Ich häcksel alles, groß und klein\nund du könntest der nächste sein', null, 'sslsllslsll')
-    await scene.characters.antonius.speech.say('Wäre es in Ordnung wenn du das...\nnicht tun könntest?', null, 'sslsss')
-    await scene.characters.meckie.speech.say('Verschonen könnt ich dich vielleicht,\neinfach was zum hacken reicht.', null, 'sisllslssl')
-    await scene.characters.meckie.speech.say('Wie wär’s mit ‘nem Zerteil-Versuch\nmit deinem kleinen Bibel-Buch? Hähähähä!', null, 'isslisslh')
-    await scene.characters.antonius.speech.say('Also bitte, dies ist ein Buch Gottes!', null, 'sssl')
+    await scene.playDialogJson('meckieIntro')
 
     return MeckieRequest
   }
@@ -387,7 +363,7 @@ class MeckieRequest extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.meckie.speech.say('Willst du nicht enden als Eingeweide,\nbring etwas, das ich zerschneide!', null, 'sslslsllslh')
+    await scene.playDialogJson('meckieRequest')
 
     return WaitingForFish
   }
@@ -419,20 +395,18 @@ class CutFish extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.antonius.speech.say('Ich hätte hier einen Fisch,\nden du vielleicht zerschneiden könntest.', null, 'ssssss')
-    await scene.characters.meckie.speech.say('Ein Wasservieh, frisch aus der See,\nverwandle ich in Lachsfilet!', null, 'ilisi')
+    await scene.playDialogJson('cutFishBeforeCutting')
 
     Inventory.instance.takeItem(Images.fish.key)
 
     scene.characters.meckie.setActiveState('swinging')
     await scene.wait(1)
 
-    await scene.characters.antonius.speech.say('Toll! Willst du denn damit etwas kochen, oder…?', null, 'ssssl')
+    await scene.playDialogJson('cutFishAfterCutting')
 
     Inventory.instance.addItem(Images.filet.key, 2)
 
-    await scene.characters.meckie.speech.say('Was ich tun wollt’ hab ich getan,\nich bin ja eigentlich vegan.', null, 'ssslsslsslsl')
-    await scene.characters.antonius.speech.say('Praktisch!', null, 's')
+    await scene.playDialogJson('cutFishAfterPickup')
 
     return WaitingForVeggies
   }
@@ -453,7 +427,7 @@ class RequestingVeggies extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.meckie.speech.say('[placeholder]', null, 'i')
+    await scene.playDialogJson('requestingVeggies')
 
     return WaitingForVeggies
   }
@@ -474,8 +448,7 @@ class CuttingVeggies extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.meckie.speech.say('Ah, du bringst mir Kraut und Rüben,\nda kann ich noch mehr Schneiden üben!', null, 'isslslssllsi')
-    await scene.characters.antonius.speech.say('Bedien\' dich ruhig an dem Gemüse,\nes ist genug für Alle da!', null, 'sllslssllsssl')
+    await scene.playDialogJson('cuttingVeggiesBeforeCutting')
 
     Inventory.instance.takeItem(Images.veggies.key)
 
@@ -484,9 +457,7 @@ class CuttingVeggies extends SceneStateTransition<BardScene> {
 
     Inventory.instance.addItem(Images.slicedVeggies.key)
 
-    await scene.characters.meckie.speech.say('Danke für den Proviant,\ndas ist wie im Schlaraffenland!', null, 'sslslslsllslssl')
-    await scene.characters.meckie.speech.say('Das war jetzt auch mein letzter Reim,\nden Rest zerschnibbel ich daheim.', null, 'slsslsslslssl')
-    await scene.characters.antonius.speech.say('Tschüss!', null, 'l')
+    await scene.playDialogJson('cuttingVeggiesAfterCutting')
 
     scene.characters.meckie.scale.x = -3
     scene.characters.meckie.setActiveState('walking')

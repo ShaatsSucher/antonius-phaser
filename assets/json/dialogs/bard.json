@@ -1,0 +1,152 @@
+{
+  "bardIntro": [
+    [ "goose",    [ "Ach du meine Güte.",
+                    "Wie theatralisch!"
+                  ], 3 ],
+
+    [ "antonius",   "Ihr da, auf dem fantastischen Reitwesen!", [null, "slssls"] ],
+    [ "antonius", [ "Dieses Lied klingt so unendlich einsam,",
+                    "warum seid Ihr so traurig?"
+                  ], [null, "ssssssss"] ],
+
+    [ "bard",     [ "Hört mir denn keiner zu?",
+                    "Ich vermisse meine Freundin,",
+                    "die Reitgans, sehr!"
+                  ], 10 ],
+
+    [ "goose",      "So weit sind wir ja nicht voneinander entfernt...", 6 ],
+
+    [ "antonius", [ "Stimmt, so weit seid ihr doch",
+                    "nicht voneinander entfernt..."
+                  ], [null, "sssssss" ] ],
+    [ "antonius",   "Dreht Euch doch einmal um.", [null, "ssl" ] ],
+
+    [ "bard",       "Das geht nicht. Da ist etwas hinter mir!", 6 ],
+
+    [ "antonius", [ "Ich sehe das Problem.",
+                    "Vielleicht kann ich helfen."
+                  ], [null, "ssssss" ] ]
+  ],
+  "annoyedCat": [
+    [ "cat",        "[genervtes Miauen]", 4.9 ],
+
+    [ "antonius",   "Das wird wohl schwieriger als gedacht...", [null, "sssssl"] ]
+  ],
+  "sadBard": [
+    [ "bard",       "*seufz*", [2, "practice"] ],
+
+    [ "goose",    [["Oh Mann..."],
+                   ["Wann hört das auf?"],
+                   ["Meine Nerven!"]
+                  ], 2]
+  ],
+  "catFeastBeforeAccepted": [
+    [ "antonius", [ "Hier, Miez!",
+                    "Ich hab einen Fisch für dich."
+                  ], [null, "llsssslsl"] ],
+
+    ["cat",         "...", [1, "silent"] ],
+
+    ["antonius",    "Komm, hohl dir einen leckeren Fisch!", [null, "lsssssssl"] ],
+
+    ["cat",         "...", [1, "silent"] ]
+  ],
+  "catFeastAfterAccepted": [
+    ["cat",         "... Angemessen.", [1, "silent", "audioCatCatAccepts"] ],
+
+    ["antonius",    "...", [null, ""] ],
+    ["antonius",    "Was?", [null, "l"] ],
+  ],
+  "catGoneBeforeReversal": [
+    [ "bard",       "Oh! Was für ein sonderbares Gefühl!", 3],
+    [ "bard",     [ "Als hätte sich eine Blockade",
+                    "von meinem Rücken gelöst!"
+                 ], 5],
+    [ "bard",     [ "Was war das für eine schreckliche Last,",
+                    "die soeben verschwunden ist?"
+                 ], 5]
+  ],
+  "catGoneAfterReversal": [
+    [ "bard",       "Ach da bist du ja, Reitgans!", 3],
+
+    [ "goose",    [ "... Ja, da bin ich.",
+                    "Schon die ganze Zeit."
+                  ], 4],
+
+    [ "bard",     [ "Oh, du wirst nicht glauben,",
+                    "wie lange ich nach dir gesucht habe!"
+                  ], 5],
+
+    ["goose",       "Ich kann's mir vorstellen.", 3],
+
+    ["bard",        "Komm, lass uns nach Hause gehen!", 3]
+  ],
+  "meckieIntro": [
+    [ "meckie",   [ "Schnibbel schnabbel schnapp!",
+                    "Ich schneid dir die Kapute ab!"], [null, "sssslsll"] ],
+
+    [ "antonius", [ "Immer mit der Ruhe!",
+                    "Was hast du denn mit dem Messer vor?"], [null, "sslssl"] ],
+
+    [ "meckie",   [ "Ich käcksel alles, groß und klein",
+                    "und du könntest der Nächste sein!"], [null, "sslsllslsll"] ],
+
+    [ "antonius", [ "Wäre es in Ordnung, wenn du das...",
+                    "nicht tun könntest?"], [null, "sslsss"] ],
+
+    [ "meckie",   [ "Verschonen könnt ich dich vielleicht,",
+                    "einfach was zum Hacken reicht."
+                  ], [null, "sisllslssl"] ],
+    [ "meckie",   [ "Wie wär's mit 'nem Zerteil-Versuch",
+                    "mit deinem kleinen Bibel-Buch? Hähähähä!"
+                  ], [null, "isslisslh"] ],
+
+    [ "antonius",   "Also bitte, dies ist ein Buch Gottes!", [null, "sssl"] ]
+  ],
+  "meckieRequest": [
+    [ "meckie",   [ "Willst du nicht enden als Eingeweide,",
+                    "bring etwas, das ich zerschneide!"
+                  ], [null, "sslslsllslh"] ]
+  ],
+  "cutFishBeforeCutting": [
+    [ "antonius", [ "Ich hätte hier einen Fisch,",
+                    "den du vielleicht zerschneiden könntest."
+                  ], [null, "ssssss"] ],
+
+    [ "meckie",   [ "Ein Wasservieh, frisch aus der See,",
+                    "verwandle ich in Lachsfilet!"
+                  ], [null, "ilisi"] ]
+  ],
+  "cutFishAfterCutting": [
+    [ "antonius",   "Toll! Willst du denn damit etwas kochen, oder...?", [null, "ssssl"] ]
+  ],
+  "cutFishAfterPickup": [
+    [ "meckie",   [ "Was ich tun wollt' hab ich getan,",
+                    "ich bin ja eigentlich vegan."
+                  ], [null, "ssslsslsslsl"] ],
+
+    [ "antonius",   "Praktisch!", [null, "s"] ]
+  ],
+  "requestingVeggies": [
+    [ "meckie",     "[placeholder]", [null, "i"] ]
+  ],
+  "cuttingVeggiesBeforeCutting": [
+    [ "meckie",   [ "Ah, du bringst mir Kraut und Rüben,",
+                    "da kann ich noch mehr Schneiden üben!"
+                  ], [null, "isslslssllsi"] ],
+
+    [ "antonius", [ "Bedien' dich ruhig an dem Gemüse,",
+                    "es ist genug für Alle da!"
+                  ], [null, "sllslssllsssl"] ]
+  ],
+  "cuttingVeggiesAfterCutting": [
+    [ "meckie",   [ "Danke für den Proviant,",
+                    "das ist wie im Schlaraffenland!"
+                  ], [null, "sslslslsllslssl"] ],
+    [ "meckie",   [ "Das war jetzt auch mein letzter Reim,",
+                    "den Rest zerschnibbel ich daheim."
+                  ], [null, "slsslsslslssl"] ],
+
+    [ "antonius",   "Tschüss!", [null, "l"] ]
+  ]
+}
