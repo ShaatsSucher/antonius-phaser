@@ -9,13 +9,13 @@ export default class BucketheadCharacter extends Character {
   public readonly speech = new SpeechHelper(this, 0, 0,
     SpeechHelper.Generators.random(ArrayUtils.range(1, 29).map(i =>
       Assets.Audio[`bucketmanWithBucket${StringUtils.intToString(i, 3)}`].key
-    )), false, 'idleBucket', 'talkingBucket'
+    )), '#fff', false, 'idleBucket', 'talkingBucket'
   )
 
   public readonly hatSpeech = new SpeechHelper(this, 0, 0,
     SpeechHelper.Generators.random(ArrayUtils.range(1, 29).map(i =>
       Assets.Audio[`bucketmanNoBucket${StringUtils.intToString(i, 3)}`].key
-    )), false, 'idleHat', 'talkingHat'
+    )), '#fff', false, 'idleHat', 'talkingHat'
   )
 
   constructor(scene: Scene, x: number, y: number) {

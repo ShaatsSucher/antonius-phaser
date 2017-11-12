@@ -22,7 +22,7 @@ export default class TreeCharacter extends Character {
         Assets.Audio[`treeShy${StringUtils.intToString(i, 3)}`].key
       )
     )
-  }), false, 'idle', 'idle')
+  }), '#fff', false, 'idle', 'idle')
 
   constructor(scene: Scene, x: number, y: number) {
     // TODO: replace with correct spritesheet
