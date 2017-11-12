@@ -55,7 +55,7 @@
     ["cat",         "... Angemessen.", [1, "silent", "audioCatCatAccepts"] ],
 
     ["antonius",    "...", [null, ""] ],
-    ["antonius",    "Was?", [null, "l"] ],
+    ["antonius",    "Was?", [null, "l"] ]
   ],
   "catGoneBeforeReversal": [
     [ "bard",       "Oh! Was für ein sonderbares Gefühl!", 3],
@@ -83,16 +83,20 @@
   ],
   "meckieIntro": [
     [ "meckie",   [ "Schnibbel schnabbel schnapp!",
-                    "Ich schneid dir die Kapute ab!"], [null, "sssslsll"] ],
+                    "Ich schneid dir die Kapute ab!"
+                  ], [null, "sssslsll"] ],
 
     [ "antonius", [ "Immer mit der Ruhe!",
-                    "Was hast du denn mit dem Messer vor?"], [null, "sslssl"] ],
+                    "Was hast du denn mit dem Messer vor?"
+                  ], [null, "sslssl"] ],
 
     [ "meckie",   [ "Ich käcksel alles, groß und klein",
-                    "und du könntest der Nächste sein!"], [null, "sslsllslsll"] ],
+                    "und du könntest der Nächste sein!"
+                  ], [null, "sslsllslsll"] ],
 
     [ "antonius", [ "Wäre es in Ordnung, wenn du das...",
-                    "nicht tun könntest?"], [null, "sslsss"] ],
+                    "nicht tun könntest?"
+                  ], [null, "sslsss"] ],
 
     [ "meckie",   [ "Verschonen könnt ich dich vielleicht,",
                     "einfach was zum Hacken reicht."
