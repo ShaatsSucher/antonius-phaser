@@ -1,0 +1,174 @@
+{
+  "treeScaredOfMeckie": [
+    [ "tree",       "So ein riesiges Messer...", [2, "scared"] ],
+
+    [ "antonius", [ "Ein sprechender Baum?",
+                    "Mich wundert heute gar nichts mehr."
+                  ], [null, "ssslssss"] ],
+
+    [ "tree",       "*seufz*", [1, "scared"] ],
+
+    [ "antonius",   "Was leigt dir auf dem Herzen?", [null, "sssl"] ],
+
+    [ "tree",       "Ich hab' solche Angst um meine Rinde!", [2, "scared"] ],
+    [ "tree",     [ "Dieser Mann da vorne fuchtelt so",
+                    "wild mit seinem Messer herum"
+                  ], [5, "scared"] ],
+    [ "tree",     [ "Er wird bestimmt mit einer",
+                    "Liebesbotschaft meinen schönen Teint ruinieren!"
+                  ], [5, "scared"] ],
+
+    [ "antonius", [ "Ja, das hat schon eine stattliche",
+                    "Größe, dieses Messer!"
+                  ], [null, "lssslsl"] ]
+  ],
+  "treeWaitingForMeckieGone": [
+    [ "tree",     [ "Bitte mach, dass dieser",
+                    "Messermann verschwindet."
+                  ], [3, "scared"] ]
+  ],
+  "treeAllowingAscend": [
+    [ "tree",       "Endlich ist der Verrückte mit dem Messer weg!", [3, "scared"] ],
+    [ "tree",       "Ich hatte solche Angst um meine Rinde!", [3, "scared"] ],
+
+    [ "antonius",   "Deine Rinde ist u nversehrt.", [null, "sssllssl"] ],
+
+    [ "tree",       "Aber sie ist sowas von schrumpelig...", [3, "shy"] ],
+
+    [ "antonius",   "Überhaupt nicht.", [null, "ssll"] ],
+    [ "antonius", [ "Ich wollte fragen, ob ich",
+                    "in deine Baumhöhle darf."
+                  ], [null, "ssslssslslslls"] ],
+
+    [ "tree",       "Ach... Eher nicht.", [2, "shy"] ],
+    [ "tree",       "Das wäre mir doch ein bisschen unangenehm...", [3, "shy"] ],
+
+    [ "antonius",   "Kann ich verstehen.", [null, "slssl"] ],
+
+    [ "tree",       "Aber... Ich könnte deine Hilfe gebrauchen...", [2, "shy"] ]
+  ],
+  "treeWantsOwlGone": [
+    [ "tree",     [ "Die Eule da oben...",
+                    "pisst mich einfach an."
+                  ], [3, "disgusted"] ],
+
+    [ "antonius",   "Ich schaue mal, was ich da tun kann.", [null, "sslllssls"] ]
+  ],
+  "antoniusRequestsEntryForTheFirstTime": [
+    [ "antonius",   "Das Eulen-Problem ist gelöst.", [null, "sslslssl"] ],
+
+    [ "tree",       "Antonius, mir fällt ein Stein vom Herzen!", [3, "shy"] ],
+
+    [ "antonius",   "Ach, das hab' ich doch gerne gemacht.", [null, "ssslsslsl"] ],
+
+    [ "tree",     [ "Du hast so viel für mich getan.",
+                    "Wie kann ich dir danken?"
+                  ], [3, "shy"] ],
+
+    [ "antonius", [ "Dürfte ich jetzt vielleicht",
+                    "deine Baumhöhle betreten?"
+                  ], [null, "ssllslssslsssl"] ],
+
+    [ "tree",       "Warum möchtest du das denn?", [2, "shy"] ],
+
+    [ "antonius", [ "Ich würde wirklich gerne",
+                    "mal eine von innen sehen."
+                  ], [null, "lslslslssllsssl"] ]
+  ],
+  "treeDeniesEntry": [
+    [ "tree",     [ "Ich würde dir ja gerne diesen Gefallen run,",
+                    "aber mir ist das schrecklich unangenehm,",
+                    "wenn mich jeder dabei sieht."
+                  ], [8, "shy"] ],
+
+    [ "antonius", [ "Oh, ich verstehe.",
+                    "Vielleicht später!"
+                  ], [null, "lsslsssl"] ]
+  ],
+  "antoniusRequestsEntry": [
+    [ "antonius", [ "Dürfte ich jetzt vielleicht",
+                    "deine Baumhöhle betreten?"
+                  ], [null, "ssllslssslsssl"] ]
+  ],
+  "treeOpeningUp": [
+    [ "antonius", [ "Dürfte ich jetzt vielleicht",
+                    "deine Baumhöhle betreten?"
+                  ], [null, "ssllslssslsssl"] ],
+
+    [ "tree",       "Wenn du das unbedingt möchtest...", [2, "shy"] ],
+    [ "tree",       "Aber ich habe nicht aufgeräumt!", [2, "shy"] ],
+
+    [ "antonius",   "Danke für dein Vertrauen.", [null, "ssslssl"] ]
+  ],
+  "womenIsHungry": [
+    [ "antonius",   "Seid gegrüßt, holde Maid!", [null, "ssls"] ],
+
+    [ "woman",    [ "Redest du mit mir?",
+                    "*hicks*"
+                  ], 5 ],
+
+    [ "antonius",   "Ja", [null, "l"] ],
+
+    [ "woman",      "Wo du schon mal hier bist...", 5 ],
+    [ "woman",    [ "Hast du auf dem Weg hierher",
+                    "erwas zu Essen gesehen?"
+                  ], 8 ],
+
+    [ "antonius", [ "Nein, aber ich werde",
+                    "die Augen offen halten."
+                  ], [null, "lsslsss"] ]
+  ],
+  "womenIsStillHungry": [
+    [ "woman",    [ "Hast du inzwischen",
+                    "was zu Essen gefunden?"
+                  ], 7 ],
+
+    [ "antonius",   "Nein, noch nicht.", [null, "lss"] ]
+  ],
+  "antoniusOffersToGetFood": [
+    [ "woman",    [ "Hast du inzwischen",
+                    "was zu Essen gefunden?"
+                  ], 7 ],
+
+    [ "antonius", [ "Ja, die Köche da hinten",
+                    "wollen eine Suppe zubereiten."
+                  ], [null, "lsssls"] ],
+    [ "antonius", [ "Kann ich deinen Kelch zum",
+                    "Wasserschöpfen ausleihen?"
+                  ], [null, "sslsssl"] ],
+
+    [ "woman",    [ "Okay, aber wehe die",
+                    "Suppe schmeckt nicht!"
+                  ], 7 ],
+
+    [ "antonius", [ "Keine Sorge, die Köche",
+                    "geben sich sicher Mühe."
+                  ], [null, "slssssl"] ]
+  ],
+  "womanWaitsForSoup": [
+    [ "woman",      "Ist die Suppe bald fertig?", 5 ],
+
+    [ "antonius", [ "Du musst dich leider",
+                    "noch ein wenig gedulden."
+                  ], [null, "sslssl"] ]
+  ],
+  "womanEatsSoup": [
+    [ "antonius",   "Hier die versprochene Suppe.", [null, "lsss"] ],
+
+    [ "woman",    [ "Das wurde aber auch Zeit.",
+                    "Ich bin hier fast vor Hunger gestorben."
+                  ], 10 ],
+    [ "woman",    [ "*schlürf*",
+                    "Jetzt geht es mir besser!"
+                  ], [4, "sober"] ],
+    [ "woman",    [ "Was mache ich eigentlich noch",
+                    "an diesem öden Ort?"
+                  ], [5, "sober"] ],
+    [ "woman",    [ "Besuch' mich doch,",
+                    "wenn du mal in der Gegend bist!"
+                  ], [5, "sober"] ]
+  ],
+  "antoniusWondersAboutWomansInvitation": [
+    [ "antonius",   "Hat sie mich eben in die Hölle eingeladen?", [null, "ssslsl"] ]
+  ]
+}

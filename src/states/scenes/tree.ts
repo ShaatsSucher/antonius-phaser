@@ -8,7 +8,7 @@ import { SceneStateManager
 
 import { WaitingForWater } from './kitchen'
 
-import { Images, Audio } from '../../assets'
+import { Audio, Images, Json } from '../../assets'
 
 import AntoniusCharacter from '../../characters/antonius'
 import TreeCharacter from '../../characters/tree'
@@ -78,7 +78,9 @@ export default class TreeScene extends Scene {
     super(
       game,
       Images.backgroundsWoman.key,
-      Audio.soundscapesScene7.key
+      Audio.soundscapesScene7.key,
+      [],
+      Json.dialogsTree.key
     )
   }
 
@@ -202,14 +204,7 @@ class TreeScaredOfMeckie extends SceneStateTransition<TreeScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.tree.speech.say('So ein riesiges Messer...', 2, 'scared')
-    await scene.characters.antonius.speech.say('Ein sprechender Baum?\nMich wundert gar nichts mehr', null, 'ssslssss')
-    await scene.characters.tree.speech.say('\"seufz\"', 1, 'scared')
-    await scene.characters.antonius.speech.say('Was liegt dir auf dem Herzen?', null, 'sssl')
-    await scene.characters.tree.speech.say('Ich hab so Angst um meine Rinde!', 2, 'scared')
-    await scene.characters.tree.speech.say('Dieser Mann da vorne fuchtelt so wild mit seinem Messer herum', 3, 'scared')
-    await scene.characters.tree.speech.say('er wird bestimmt mit einer Liebesbotschaft meinen schönen Teint ruinieren!', 3, 'scared')
-    await scene.characters.antonius.speech.say('Ja das hat schon eine stattliche Größe, dieses Messer!', null, 'lssslsl')
+    await scene.playDialogJson('treeScaredOfMeckie')
 
     return TreeWaitingForMeckieGone
   }
@@ -233,7 +228,7 @@ class TreeStillWaitingForMeckieGone extends SceneStateTransition<TreeScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.tree.speech.say('Bitte mach, dass dieser Messermann verschwindet', 3, 'scared')
+    await scene.playDialogJson('treeWaitingForMeckieGone')
 
     return TreeWaitingForMeckieGone
   }
@@ -255,16 +250,7 @@ class TreeAllowingAscend extends SceneStateTransition<TreeScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.tree.speech.say('Endlich ist der Verrückte mit dem Messer weg!', 3, 'scared')
-    await scene.characters.tree.speech.say('Ich hatte solche Angst um meine Rinde!', 3, 'scared')
-    await scene.characters.antonius.speech.say('Deine Rinde ist unversehrt.', null, 'sssllssl')
-    await scene.characters.tree.speech.say('Aber sie ist sowas von schrumpelig...', 3, 'shy')
-    await scene.characters.antonius.speech.say('Überhaupt nicht.', null, 'ssll')
-    await scene.characters.antonius.speech.say('Ich wollte fragen, ob ich\nin deine Baumhöhle darf.', null, 'ssslssslslslls')
-    await scene.characters.tree.speech.say('Ach... Eher nicht.', 2, 'shy')
-    await scene.characters.tree.speech.say('Das wäre mir doch ein bisschen unangenehm...', 3, 'shy')
-    await scene.characters.antonius.speech.say('Kann ich verstehen.', null, 'slssl')
-    await scene.characters.tree.speech.say('Aber... Ich könnte deine Hilfe gebrauchen...', 2, 'shy')
+    await scene.playDialogJson('treeAllowingAscend')
 
     return TreeStillWaitingForOwlGone
   }
@@ -274,8 +260,7 @@ class TreeStillWaitingForOwlGone extends SceneStateTransition<TreeScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.tree.speech.say('Die Eule da oben...\nPisst mich einfach an.', 3, 'disgusted')
-    await scene.characters.antonius.speech.say('Ich schaue mal, was ich da tun kann.', null, 'sslllssls')
+    await scene.playDialogJson('treeWantsOwlGone')
 
     return TreeWaitingForOwlGone
   }
@@ -307,13 +292,7 @@ class AntoniusRequestsEntryForTheFirstTime extends SceneStateTransition<TreeScen
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.antonius.speech.say('Das Eulen-Problem ist gelöst.', null, 'sslslssl')
-    await scene.characters.tree.speech.say('Antonius, mir fällt ein Stein vom Herzen!', 3, 'shy')
-    await scene.characters.antonius.speech.say('Ach, das hab ich doch gerne gemacht.', null, 'ssslsslsl')
-    await scene.characters.tree.speech.say('Du hast so viel für mich getan.\nWie kann ich dir danken?', 3, 'shy')
-    await scene.characters.antonius.speech.say('Dürfte ich jetzt vielleicht\ndeine Baumhöhle betreten?', null, 'ssllslssslsssl')
-    await scene.characters.tree.speech.say('Warum möchtest du das denn?', 2, 'shy')
-    await scene.characters.antonius.speech.say('Ich würde wirklich gerne\nmal eine von innen sehen.', null, 'lslslslssllsssl')
+    await scene.playDialogJson('antoniusRequestsEntryForTheFirstTime')
 
     return AntoniusRequestedEntryForTheFirstTime
   }
@@ -329,8 +308,7 @@ class TreeDeniesEntry extends SceneStateTransition<TreeScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.tree.speech.say('Ich würde dir ja gerne diesen Gefallen tun,\naber mir ist das schrecklich unangenehm,\nwenn mich jeder dabei sieht.', 5, 'shy')
-    await scene.characters.antonius.speech.say('Oh, verstehe.\nVielleicht später!', null, 'lsslsssl')
+    await scene.playDialogJson('treeDeniesEntry')
 
     return TreeDeniedEntry
   }
@@ -351,7 +329,7 @@ class AntoniusRequestsEntry extends SceneStateTransition<TreeScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.antonius.speech.say('Dürfte ich jetzt vielleicht\ndeine Baumhöhle betreten?', null, 'ssllslssslsssl')
+    await scene.playDialogJson('antoniusRequestsEntry')
 
     return TreeDeniesEntry
   }
@@ -372,10 +350,7 @@ class TreeOpeningUp extends SceneStateTransition<TreeScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.characters.antonius.speech.say('Dürfte ich jetzt vielleicht\ndeine Baumhöhle betreten?', null, 'ssllslssslsssl')
-    await scene.characters.tree.speech.say('Wenn du das unbedingt möchtest...', 2, 'shy')
-    await scene.characters.tree.speech.say('Aber ich habe nicht aufgeräumt!', 2, 'shy')
-    await scene.characters.antonius.speech.say('Danke für dein Vertrauen.', null, 'ssslssl')
+    await scene.playDialogJson('treeOpeningUp')
 
     await scene.characters.tree.setActiveState('opening')
     await scene.wait(1)
@@ -410,14 +385,9 @@ export class InitialWoman extends SceneState<TreeScene> {
 
 class IAmHungry extends SceneStateTransition<TreeScene> {
   async enter() {
-    const c = this.scene.characters
+    const scene = this.scene
 
-    await c.antonius.speech.say('Seid gegruesst, holde Maid!', null, 'ssls')
-    await c.woman.speech.say('Redest du mit mir?\n*hicks*', 5)
-    await c.antonius.speech.say('Ja', null, 'l')
-    await c.woman.speech.say('Wo du schon mal hier bist:', 5)
-    await c.woman.speech.say('Hast du auf dem Weg hierher\nwas zu Essen gesehen?', 8)
-    await c.antonius.speech.say('Nein, aber ich werde\ndie Augen offen halten', null, 'lsslsss')
+    await scene.playDialogJson('womenIsHungry')
 
     return HungryWoman
   }
@@ -437,10 +407,9 @@ export class HungryWoman extends SceneState<TreeScene> {
 
 class StillHungry extends SceneStateTransition<TreeScene> {
   async enter() {
-    const c = this.scene.characters
+    const scene = this.scene
 
-    await c.woman.speech.say('Hast du inzwischen\nwas zu Essen gefunden?', 7)
-    await c.antonius.speech.say('Nein, noch nicht', null, 'lss')
+    await scene.playDialogJson('womenIsStillHungry')
 
     return HungryWoman
   }
@@ -450,7 +419,7 @@ export class NewKnowledge extends SceneState<TreeScene> {
   public async show() {
     const c = this.scene.characters
 
-    console.log('KNEW KNOWLEDGE AQUIRED!')
+    console.log('KNEW KNOWLEDGE ACQUIRED!')
 
     c.woman.interactionEnabled = true
 
@@ -462,13 +431,9 @@ export class NewKnowledge extends SceneState<TreeScene> {
 
 class TakeMyCup extends SceneStateTransition<TreeScene> {
   async enter() {
-    const c = this.scene.characters
+    const scene = this.scene
 
-    await c.woman.speech.say('Hast du inzwischen\nwas zu Essen gefunden?', 7)
-    await c.antonius.speech.say('Ja, die Koeche da hinten\nwollen eine Suppe zubereiten', null, 'lsssls')
-    await c.antonius.speech.say('Kann ich deinen Kelch zum\nWasserschoepfen ausleihen?', null, 'sslsssl')
-    await c.woman.speech.say('Okay, aber wehe die\nSuppe schmeckt nicht!', 7)
-    await c.antonius.speech.say('Keine Sorge, die Koeche\ngeben sich sicher Muehe', null, 'slssssl')
+    await scene.playDialogJson('antoniusOffersToGetFood')
 
     Inventory.instance.addItem(Images.cupEmpty.key)
 
@@ -495,10 +460,9 @@ export class ImaptientWoman extends SceneState<TreeScene> {
 
 class StillWaitig extends SceneStateTransition<TreeScene> {
   async enter() {
-    const c = this.scene.characters
+    const scene = this.scene
 
-    await c.woman.speech.say('Ist die Suppe bald fertig?', 5)
-    await c.antonius.speech.say('Du musst dich leider\nnoch ein wenig gedulden', null, 'sslssl')
+    await scene.playDialogJson('womanWaitsForSoup')
 
     return ImaptientWoman
   }
@@ -506,21 +470,18 @@ class StillWaitig extends SceneStateTransition<TreeScene> {
 
 class Eating extends SceneStateTransition<TreeScene> {
   async enter() {
-    const c = this.scene.characters
+    const scene = this.scene
+    const c = scene.characters
 
-    await c.antonius.speech.say('Hier, die versprochene Suppe', null, 'lsss')
-    await c.woman.speech.say('Das wurde aber auch Zeit.\nIch bin hier fast vor Hunger gestorben', 10)
-    await c.woman.speech.say('*schluerf*\nJetzt geht es mir besser!', 4, 'sober')
-    await c.woman.speech.say('Was mache ich eigentlich noch\nan diesem oeden Ort?', 5, 'sober')
-    await c.woman.speech.say('Besuch mich doch,\nwenn du mal in der Gegend bist', 5, 'sober')
+    await scene.playDialogJson('womanEatsSoup')
 
     c.woman.setActiveState('walking')
 
-    await this.scene.tweens.create(c.woman).to({
+    await scene.tweens.create(c.woman).to({
       x: -Math.abs(c.woman.width * c.woman.anchor.x)
     }, 3000).start().onComplete.asPromise()
 
-    await c.antonius.speech.say('Hat die mich eben in die Hoelle eingeladen?', null, 'ssslsl')
+    await scene.playDialogJson('antoniusWondersAboutWomansInvitation')
 
     return SatisfiedWoman
   }
