@@ -1,0 +1,19 @@
+{
+  "headIntro": [
+    [ "hellmouth",   "Um Gottes Willen...", 3],
+    [ "hellmouth", [ "Es toben ganz schön viele",
+                     "dieser Dämonen herum!!"
+                   ], 6],
+    [ "hellmouth", [ "Wenn du irgendwelche Fragen hast,",
+                     "kannst du dich jederzeit an mich wenden!"
+                   ], 6],
+    [ "hellmouth",   "Du schaffst das, Antonius!", 3],
+    [ "hellmouth",   "Wenn nicht du, wer dann?", 3],
+    [ "hellmouth",   "Nun geh und leg los...", 3]
+  ],
+  "fishHint": [
+    [ "hellmouth", [ "Hmmm...",
+                     "Aus dem Süden kommt ein merkwürdiger Geruch!"
+                   ], 4 ]
+  ]
+}
