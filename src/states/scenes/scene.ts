@@ -4,6 +4,7 @@ import Character from '../../characters/character'
 import GameObject from '../../gameObjects/gameObject'
 
 import SettingsOverlay from '../../overlays/settings'
+import RestartOverlay from '../../overlays/restart'
 import Inventory from '../../overlays/inventory'
 
 import { SceneStateManager } from '../../utils/stateManager'
@@ -158,6 +159,16 @@ export default abstract class Scene extends Phaser.State implements Pausable {
       Inventory.instance.show()
     })
 
+    RestartOverlay.instance.isShowing.onValueChanged.add(value => {
+      if (this.isVisible) {
+        console.log('RestartOverlay isShowing changed to', value)
+        if (!SettingsOverlay.instance.visible) {
+          this.isPaused.value = value
+        }
+      }
+    })
+    RestartOverlay.instance.timeoutEnabled = true
+
     // Make sure nothing can obstruct the settings and inventory buttons
     this.settingsButton.bringToTop()
     this.inventoryButton.bringToTop()
@@ -196,7 +207,16 @@ export default abstract class Scene extends Phaser.State implements Pausable {
   public shutdown() {
     this._isVisible = false
 
+    RestartOverlay.instance.timeoutEnabled = true
+
     this.onShutdown.dispatch()
+  }
+
+  public async resetStates() {
+    await Promise.all(
+      Object.keys(this.stateManagers)
+        .map(key => this.stateManagers[key])
+        .map(sm => sm.resetStates()))
   }
 
   public async playDialogJson(key: string) {
@@ -237,7 +257,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
       let handle: Phaser.SignalBinding
       handle = this.onUpdate.add(() => {
         if (!ignorePause && this.isPaused.value) {
-          mouseWasUp = true
+          mouseWasUp = false
           mouseWasDown = false
         }
         if (!this.game.input.activePointer.leftButton.isDown) {

@@ -133,7 +133,7 @@ export default class SettingsOverlay extends Phaser.Group {
     return this.onMenuClosed.asPromise()
   }
 
-  private hide(resetSettings: boolean) {
+  public hide(resetSettings: boolean = false) {
     if (resetSettings) {
       this.masterVolumeSlider.value = this.oldState.masterVolume
       this.musicVolumeSlider.value = this.oldState.musicVolume

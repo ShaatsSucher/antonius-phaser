@@ -1,6 +1,8 @@
 import * as Assets from '../assets'
 import * as AssetUtils from '../utils/assetUtils'
 
+import Reset from './reset'
+
 import IntroScene from './scenes/intro'
 import HeadScene from './scenes/head'
 import BardScene from './scenes/bard'
@@ -15,6 +17,7 @@ import CaveScene from './scenes/cave'
 import EndScene from './scenes/end'
 
 import SettingsOverlay from '../overlays/settings'
+import RestartOverlay from '../overlays/restart'
 import Inventory from '../overlays/inventory'
 import { AudioManager } from '../utils/audioManager'
 
@@ -47,6 +50,8 @@ export default class Preloader extends Phaser.State {
   }
 
   private startGame(): void {
+    this.state.add('reset', Reset)
+
     this.state.add('intro', IntroScene)
     this.state.add('head', HeadScene)
     this.state.add('bard', BardScene)
@@ -66,6 +71,7 @@ export default class Preloader extends Phaser.State {
       .forEach(scene => scene.registerConditionalStateTransitions(this.state.states))
 
     SettingsOverlay.init(this.game)
+    RestartOverlay.init(this.game)
     Inventory.init(this.game)
     AudioManager.init(this.game.sound)
 
