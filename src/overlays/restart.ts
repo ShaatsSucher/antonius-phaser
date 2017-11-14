@@ -30,7 +30,7 @@ export default class RestartOverlay extends Phaser.Group {
 
   /* Actual Class */
 
-  public readonly AUTORESTART_DELAY = 1
+  public readonly AUTORESTART_DELAY = 5 * 60
 
   public onMenuClosed = new Phaser.Signal()
 
