@@ -15,6 +15,7 @@ export default class SpeechHelper implements Pausable {
   constructor(private character: Character,
               anchorX: number, anchorY: number,
               private sampleGenerator: SampleGenerator,
+              private textColor = '#fff',
               private resetCharacterStateBeforePlaying = true,
               private idleState = 'idle',
               private talkingState = 'talking') {
@@ -72,7 +73,7 @@ export default class SpeechHelper implements Pausable {
     const frameMargin = 5
     const textStyle = {
       font: `8px ${CustomWebFonts.pixelOperator8Bold.family}`,
-      fill: '#fff',
+      fill: this.textColor,
       stroke: '#000',
       strokeThickness: 2
     }
