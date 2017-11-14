@@ -244,7 +244,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
       let handle: Phaser.SignalBinding
       handle = this.onUpdate.add(() => {
         if (!ignorePause && this.isPaused.value) {
-          mouseWasUp = true
+          mouseWasUp = false
           mouseWasDown = false
         }
         if (!this.game.input.activePointer.leftButton.isDown) {
