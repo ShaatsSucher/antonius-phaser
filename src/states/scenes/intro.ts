@@ -7,6 +7,7 @@ import { SceneStateManager
 import { Images, Audio, CustomWebFonts } from '../../assets'
 
 import Inventory from '../../overlays/inventory'
+import RestartOverlay from '../../overlays/restart'
 import { ArrayUtils, StringUtils } from '../../utils/utils'
 import { AudioManager } from '../../utils/audioManager'
 
@@ -40,6 +41,12 @@ export default class IntroScene extends Scene {
     { time: 65000, text: 'Gelingt es dir nicht, wird dir und der\ngesamten Menschheit ÜBLES widerfahren!!!' },
     { time: 80000, text: '' }
   ]
+
+  public create() {
+    super.create()
+
+    RestartOverlay.instance.timeoutEnabled = false
+  }
 
   protected createGameObjects() {
     this.image = this.add.sprite(
@@ -76,6 +83,8 @@ export default class IntroScene extends Scene {
 
     this.settingsButton.visible = true
     this.inventoryButton.visible = true
+
+    RestartOverlay.instance.timeoutEnabled = true
   }
 }
 

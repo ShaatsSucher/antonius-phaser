@@ -17,6 +17,7 @@ import CaveScene from './scenes/cave'
 import EndScene from './scenes/end'
 
 import SettingsOverlay from '../overlays/settings'
+import RestartOverlay from '../overlays/restart'
 import Inventory from '../overlays/inventory'
 import { AudioManager } from '../utils/audioManager'
 
@@ -70,6 +71,7 @@ export default class Preloader extends Phaser.State {
       .forEach(scene => scene.registerConditionalStateTransitions(this.state.states))
 
     SettingsOverlay.init(this.game)
+    RestartOverlay.init(this.game)
     Inventory.init(this.game)
     AudioManager.init(this.game.sound)
 
