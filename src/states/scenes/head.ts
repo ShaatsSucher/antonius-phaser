@@ -22,6 +22,11 @@ import MeckieCharacter from '../../characters/meckie'
 import Cook1Character from '../../characters/cook1'
 import Cook2Character from '../../characters/cook2'
 import WomanCharacter from '../../characters/woman'
+import PainterCharacter from '../../characters/painter'
+import BucketheadCharacter from '../../characters/buckethead'
+
+import { HatPickedUp } from './canopy'
+import { ColorPickedUp } from './cave'
 
 import Arrow from '../../gameObjects/arrow'
 import Inventory from '../../overlays/inventory'
@@ -32,7 +37,9 @@ import { ArrayUtils, StringUtils } from '../../utils/utils'
 export default class HeadScene extends Scene {
   public characters = {
     hellmouth: null,
-    antonius: null
+    antonius: null,
+    painter: null,
+    buckethead: null
   }
 
   public interactiveObjects = {
@@ -42,7 +49,7 @@ export default class HeadScene extends Scene {
   }
 
   stateManagers: { [name: string]: SceneStateManager<HeadScene> } = {
-    head: new SceneStateManager(this, [
+    head: new SceneStateManager<HeadScene>(this, [
       Introduction,
       Silent,
       FishHintAvailable,
@@ -52,13 +59,33 @@ export default class HeadScene extends Scene {
       IntroductionSpeech,
       FishHintSpeech,
       Credits
+    ]),
+    painter: new SceneStateManager<HeadScene>(this, [
+      PainterIsAnnoyed,
+      PainterIsComplaining,
+      PainterNeedsColor,
+      AntoniusBroughtColor,
+      PainterIsDoneWithPainting
+    ], [
+      PainterComplains,
+      PainterAsksForColor,
+      PainterPaints
+    ]),
+    buckethead: new SceneStateManager<HeadScene>(this, [
+      BucketheadDingDingDing,
+      BucketheadIsAnnoying,
+      AntoniusBroughtHat,
+      BucketheadIsStealthy
+    ], [
+      BucketheadAsksForHelp,
+      BucketheadGetsAHat
     ])
   }
 
   constructor(game: Phaser.Game) {
     super(
       game,
-      Images.backgroundsHead.key,
+      Images.backgroundsBG01.key,
       Audio.soundscapesScene5.key,
       Audio.musicHead.key,
       Json.dialogsHead.key
@@ -79,6 +106,29 @@ export default class HeadScene extends Scene {
         Suction,
         TransitionCondition.reachedState(scenes.bard.stateManagers.bard, BardGone)
         .and(TransitionCondition.reachedState(scenes.bard.stateManagers.meckie, MeckieGone))
+      )
+    )
+
+    this.stateManagers.buckethead.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        BucketheadIsAnnoying,
+        TransitionCondition.reachedState(this.stateManagers.painter, PainterIsComplaining)
+      ),
+      new ConditionalStateTransition(
+        AntoniusBroughtHat,
+        TransitionCondition.reachedState(this.stateManagers.buckethead, BucketheadIsAnnoying)
+        .and(TransitionCondition.reachedState(scenes.canopy.stateManagers.hat, HatPickedUp))
+      )
+    )
+
+    this.stateManagers.painter.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        PainterNeedsColor,
+        TransitionCondition.reachedState(this.stateManagers.buckethead, BucketheadIsStealthy)
+      ),
+      new ConditionalStateTransition(
+        AntoniusBroughtColor,
+        TransitionCondition.reachedState(scenes.cave.stateManagers.color, ColorPickedUp)
       )
     )
   }
@@ -110,15 +160,27 @@ export default class HeadScene extends Scene {
     })
 
     // Add hellmouth
-    const hellmouth = this.characters.hellmouth = new HellmouthCharacter(this, 135, 40)
+    const hellmouth = this.characters.hellmouth = new HellmouthCharacter(this, 127, 43)
     this.game.add.existing(hellmouth)
 
     // Add antonius
     const antonius = this.characters.antonius = new AntoniusCharacter(this, 258, 120)
-    antonius.scale = new Phaser.Point(2, 2)
+    antonius.scale.setTo(2)
     this.game.add.existing(antonius)
+
+    const painter = this.characters.painter = new PainterCharacter(this, 165, 56)
+    // painter.scale.setTo(1)
+    this.game.add.existing(painter)
+
+    const bucket = this.characters.buckethead = new BucketheadCharacter(this, 191, 51)
+    // bucket.scale.setTo(1)
+    this.game.add.existing(bucket)
   }
 }
+
+// ---------------------------------------------------------------------------
+// Hellmouth States
+// ---------------------------------------------------------------------------
 
 export class Introduction extends SceneState<HeadScene> {
   public async show() {
@@ -169,6 +231,163 @@ class FishHintSpeech extends SceneStateTransition<HeadScene> {
     return FishHintAvailable
   }
 }
+
+// ---------------------------------------------------------------------------
+// Painter States
+// ---------------------------------------------------------------------------
+
+class PainterIsAnnoyed extends SceneState<HeadScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.characters.painter.interactionEnabled = true
+    this.listeners.push(scene.characters.painter.events.onInputUp.add(
+      () => this.stateManager.trigger(PainterComplains)
+    ))
+  }
+}
+
+class PainterComplains extends SceneStateTransition<HeadScene> {
+  public async enter() {
+    const scene = this.scene
+
+    await scene.playDialogJson('painterComplains')
+
+    return PainterIsComplaining
+  }
+}
+
+class PainterIsComplaining extends SceneState<HeadScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.characters.painter.interactionEnabled = true
+    this.listeners.push(scene.characters.painter.events.onInputUp.add(
+      () => this.stateManager.trigger(PainterComplains)
+    ))
+  }
+}
+
+class PainterNeedsColor extends SceneState<HeadScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.characters.painter.interactionEnabled = true
+    this.listeners.push(scene.characters.painter.events.onInputUp.add(
+      () => this.stateManager.trigger(PainterAsksForColor)
+    ))
+  }
+}
+
+class PainterAsksForColor extends SceneStateTransition<HeadScene> {
+  public async enter() {
+    const scene = this.scene
+
+    await scene.playDialogJson('painterAsksForColor')
+
+    return PainterNeedsColor
+  }
+}
+
+class AntoniusBroughtColor extends SceneState<HeadScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.characters.painter.interactionEnabled = true
+    this.listeners.push(scene.characters.painter.events.onInputUp.add(
+      () => this.stateManager.trigger(PainterPaints)
+    ))
+  }
+}
+
+class PainterPaints extends SceneStateTransition<HeadScene> {
+  public async enter() {
+    const scene = this.scene
+
+    await scene.playDialogJson('painterBeforePainting')
+
+    await scene.characters.painter.setActiveState('painting')
+    await scene.wait(1)
+    await scene.playDialogJson('painterPaintingStage1')
+    await scene.characters.painter.setActiveState('painting')
+    await scene.wait(1)
+    await scene.playDialogJson('painterPaintingStage2')
+    await scene.characters.painter.setActiveState('painting')
+    await scene.wait(1)
+    await scene.playDialogJson('painterPaintingStage3')
+
+    return PainterIsDoneWithPainting
+  }
+}
+
+class PainterIsDoneWithPainting extends SceneState<HeadScene> {
+  public async show() {
+    // TODO: display the picture in big
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Buckethead States
+// ---------------------------------------------------------------------------
+
+class BucketheadDingDingDing extends SceneState<HeadScene> {
+  public async show() { }
+}
+
+class BucketheadIsAnnoying extends SceneState<HeadScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.characters.buckethead.interactionEnabled = true
+    this.listeners.push(scene.characters.buckethead.events.onInputUp.add(
+      () => this.stateManager.trigger(BucketheadAsksForHelp)
+    ))
+  }
+}
+
+class BucketheadAsksForHelp extends SceneStateTransition<HeadScene> {
+  public async enter() {
+    const scene = this.scene
+
+    await scene.playDialogJson('bucketheadAsksForHelp')
+
+    return BucketheadIsAnnoying
+  }
+}
+
+class AntoniusBroughtHat extends SceneState<HeadScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.characters.buckethead.interactionEnabled = true
+    this.listeners.push(scene.characters.buckethead.events.onInputUp.add(
+      () => this.stateManager.trigger(BucketheadGetsAHat)
+    ))
+  }
+}
+
+class BucketheadGetsAHat extends SceneStateTransition<HeadScene> {
+  public async enter() {
+    const scene = this.scene
+
+    await scene.playDialogJson('antoniusBringsHat')
+    Inventory.instance.takeItem(Images.hat.key)
+    await scene.playDialogJson('bucketheadTakesHat')
+    Inventory.instance.addItem(Images.bucket.key)
+
+    return BucketheadIsStealthy
+  }
+}
+
+export class BucketheadIsStealthy extends SceneState<HeadScene> {
+  public async show() {
+    this.scene.characters.buckethead.setActiveState('idleHat')
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Credits States
+// ---------------------------------------------------------------------------
 
 export class Suction extends SceneState<HeadScene> {
   public async show() {
