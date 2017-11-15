@@ -27,8 +27,7 @@ export default class CanopyScene extends Scene {
   } = <any>{}
 
   public interactiveObjects = {
-    toTreeArrow: null,
-    toForeheadArrow: null
+    toTreeArrow: null
   }
 
   stateManagers = {
@@ -65,7 +64,7 @@ export default class CanopyScene extends Scene {
     this.stateManagers.owl.registerConditionalTransitions(
       new ConditionalStateTransition(
         OwlWillPeeInBucket,
-        TransitionCondition.reachedState(scenes.forehead.stateManagers.buckethead, BucketheadIsStealthy)
+        TransitionCondition.reachedState(scenes.head.stateManagers.buckethead, BucketheadIsStealthy)
       )
     )
   }
@@ -98,15 +97,6 @@ export default class CanopyScene extends Scene {
     toTreeArrow.events.onInputDown.addOnce(() => {
       toTreeArrow.interactionEnabled = false
       this.fadeTo('tree')
-    })
-
-    const toForeheadArrow = this.interactiveObjects.toForeheadArrow = new Arrow(this.game, 20, 108)
-    toForeheadArrow.rotation = Math.PI
-    toForeheadArrow.interactionEnabled = true
-    this.game.add.existing(toForeheadArrow)
-    toForeheadArrow.events.onInputDown.addOnce(() => {
-      toForeheadArrow.interactionEnabled = false
-      this.fadeTo('forehead')
     })
   }
 }

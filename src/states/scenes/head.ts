@@ -28,6 +28,7 @@ import BucketheadCharacter from '../../characters/buckethead'
 import { HatPickedUp } from './canopy'
 import { ColorPickedUp } from './cave'
 
+import gameObject from '../../gameObjects/gameObject'
 import Arrow from '../../gameObjects/arrow'
 import Inventory from '../../overlays/inventory'
 import { AudioManager } from '../../utils/audioManager'
@@ -45,7 +46,7 @@ export default class HeadScene extends Scene {
   public interactiveObjects = {
     toBardArrow: null,
     toFishArrow: null,
-    toSeaArrow: null
+    seaClickBox: null
   }
 
   stateManagers: { [name: string]: SceneStateManager<HeadScene> } = {
@@ -150,14 +151,6 @@ export default class HeadScene extends Scene {
       arrow2.interactionEnabled = false
       this.fadeTo('fish')
     })
-    const arrow3 = this.interactiveObjects.toSeaArrow = new Arrow(this.game, 20, 95)
-    arrow3.rotation = Math.PI
-    arrow3.interactionEnabled = true
-    this.game.add.existing(arrow3)
-    arrow3.events.onInputUp.addOnce(() => {
-      arrow3.interactionEnabled = false
-      this.fadeTo('sea')
-    })
 
     // Add hellmouth
     const hellmouth = this.characters.hellmouth = new HellmouthCharacter(this, 127, 43)
@@ -175,6 +168,19 @@ export default class HeadScene extends Scene {
     const bucket = this.characters.buckethead = new BucketheadCharacter(this, 191, 51)
     // bucket.scale.setTo(1)
     this.game.add.existing(bucket)
+
+    const seaClickBox = this.interactiveObjects.seaClickBox = new gameObject(this.game, 30, 160, Images.water.key)
+    seaClickBox.scale = new Phaser.Point(2, 2)
+    seaClickBox.interactionEnabled = true
+    seaClickBox.input.pixelPerfectOver = false
+    seaClickBox.input.pixelPerfectClick = false
+    this.game.add.existing(seaClickBox)
+    seaClickBox.events.onInputUp.add(() => {
+      if (Inventory.instance.hasItem(Images.cupEmpty.key)) {
+        Inventory.instance.takeItem(Images.cupEmpty.key)
+        Inventory.instance.addItem(Images.cupWater.key)
+      }
+    })
   }
 }
 
