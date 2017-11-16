@@ -66,12 +66,18 @@ Phaser.Signal.prototype.discardDuplicates = function discardDuplicates(): Phaser
 }
 
 interface Array<T> {
-  flatMap<U>(callback: (currentValue: T, index: number, array: T[]) => U): U[]
+  flatMap<U>(callback: (currentValue: T, index: number, array: T[]) => (U | U[])): U[]
+  head(): T
 }
-Array.prototype.flatMap = function flatMap<U>(callback: (currentValue, index: number, array: any[]) => U): U[] {
-  return this.map(callback).filter(value =>
-    value !== undefined && value !== null
+Array.prototype.flatMap = function flatMap<U>(callback: (currentValue, index: number, array: any[]) => (U | U[])): U[] {
+  return [].concat(...this
+    .map(callback)
+    .filter(v => v !== undefined && v !== null)
+    .map(value => Array.isArray(value) ? value : [value])
   )
+}
+Array.prototype.head = function head() {
+  return this.length > 0 ? this[0] : null
 }
 
 interface Storage {

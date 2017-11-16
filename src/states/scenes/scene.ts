@@ -48,6 +48,13 @@ export default abstract class Scene extends Phaser.State implements Pausable {
   public onCreate = new Phaser.Signal()
   public onShutdown = new Phaser.Signal()
 
+  private itemDropHandlers: [GameObject, ((key: string) => Promise<boolean>)[]][] = []
+
+  public static getActiveScene(game: Phaser.Game): Scene {
+    const currentState = game.state.states[game.state.current]
+    return currentState instanceof Scene ? <Scene>currentState : null
+  }
+
   constructor(game: Phaser.Game, private backgroundKey,
               atmoKeys: string | string[] = [], musicKeys: string | string[] = [], dialogJsonKey?: string) {
     super()
@@ -164,7 +171,9 @@ export default abstract class Scene extends Phaser.State implements Pausable {
         Inventory.instance.hide()
         this.isPaused.value = false || RestartOverlay.instance.isShowing.value
       })
-      Inventory.instance.show()
+      Inventory.instance.show().then(() => {
+        this.isPaused.value = false || RestartOverlay.instance.isShowing.value
+      })
     })
 
     RestartOverlay.instance.isShowing.onValueChanged.add(value => {
@@ -221,6 +230,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
   }
 
   public async resetStates() {
+    this.itemDropHandlers = []
     await Promise.all(
       Object.keys(this.stateManagers)
         .map(key => this.stateManagers[key])
@@ -232,6 +242,35 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     if (dialog) {
       await this.playDialog.apply(this, dialog)
     }
+  }
+
+  public addItemDropHandler(target: GameObject, handler: (key: string) => Promise<boolean>) {
+    let handlers = this.itemDropHandlers.filter(h => h[0] === target).head()
+    if (!handlers) {
+      handlers = [target, []]
+      this.itemDropHandlers.push(handlers)
+    }
+    handlers[1].push(handler)
+  }
+
+  public async itemDropped(x: number, y: number, key: string): Promise<boolean> {
+    console.log(`Item ${key} dropped at (${x},${y})`)
+    const point: any = new Phaser.Point(x, y)
+    const results = await Promise.all(
+      this.itemDropHandlers
+      .flatMap(handlers => {
+        const tmpPoint = new Phaser.Point()
+        const hit = this.game.input.hitTest(handlers[0], <Phaser.Pointer>point, tmpPoint)
+        if (!hit) return null
+        const inputEnabled = handlers[0].inputEnabled
+        handlers[0].inputEnabled = true
+        const pixelHit = handlers[0].input.checkPixel(tmpPoint.x, tmpPoint.y, <Phaser.Pointer>point)
+        handlers[0].inputEnabled = inputEnabled
+        return pixelHit ? handlers[1] : null
+      })
+      .map(handler => handler(key))
+    )
+    return results.reduce((l, r) => l || r, false)
   }
 
   public async playDialog(...lines: [string, string | string[] | string[][], any | any[]][]) {
