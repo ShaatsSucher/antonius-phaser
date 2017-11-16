@@ -222,7 +222,7 @@ class CollectFish extends SceneStateTransition<FishScene> {
   public async enter() {
     const scene = this.scene
 
-    Inventory.instance.addItem(Images.fish.key)
+    await Inventory.instance.pickupItem(scene.characters.fish, scene, Images.fish.key)
 
     return FishGone
   }
