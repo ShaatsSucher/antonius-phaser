@@ -1,5 +1,5 @@
 import { Button, ButtonState } from '../gameObjects/button'
-import { Atlases, Images } from '../assets'
+import { Atlases, CustomWebFonts, Images, Json } from '../assets'
 import Slider from '../gameObjects/slider'
 import GameObject from '../gameObjects/gameObject'
 
@@ -47,16 +47,16 @@ export default class Inventory extends Phaser.Group {
     this.add(backgroundShading)
 
     this.background = new Phaser.Sprite(game, this.game.width / 2, this.game.height / 2, Images.inventoryBackground.key)
-    this.background.scale.setTo(3)
+    this.background.scale.setTo(4)
     this.add(this.background)
     this.background.anchor.setTo(0.5, 0.5)
 
     this.slots = []
-    const minX = this.game.width / 3
-    const width = this.game.width / 3
+    const minX = this.game.width / 4 + 12
+    const width = this.game.width / 2 - 24
     const slotsX = 3
-    const minY = this.game.height / 3
-    const height = this.game.height / 3
+    const minY = this.game.height / 4
+    const height = this.game.height / 2
     const slotsY = 3
     for (let x = 0; x < slotsX; x++) {
       for (let y = 0; y < slotsY; y++) {
@@ -151,11 +151,28 @@ export default class Inventory extends Phaser.Group {
 class InventorySlot {
   public readonly position: Phaser.Point
   public item: Phaser.Sprite
+  private label: Phaser.Text
+  private itemNames: { [name: string]: string }
+
+  private static readonly textStyle = {
+    font: `8px ${CustomWebFonts.pixelOperator8Bold.family}`,
+    fill: '#fff',
+    stroke: '#000',
+    strokeThickness: 2
+  }
 
   constructor(private readonly inventory: Inventory,
               posX: number, posY: number) {
     this.position = new Phaser.Point(posX, posY)
     this.item = null
+    this.label = new Phaser.Text(
+      inventory.game,
+      this.position.x, this.position.y + 18,
+      '[No name Set]', InventorySlot.textStyle
+    )
+    this.label.align = 'center'
+    this.label.anchor.setTo(0.5, 0)
+    this.itemNames = inventory.game.cache.getJSON(Json.items.key)
   }
 
   get isOccupied(): boolean {
@@ -165,6 +182,7 @@ class InventorySlot {
   clear() {
     if (this.isOccupied) {
       this.inventory.remove(this.item, true)
+      this.inventory.remove(this.label, true)
       this.item = null
     }
   }
@@ -177,7 +195,16 @@ class InventorySlot {
     this.item = new Phaser.Sprite(this.inventory.game, this.position.x, this.position.y, value)
     this.item.scale.setTo(2)
     this.item.anchor.setTo(0.5)
+
+    this.label.text = this.itemNames[this.itemKey] || `[No name for ${this.itemKey}]`
+    if (this.label.width % 2 === 1) {
+      this.label.x = this.position.x - 0.5
+    } else {
+      this.label.x = this.position.x
+    }
+
     this.inventory.add(this.item)
+    this.inventory.add(this.label)
   }
 
   get itemKey(): string {
