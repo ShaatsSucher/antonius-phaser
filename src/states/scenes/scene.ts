@@ -144,7 +144,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
       })
     })
 
-    this.inventoryButton = new Button(this.game, 0, 0, Atlases.wrench.key)
+    this.inventoryButton = new Button(this.game, 0, 0, Atlases.bag.key)
     this.inventoryButton.x = this.game.width - 2 - this.inventoryButton.width / 2
     this.inventoryButton.y = this.game.height - 2 - this.inventoryButton.height / 2
     this.inventoryButton.interactionEnabled = false
