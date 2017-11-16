@@ -67,7 +67,7 @@ export default class FishScene extends Scene {
       game,
       Images.backgroundsFish.key,
       Audio.soundscapesScene9.key,
-      Audio.musicHeadScreen.key,
+      Audio.musicHead.key,
       Json.dialogsFish.key
     )
   }
