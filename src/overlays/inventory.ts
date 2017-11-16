@@ -86,8 +86,12 @@ export default class Inventory extends Phaser.Group {
     return this.countItems(key) >= amount
   }
 
-  public async pickupItem(item: GameObject, scene: Scene, key: string = null): Promise<void> {
+  public async pickupItem(item: GameObject, scene: Scene = null, key: string = null): Promise<void> {
     const enableInteraction = scene.disableInteraction()
+
+    if (!scene) {
+      scene = Scene.getActiveScene(this.game)
+    }
 
     // Animate the item using the scene's tween manager to the scene's inventoryButton
     const invCenterX = scene.inventoryButton.x
@@ -152,6 +156,8 @@ class InventorySlot {
   public readonly position: Phaser.Point
   public item: Phaser.Sprite
 
+  private dragHandlers: Phaser.SignalBinding[] = []
+
   constructor(private readonly inventory: Inventory,
               posX: number, posY: number) {
     this.position = new Phaser.Point(posX, posY)
@@ -177,6 +183,60 @@ class InventorySlot {
     this.item = new Phaser.Sprite(this.inventory.game, this.position.x, this.position.y, value)
     this.item.scale.setTo(2)
     this.item.anchor.setTo(0.5)
+    this.item.inputEnabled = true
+    this.item.input.useHandCursor = true
+    this.item.input.enableDrag()
+
+    let sceneItem: Phaser.Sprite = null
+    let updateHandler: Phaser.SignalBinding = null
+
+    this.dragHandlers.push(this.item.events.onDragStart.add((sprite, pointer: Phaser.Pointer) => {
+      this.inventory.hide()
+
+      const activeScene = Scene.getActiveScene(this.inventory.game)
+
+      sceneItem = new Phaser.Sprite(this.inventory.game, this.position.x, this.position.y, value)
+      sceneItem.scale.setTo(2)
+      sceneItem.anchor.setTo(0.5)
+
+      activeScene.add.existing(sceneItem)
+
+      const deltaX = sprite.x - pointer.x
+      const deltaY = sprite.y - pointer.y
+      updateHandler = activeScene.onUpdate.add(() => {
+        sceneItem.position.setTo(pointer.x + deltaX, pointer.y + deltaY)
+      })
+    }))
+
+    this.dragHandlers.push(this.item.events.onDragStop.add((sprite, pointer) => {
+      updateHandler.detach()
+
+      const scene = Scene.getActiveScene(this.inventory.game)
+
+      scene.itemDropped(pointer.x, pointer.y, value).then(async (success) => {
+        if (!success) {
+          const invCenterX = scene.inventoryButton.x
+          const invCenterY = scene.inventoryButton.y
+          await Promise.all([
+            scene.tweens.create(sceneItem)
+              .to({
+                x: [invCenterX - sceneItem.width / sceneItem.scale.x / 2, invCenterX],
+                y: [invCenterY - 100, invCenterY]
+              }, 1000, Phaser.Easing.Quadratic.InOut, true)
+              .interpolation(Phaser.Math.bezierInterpolation)
+              .onComplete.asPromise(),
+            scene.tweens.create(sceneItem.scale)
+              .to({
+                x: [1, 0],
+                y: [1, 0],
+              }, 1000, Phaser.Easing.Quadratic.InOut, true)
+              .onComplete.asPromise()
+          ])
+        }
+        await sceneItem.destroy()
+      })
+    }))
+
     this.inventory.add(this.item)
   }
 
