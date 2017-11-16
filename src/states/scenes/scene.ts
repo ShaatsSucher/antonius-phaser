@@ -128,6 +128,14 @@ export default abstract class Scene extends Phaser.State implements Pausable {
       .forEach(object => object.isPaused.value = false)
   }
 
+  public disableInteraction() {
+    const interactableObjects = this.allInteractiveObjects.filter(obj => obj.interactionEnabled)
+    interactableObjects.forEach(obj => obj.interactionEnabled = false)
+    return () => {
+      interactableObjects.forEach(obj => obj.interactionEnabled = true)
+    }
+  }
+
   public create() {
     this.backgroundImage = this.add.sprite(0, 0, this.backgroundKey)
 
