@@ -128,6 +128,14 @@ export default abstract class Scene extends Phaser.State implements Pausable {
       .forEach(object => object.isPaused.value = false)
   }
 
+  public disableInteraction() {
+    const interactableObjects = this.allInteractiveObjects.filter(obj => obj.interactionEnabled)
+    interactableObjects.forEach(obj => obj.interactionEnabled = false)
+    return () => {
+      interactableObjects.forEach(obj => obj.interactionEnabled = true)
+    }
+  }
+
   public create() {
     this.backgroundImage = this.add.sprite(0, 0, this.backgroundKey)
 
@@ -140,7 +148,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     this.settingsButton.events.onInputDown.add(() => {
       this.isPaused.value = true
       SettingsOverlay.instance.show().then(() => {
-        this.isPaused.value = false
+        this.isPaused.value = false || RestartOverlay.instance.isShowing.value
       })
     })
 
@@ -154,7 +162,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
       this.isPaused.value = true
       this.clickedAnywhere(true).then(() => {
         Inventory.instance.hide()
-        this.isPaused.value = false
+        this.isPaused.value = false || RestartOverlay.instance.isShowing.value
       })
       Inventory.instance.show()
     })

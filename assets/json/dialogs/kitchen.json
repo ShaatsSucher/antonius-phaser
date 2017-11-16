@@ -4,20 +4,20 @@
 
     [ "cook1",      "Was will denn der da von uns?", 4 ],
 
-    [ "cook2",      "Frag' ihn doch.", 2 ],
+    [ "cook2",      "Frag ihn doch.", 2 ],
 
-    [ "cook1",      "Frag' du ihn doch!", 3 ],
+    [ "cook1",      "Frag DU ihn doch!", 3 ],
 
     [ "antonius",   "Kann ich euch irgendwie helfen?", [null, "sssls"] ],
 
     [ "cook2",      "Wir brauchen noch Wasser für unsere Suppe.", 6 ],
 
-    [ "cook1",      "Wolltest du das nicht holen?", 5 ],
+    [ "cook1",      "Wolltest DU das nicht holen?", 5 ],
 
     [ "cook2",      "Nein. Mein Bein ist verrenkt.", 5 ],
 
     [ "cook1",    [ "Stimmt, mein Bein ist ja auch",
-                    "äh verrenkt."
+                    "...äh... verrenkt."
                   ], 5 ],
 
     [ "antonius",   "Ich kümmere mich darum.", [null, "slss"] ]
@@ -27,7 +27,9 @@
                     "quälen mich so sehr."
                   ], 5 ],
 
-    [ "cook1",      "Mich auch.", 2 ]
+    [ "cook1",      "Mich auch.", 2 ],
+    
+    [ "cook2",     "Kein Wasser, keine Suppe.", 5 ]
   ],
   "cooksNeedFish": [
     [ "antonius", [ "Ich habe hier etwas Wasser.",
@@ -46,9 +48,11 @@
                   ], 5 ],
 
     [ "cook1",      "Mich auch.", 2 ]
+    
+    [ "cook2",     "Kein Fisch, keine Suppe.", 5 ]
   ],
   "cooksNeedVeggies": [
-    [ "cook1",      "Jetzt fehlt nurnoch Gemüse!", 4 ],
+    [ "cook1",      "Jetzt fehlt nur noch Gemüse!", 4 ],
 
     [ "cook2",    [ "Wäre mein Bein nicht so verrenkt,",
                     "würde ich sofort welches holen."
@@ -62,6 +66,8 @@
                   ], 5 ],
 
     [ "cook1",      "Mich auch.", 2 ]
+    
+    [ "cook2",     "Kein Gemüse, keine Suppe.", 5 ]
   ],
   "cooksWantVeggiesCut": [
     [ "cook1",      "Das ist ja noch gar nicht geschnitten!", 5 ],
@@ -71,14 +77,16 @@
   "cooksCooking": [
     [ "antonius",   "Fehlt sonst noch etwas?", [null, "ssl"] ],
 
-    [ "cook1",      "Toll gemacht, Bruder!", 3 ],
+    [ "cook1",      "Das haben wir gut gemacht!", 3 ],
 
-    [ "cook2",    [ "Seht gute Zutaten, die",
+    [ "cook2",    [ "Sehr gute Zutaten, die",
                     "wir da gesammelt haben."
                   ], 5 ],
 
     [ "cook1",      "Wir können stolz auf uns sein!", 4 ],
 
-    [ "antonius",   "Na dann guten Appetit!", [null, "lsss"] ]
+    [ "antonius",   "Na dann guten Appetit!", [null, "lsss"] ],
+    
+    [ "cook2",      "Unsere Aufgabe ist erledigt.", 5 ]
   ]
 }

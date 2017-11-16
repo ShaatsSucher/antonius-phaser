@@ -1,6 +1,9 @@
 import { Button, ButtonState } from '../gameObjects/button'
 import { Atlases, CustomWebFonts, Images, Json } from '../assets'
 import Slider from '../gameObjects/slider'
+import GameObject from '../gameObjects/gameObject'
+
+import Scene from '../states/scenes/scene'
 
 export default class Inventory extends Phaser.Group {
   /* Singleton-related */
@@ -81,6 +84,34 @@ export default class Inventory extends Phaser.Group {
 
   public hasItem(key: string, amount: number = 1): boolean {
     return this.countItems(key) >= amount
+  }
+
+  public async pickupItem(item: GameObject, scene: Scene, key: string = null): Promise<void> {
+    const enableInteraction = scene.disableInteraction()
+
+    // Animate the item using the scene's tween manager to the scene's inventoryButton
+    const invCenterX = scene.inventoryButton.x
+    const invCenterY = scene.inventoryButton.y
+    await Promise.all([
+      scene.tweens.create(item)
+        .to({
+          x: [invCenterX - item.width / item.scale.x / 2, invCenterX],
+          y: [invCenterY - 100, invCenterY]
+        }, 1000, Phaser.Easing.Quadratic.InOut, true)
+        .interpolation(Phaser.Math.bezierInterpolation)
+        .onComplete.asPromise(),
+      scene.tweens.create(item.scale)
+        .to({
+          x: [1, 0],
+          y: [1, 0],
+        }, 1000, Phaser.Easing.Quadratic.InOut, true)
+        .onComplete.asPromise()
+    ])
+
+    // Actually add the item to the inventory
+    await this.addItem(key || <string>item.key)
+
+    enableInteraction()
   }
 
   public async addItem(key: string, amount: number = 1): Promise<void> {

@@ -47,7 +47,7 @@ export default class EndScene extends Scene {
 
     this.wait(10).then(() => {
       this.game.camera.onFadeComplete.addOnce(() => {
-        window.location.reload()
+        this.game.state.start('reset')
       })
       this.game.camera.fade(0x000000, 5000)
     })
