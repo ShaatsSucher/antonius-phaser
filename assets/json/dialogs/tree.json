@@ -8,9 +8,9 @@
 
     [ "tree",       "*seufz*", [1, "scared"] ],
 
-    [ "antonius",   "Was leigt dir auf dem Herzen?", [null, "sssl"] ],
+    [ "antonius",   "Was liegt dir auf dem Herzen?", [null, "sssl"] ],
 
-    [ "tree",       "Ich hab' solche Angst um meine Rinde!", [2, "scared"] ],
+    [ "tree",       "Ich hab solche Angst um meine Rinde!", [2, "scared"] ],
     [ "tree",     [ "Dieser Mann da vorne fuchtelt so",
                     "wild mit seinem Messer herum"
                   ], [5, "scared"] ],
@@ -31,7 +31,7 @@
     [ "tree",       "Endlich ist der Verrückte mit dem Messer weg!", [3, "scared"] ],
     [ "tree",       "Ich hatte solche Angst um meine Rinde!", [3, "scared"] ],
 
-    [ "antonius",   "Deine Rinde ist u nversehrt.", [null, "sssllssl"] ],
+    [ "antonius",   "Deine Rinde ist unversehrt.", [null, "sssllssl"] ],
 
     [ "tree",       "Aber sie ist sowas von schrumpelig...", [3, "shy"] ],
 
@@ -59,7 +59,7 @@
 
     [ "tree",       "Antonius, mir fällt ein Stein vom Herzen!", [3, "shy"] ],
 
-    [ "antonius",   "Ach, das hab' ich doch gerne gemacht.", [null, "ssslsslsl"] ],
+    [ "antonius",   "Ach, das hab ich doch gerne gemacht.", [null, "ssslsslsl"] ],
 
     [ "tree",     [ "Du hast so viel für mich getan.",
                     "Wie kann ich dir danken?"
@@ -107,11 +107,11 @@
                     "*hicks*"
                   ], 5 ],
 
-    [ "antonius",   "Ja", [null, "l"] ],
+    [ "antonius",   "Ja.", [null, "l"] ],
 
     [ "woman",      "Wo du schon mal hier bist...", 5 ],
     [ "woman",    [ "Hast du auf dem Weg hierher",
-                    "erwas zu Essen gesehen?"
+                    "etwas zu Essen gesehen?"
                   ], 8 ],
 
     [ "antonius", [ "Nein, aber ich werde",
@@ -142,7 +142,7 @@
                   ], 7 ],
 
     [ "antonius", [ "Keine Sorge, die Köche",
-                    "geben sich sicher Mühe."
+                    "geben sich Mühe."
                   ], [null, "slssssl"] ]
   ],
   "womanWaitsForSoup": [
@@ -164,7 +164,7 @@
     [ "woman",    [ "Was mache ich eigentlich noch",
                     "an diesem öden Ort?"
                   ], [5, "sober"] ],
-    [ "woman",    [ "Besuch' mich doch,",
+    [ "woman",    [ "Besuch mich doch,",
                     "wenn du mal in der Gegend bist!"
                   ], [5, "sober"] ]
   ],
