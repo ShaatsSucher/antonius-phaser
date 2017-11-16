@@ -170,7 +170,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     RestartOverlay.instance.isShowing.onValueChanged.add(value => {
       if (this.isVisible) {
         console.log('RestartOverlay isShowing changed to', value)
-        if (!SettingsOverlay.instance.visible) {
+        if (!SettingsOverlay.instance.visible && !Inventory.instance.visible) {
           this.isPaused.value = value
         }
       }
