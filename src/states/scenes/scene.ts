@@ -140,7 +140,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     this.settingsButton.events.onInputDown.add(() => {
       this.isPaused.value = true
       SettingsOverlay.instance.show().then(() => {
-        this.isPaused.value = false
+        this.isPaused.value = false || RestartOverlay.instance.isShowing.value
       })
     })
 
@@ -154,7 +154,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
       this.isPaused.value = true
       this.clickedAnywhere(true).then(() => {
         Inventory.instance.hide()
-        this.isPaused.value = false
+        this.isPaused.value = false || RestartOverlay.instance.isShowing.value
       })
       Inventory.instance.show()
     })
