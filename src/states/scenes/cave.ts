@@ -84,7 +84,7 @@ class ColorPresent extends SceneState<CaveScene> {
 
 class ColorBeingPickedUp extends SceneStateTransition<CaveScene> {
   public async enter() {
-    Inventory.instance.addItem(Images.colour.key)
+    await Inventory.instance.pickupItem(this.scene.color, this.scene)
     return ColorPickedUp
   }
 }

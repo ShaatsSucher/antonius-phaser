@@ -114,7 +114,7 @@ class VeggiesPresent extends SceneState<ConcertScene> {
 
 class VeggiesBeingPickedUp extends SceneStateTransition<ConcertScene> {
   public async enter() {
-    Inventory.instance.addItem(Images.veggies.key)
+    await Inventory.instance.pickupItem(this.scene.veggieItem, this.scene)
     return VeggiesPickedUp
   }
 }
