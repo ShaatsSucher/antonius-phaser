@@ -33,7 +33,7 @@ export default class CaveScene extends Scene {
   constructor(game: Phaser.Game) {
     super(
       game,
-      Images.backgroundsBackgroundCaveNeu.key,
+      Images.backgroundsBG033.key,
       Audio.soundscapesScene7.key, // TODO: replace with correct soundscape
       [],
       Json.dialogsCave.key

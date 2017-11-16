@@ -49,7 +49,7 @@ export default class KitchenScene extends Scene {
   constructor(game: Phaser.Game) {
     super(
       game,
-      Images.backgroundsBackgroundChef.key,
+      Images.backgroundsBG05.key,
       Audio.soundscapesScene10.key,
       [],
       Json.dialogsKitchen.key

@@ -65,7 +65,7 @@ export default class FishScene extends Scene {
   constructor(game: Phaser.Game) {
     super(
       game,
-      Images.backgroundsFish.key,
+      Images.backgroundsBG04.key,
       Audio.soundscapesScene9.key,
       Audio.musicHead.key,
       Json.dialogsFish.key

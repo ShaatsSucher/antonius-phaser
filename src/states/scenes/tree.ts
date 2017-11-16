@@ -77,7 +77,7 @@ export default class TreeScene extends Scene {
   constructor(game: Phaser.Game) {
     super(
       game,
-      Images.backgroundsWoman.key,
+      Images.backgroundsBG03.key,
       Audio.soundscapesScene7.key,
       [],
       Json.dialogsTree.key

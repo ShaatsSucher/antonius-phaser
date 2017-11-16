@@ -135,21 +135,14 @@ export default class HeadScene extends Scene {
   }
 
   protected createGameObjects() {
-    // Add navigation arrows
-    const arrow = this.interactiveObjects.toBardArrow = new Arrow(this.game, 300, 95)
-    arrow.interactionEnabled = true
-    this.game.add.existing(arrow)
-    arrow.events.onInputUp.addOnce(() => {
-      arrow.interactionEnabled = false
-      this.fadeTo('bard')
-    })
-    const arrow2 = this.interactiveObjects.toFishArrow = new Arrow(this.game, 190, 200)
-    arrow2.rotation = Math.PI / 2
-    arrow2.interactionEnabled = true
-    this.game.add.existing(arrow2)
-    arrow2.events.onInputUp.addOnce(() => {
-      arrow2.interactionEnabled = false
-      this.fadeTo('fish')
+    const seaClickBox = this.interactiveObjects.seaClickBox = new gameObject(this.game, 0, 169, Images.water.key)
+    seaClickBox.interactionEnabled = true
+    this.game.add.existing(seaClickBox)
+    seaClickBox.events.onInputUp.add(() => {
+      if (Inventory.instance.hasItem(Images.cupEmpty.key)) {
+        Inventory.instance.takeItem(Images.cupEmpty.key)
+        Inventory.instance.addItem(Images.cupWater.key)
+      }
     })
 
     // Add hellmouth
@@ -169,17 +162,21 @@ export default class HeadScene extends Scene {
     // bucket.scale.setTo(1)
     this.game.add.existing(bucket)
 
-    const seaClickBox = this.interactiveObjects.seaClickBox = new gameObject(this.game, 30, 160, Images.water.key)
-    seaClickBox.scale = new Phaser.Point(2, 2)
-    seaClickBox.interactionEnabled = true
-    seaClickBox.input.pixelPerfectOver = false
-    seaClickBox.input.pixelPerfectClick = false
-    this.game.add.existing(seaClickBox)
-    seaClickBox.events.onInputUp.add(() => {
-      if (Inventory.instance.hasItem(Images.cupEmpty.key)) {
-        Inventory.instance.takeItem(Images.cupEmpty.key)
-        Inventory.instance.addItem(Images.cupWater.key)
-      }
+    // Add navigation arrows
+    const arrow = this.interactiveObjects.toBardArrow = new Arrow(this.game, 300, 95)
+    arrow.interactionEnabled = true
+    this.game.add.existing(arrow)
+    arrow.events.onInputUp.addOnce(() => {
+      arrow.interactionEnabled = false
+      this.fadeTo('bard')
+    })
+    const arrow2 = this.interactiveObjects.toFishArrow = new Arrow(this.game, 240, 200)
+    arrow2.rotation = Math.PI / 2
+    arrow2.interactionEnabled = true
+    this.game.add.existing(arrow2)
+    arrow2.events.onInputUp.addOnce(() => {
+      arrow2.interactionEnabled = false
+      this.fadeTo('fish')
     })
   }
 }

@@ -74,7 +74,7 @@ export default class BardScene extends Scene {
   }
 
   constructor(game: Phaser.Game) {
-    super(game, Images.backgroundsBard.key, Audio.soundscapesScene6.key, [], Json.dialogsBard.key)
+    super(game, Images.backgroundsBG02.key, Audio.soundscapesScene6.key, [], Json.dialogsBard.key)
   }
 
   protected registerConditionalStateTransitions(scenes: { [title: string]: Scene }) {
