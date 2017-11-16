@@ -233,23 +233,23 @@ export class WaitingForVeggies extends SceneState<KitchenScene> {
     c.cook1.interactionEnabled = true
     c.cook2.interactionEnabled = true
 
-    // Inventory.instance.addItem(Images.slicedVeggies.key)
+    // Inventory.instance.addItem(Images.carrotSliced.key)
 
     this.listeners.push(c.cook1.events.onInputUp.addOnce(() => {
-      if (Inventory.instance.hasItem(Images.slicedVeggies.key)) {
+      if (Inventory.instance.hasItem(Images.carrotSliced.key)) {
         this.stateManager.trigger(FinishCooking)
-        Inventory.instance.takeItem(Images.slicedVeggies.key)
-      } else if (Inventory.instance.hasItem(Images.veggies.key)) {
+        Inventory.instance.takeItem(Images.carrotSliced.key)
+      } else if (Inventory.instance.hasItem(Images.carrot.key)) {
         this.stateManager.trigger(VeggiesNotCut)
       } else {
         this.stateManager.trigger(StillNeedFish)
       }
     }))
     this.listeners.push(c.cook2.events.onInputUp.addOnce(() => {
-      if (Inventory.instance.hasItem(Images.slicedVeggies.key)) {
+      if (Inventory.instance.hasItem(Images.carrotSliced.key)) {
         this.stateManager.trigger(FinishCooking)
-        Inventory.instance.takeItem(Images.slicedVeggies.key)
-      } else if (Inventory.instance.hasItem(Images.veggies.key)) {
+        Inventory.instance.takeItem(Images.carrotSliced.key)
+      } else if (Inventory.instance.hasItem(Images.carrot.key)) {
         this.stateManager.trigger(VeggiesNotCut)
       } else {
         this.stateManager.trigger(StillNeedFish)

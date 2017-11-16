@@ -450,12 +450,12 @@ class CuttingVeggies extends SceneStateTransition<BardScene> {
 
     await scene.playDialogJson('cuttingVeggiesBeforeCutting')
 
-    Inventory.instance.takeItem(Images.veggies.key)
+    Inventory.instance.takeItem(Images.carrot.key)
 
     scene.characters.meckie.setActiveState('swinging')
     await scene.wait(1)
 
-    Inventory.instance.addItem(Images.slicedVeggies.key)
+    Inventory.instance.addItem(Images.carrotSliced.key)
 
     await scene.playDialogJson('cuttingVeggiesAfterCutting')
 

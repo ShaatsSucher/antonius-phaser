@@ -159,7 +159,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
       })
     })
 
-    this.inventoryButton = new Button(this.game, 0, 0, Atlases.wrench.key)
+    this.inventoryButton = new Button(this.game, 0, 0, Atlases.bag.key)
     this.inventoryButton.x = this.game.width - 2 - this.inventoryButton.width / 2
     this.inventoryButton.y = this.game.height - 2 - this.inventoryButton.height / 2
     this.inventoryButton.interactionEnabled = false
@@ -179,7 +179,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     RestartOverlay.instance.isShowing.onValueChanged.add(value => {
       if (this.isVisible) {
         console.log('RestartOverlay isShowing changed to', value)
-        if (!SettingsOverlay.instance.visible) {
+        if (!SettingsOverlay.instance.visible && !Inventory.instance.visible) {
           this.isPaused.value = value
         }
       }

@@ -14,7 +14,7 @@ export abstract class SceneState<T extends Scene> implements Pausable {
 
   public readonly isPaused = new Property<boolean>(false)
 
-  protected listeners: Phaser.SignalBinding[] = []
+  protected listeners: (Phaser.SignalBinding | (() => void))[] = []
 
   public async enter(): Promise<void> { }
   public async show(): Promise<void> { }
@@ -25,7 +25,13 @@ export abstract class SceneState<T extends Scene> implements Pausable {
   }
 
   public clearListeners() {
-    this.listeners.forEach(binding => binding.detach())
+    this.listeners.forEach(binding => {
+      if (binding instanceof Phaser.SignalBinding) {
+        binding.detach()
+      } else {
+        binding()
+      }
+    })
     this.listeners = []
   }
 }
