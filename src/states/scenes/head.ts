@@ -60,7 +60,7 @@ export default class HeadScene extends Scene {
       game,
       Images.backgroundsHead.key,
       Audio.soundscapesScene5.key,
-      Audio.musicHeadScreen.key,
+      Audio.musicHead.key,
       Json.dialogsHead.key
     )
   }
