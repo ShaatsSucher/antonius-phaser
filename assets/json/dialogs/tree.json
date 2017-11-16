@@ -170,5 +170,33 @@
   ],
   "antoniusWondersAboutWomansInvitation": [
     [ "antonius",   "Hat sie mich eben in die Hölle eingeladen?", [null, "ssslsl"] ]
+  ],
+  "goat1": [
+    [ "goat", "Mäh", [3.5, "human", "audioGoat001"] ],
+    [ "goat", "Mäh", [7.1, "human", "audioGoat002"]]
+  ],
+  "goat2": [
+    [ "antonius", "Und wer bist du?", [null, "ssl"] ],
+    [ "goat", "Mäh", [7.5, "human", "audioGoat003"] ]
+  ],
+  "goat3": [
+    [ "antonius", [ "Aha ... Gibt es etwas",
+                    "mit dem ich dir helfen kann?"
+                  ], [null, "lssssl"] ],
+    [ "goat", "Mäh!", [5.2, "human", "audioGoat004"] ]
+  ],
+  "goat4": [
+    [ "antonius", "... Nnnein, das weiß ich nicht", [null, "ssl"] ],
+    [ "goat", "Mäh ;)", [6.9, "human", "audioGoat005"] ]
+  ],
+  "goat5": [
+    [ "antonius", [ "Tut mir lein, aber ich weiß beim",
+                    "besten Willen nicht was du meinst"
+                  ], [null, "slsslss"] ],
+    [ "goat", "Mäh", [4.9, "human", "audioGoat006"] ]
+  ],
+  "finalGoat": [
+    [ "goat", "Mäh!", [1, "goat"] ],
+    [ "antonius", "Habe ich mir das nur eingebildet?", [null, "lsssl"] ]
   ]
 }
