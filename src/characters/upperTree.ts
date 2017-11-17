@@ -14,7 +14,7 @@ export default class UpperTreeCharacter extends Character {
   ))
 
   constructor(scene: Scene, x: number, y: number) {
-    super(scene, x, y, Assets.Spritesheets.treeupperNew.key)
+    super(scene, x, y, Assets.Spritesheets.treeUp.key)
 
     this.animations.add('idle', [0, 1], 2, true)
     this.animations.add('opening', ArrayUtils.range(2, 10), 8, false)
