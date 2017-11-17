@@ -13,7 +13,7 @@ export default class HellmouthCharacter extends Character {
   ))
 
   constructor(scene: Scene, x: number, y: number) {
-    super(scene, x, y, Assets.Spritesheets.hellmouthTalkcycle.key)
+    super(scene, x, y, Assets.Spritesheets.hellmouth.key)
 
     this.animations.add('idle', [0], 0, false)
     this.animations.add('talking', null, 16, true)
