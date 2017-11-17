@@ -153,10 +153,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     this.add.existing(this.settingsButton)
 
     this.settingsButton.events.onInputDown.add(() => {
-      this.isPaused.value = true
-      SettingsOverlay.instance.show().then(() => {
-        this.isPaused.value = false || RestartOverlay.instance.isShowing.value
-      })
+      this.showSettings()
     })
 
     this.inventoryButton = new Button(this.game, 0, 0, Atlases.bag.key)
@@ -167,11 +164,14 @@ export default abstract class Scene extends Phaser.State implements Pausable {
 
     this.inventoryButton.events.onInputDown.add(() => {
       this.isPaused.value = true
+      let alreadyWasClosed = false
       this.clickedAnywhere(true).then(() => {
+        if (alreadyWasClosed) return
         Inventory.instance.hide()
         this.isPaused.value = false || RestartOverlay.instance.isShowing.value
       })
       Inventory.instance.show().then(() => {
+        alreadyWasClosed = true
         this.isPaused.value = false || RestartOverlay.instance.isShowing.value
       })
     })
@@ -214,7 +214,25 @@ export default abstract class Scene extends Phaser.State implements Pausable {
       this.inventoryButton.interactionEnabled = true
     })
 
+    this.game.input.keyboard.addKey(Phaser.KeyCode.ESC).onDown.add(() => {
+      const visibleOverlays = [Inventory, RestartOverlay, SettingsOverlay]
+        .map(x => x.instance)
+        .filter(o => o.visible)
+
+      visibleOverlays.forEach(o => o.hide())
+      if (visibleOverlays.length === 0) {
+        this.showSettings()
+      }
+    })
+
     this.onCreate.dispatch()
+  }
+
+  private showSettings() {
+    this.isPaused.value = true
+    SettingsOverlay.instance.show().then(() => {
+      this.isPaused.value = false || RestartOverlay.instance.isShowing.value
+    })
   }
 
   public update() {
