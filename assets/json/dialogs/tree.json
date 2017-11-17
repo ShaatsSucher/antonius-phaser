@@ -186,12 +186,12 @@
     [ "goat", "Mäh!", [5.2, "human", "audioGoat004"] ]
   ],
   "goat4": [
-    [ "antonius", "... Nnnein, das weiß ich nicht", [null, "ssl"] ],
+    [ "antonius", "... Nnnein, das weiß ich nicht.", [null, "ssl"] ],
     [ "goat", "Mäh ;)", [6.9, "human", "audioGoat005"] ]
   ],
   "goat5": [
-    [ "antonius", [ "Tut mir lein, aber ich weiß beim",
-                    "besten Willen nicht was du meinst"
+    [ "antonius", [ "Tut mir leid, aber ich weiß beim",
+                    "besten Willen nicht, was du meinst."
                   ], [null, "slsslss"] ],
     [ "goat", "Mäh", [4.9, "human", "audioGoat006"] ]
   ],
