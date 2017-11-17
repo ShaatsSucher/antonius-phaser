@@ -7,6 +7,7 @@ import { SceneStateManager,
        } from '../../utils/stateManager'
 
 import { Audio, Images, Spritesheets, Json } from '../../assets'
+import { AudioManager } from '../../utils/audioManager'
 
 import { ArrayUtils } from '../../utils/utils'
 
@@ -183,6 +184,7 @@ class InitialSwan extends SceneState<ConcertScene> {
 
     swan.interactionEnabled = true
 
+    // TODO: make GettingSmashed transition trigger when you drag the hammer onto him
     this.listeners.push(swan.events.onInputUp.addOnce(
       () => this.stateManager.trigger(Stuck)
     ))
@@ -202,6 +204,17 @@ class Stuck extends SceneStateTransition<ConcertScene> {
 
 class GettingSmashed extends SceneStateTransition<ConcertScene> {
   public async enter() {
+    const swan = this.scene.characters.swan
+
+      swan.setActiveState('talking')
+
+      await this.scene.playDialogJson('gettingSmashed')
+
+      swan.setActiveState('walking')
+
+      await this.scene.tweens.create(swan).to({
+        x: -200, y: 0
+      }, 3000).start().onComplete.asPromise()
 
     return SwanGone
   }
@@ -209,7 +222,7 @@ class GettingSmashed extends SceneStateTransition<ConcertScene> {
 
 export class SwanGone extends SceneState<ConcertScene> {
   public async show() {
-
+    this.scene.characters.swan.visible = false
   }
 }
 
