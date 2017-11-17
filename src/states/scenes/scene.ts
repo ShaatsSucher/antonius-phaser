@@ -5,6 +5,7 @@ import GameObject from '../../gameObjects/gameObject'
 
 import SettingsOverlay from '../../overlays/settings'
 import RestartOverlay from '../../overlays/restart'
+import Help from '../../overlays/help'
 import Inventory from '../../overlays/inventory'
 
 import { SceneStateManager } from '../../utils/stateManager'
@@ -43,6 +44,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
 
   public settingsButton: Button
   public inventoryButton: Button
+  public helpButton: Button
 
   public onUpdate = new Phaser.Signal()
   public onCreate = new Phaser.Signal()
@@ -74,6 +76,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
       }
       this.settingsButton.isPaused.value = isPaused
       this.inventoryButton.isPaused.value = isPaused
+      this.helpButton.isPaused.value = isPaused
     })
 
     if (dialogJsonKey) {
@@ -106,6 +109,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     this.lockInput()
     this.settingsButton.isPaused.value = true
     this.inventoryButton.isPaused.value = true
+    this.helpButton.isPaused.value = true
 
     // Start the next state as soon as the fade-out is done
     this.game.camera.onFadeComplete.addOnce(() => {
@@ -176,6 +180,26 @@ export default abstract class Scene extends Phaser.State implements Pausable {
       })
     })
 
+    this.helpButton = new Button(this.game, 0, 0, Atlases.help.key)
+    this.helpButton.x = 2 + this.helpButton.width / 2
+    this.helpButton.y = 2 + this.helpButton.height / 2
+    this.helpButton.interactionEnabled = false
+    this.add.existing(this.helpButton)
+
+    this.helpButton.events.onInputDown.add(() => {
+      this.isPaused.value = true
+      let alreadyWasClosed = false
+      this.clickedAnywhere(true).then(() => {
+        if (alreadyWasClosed) return
+        Help.instance.hide()
+        this.isPaused.value = false || RestartOverlay.instance.isShowing.value
+      })
+      Help.instance.show().then(() => {
+        alreadyWasClosed = true
+        this.isPaused.value = false || RestartOverlay.instance.isShowing.value
+      })
+    })
+
     RestartOverlay.instance.isShowing.onValueChanged.add(value => {
       if (this.isVisible) {
         console.log('RestartOverlay isShowing changed to', value)
@@ -189,6 +213,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     // Make sure nothing can obstruct the settings and inventory buttons
     this.settingsButton.bringToTop()
     this.inventoryButton.bringToTop()
+    this.helpButton.bringToTop()
 
     this.createGameObjects()
     this.lockInput()
@@ -206,16 +231,19 @@ export default abstract class Scene extends Phaser.State implements Pausable {
 
     this.settingsButton.isPaused.value = true
     this.inventoryButton.isPaused.value = true
+    this.helpButton.isPaused.value = true
     this.camera.onFlashComplete.asPromise().then(() => {
       this.settingsButton.isPaused.value = false
       this.inventoryButton.isPaused.value = false
+      this.helpButton.isPaused.value = false
     }).then(() => {
       this.settingsButton.interactionEnabled = true
       this.inventoryButton.interactionEnabled = true
+      this.helpButton.interactionEnabled = true
     })
 
     this.game.input.keyboard.addKey(Phaser.KeyCode.ESC).onDown.add(() => {
-      const visibleOverlays = [Inventory, RestartOverlay, SettingsOverlay]
+      const visibleOverlays = [Inventory, RestartOverlay, SettingsOverlay, Help]
         .map(x => x.instance)
         .filter(o => o.visible)
 
