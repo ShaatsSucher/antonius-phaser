@@ -12,7 +12,7 @@
 
     [ "tree",       "Ich hab solche Angst um meine Rinde!", [2, "scared"] ],
     [ "tree",     [ "Dieser Mann da vorne fuchtelt so",
-                    "wild mit seinem Messer herum"
+                    "wild mit seinem Messer herum."
                   ], [5, "scared"] ],
     [ "tree",     [ "Er wird bestimmt mit einer",
                     "Liebesbotschaft meinen schönen Teint ruinieren!"
@@ -76,7 +76,7 @@
                   ], [null, "lslslslssllsssl"] ]
   ],
   "treeDeniesEntry": [
-    [ "tree",     [ "Ich würde dir ja gerne diesen Gefallen run,",
+    [ "tree",     [ "Ich würde dir ja gerne diesen Gefallen tun,",
                     "aber mir ist das schrecklich unangenehm,",
                     "wenn mich jeder dabei sieht."
                   ], [8, "shy"] ],
