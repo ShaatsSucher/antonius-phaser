@@ -43,6 +43,12 @@ export default class KitchenScene extends Scene {
       StillNeedVeggies,
       VeggiesNotCut,
       FinishCooking
+    ]),
+    eggwoman: new SceneStateManager<KitchenScene>(this, [
+      InitialEggwoman,
+      EggwomanWentOver
+    ], [
+      KidsTheseDays
     ])
   }
 
@@ -84,14 +90,14 @@ export default class KitchenScene extends Scene {
       this.fadeTo('concert')
     })
 
+    const eggwoman = this.characters.eggwoman = new EggWomanCharacter(this, 200, 100)
+    eggwoman.scale = new Phaser.Point(3, 3)
+    this.game.add.existing(eggwoman)
+
     const antonius = this.characters.antonius = new AntoniusCharacter(this, 270, 120)
     antonius.scale = new Phaser.Point(3, 3)
     antonius.setActiveState('idle')
     this.game.add.existing(antonius)
-
-    const eggwoman = this.characters.eggwoman = new EggWomanCharacter(this, 200, 100)
-    eggwoman.scale = new Phaser.Point(3, 3)
-    this.game.add.existing(eggwoman)
 
     const cook1 = this.characters.cook1 = new Cook1Character(this, 100, 100)
     cook1.scale = new Phaser.Point(2, 2)
@@ -308,5 +314,43 @@ export class DoneCooking extends SceneState<KitchenScene> {
 
     c.cook1.visible = false
     c.cook2.visible = false
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Eggwoman States
+// ---------------------------------------------------------------------------
+
+class InitialEggwoman extends SceneState<KitchenScene> {
+  async show() {
+    const eggwoman = this.scene.characters.eggwoman
+
+    eggwoman.interactionEnabled = true
+
+    this.listeners.push(eggwoman.events.onInputUp.addOnce(() => {
+      this.stateManager.trigger(KidsTheseDays)
+    }))
+  }
+}
+
+class KidsTheseDays extends SceneStateTransition<KitchenScene> {
+  async enter() {
+    await this.scene.playDialogJson('kidsTheseDays')
+
+    this.scene.characters.eggwoman.setActiveState('walking')
+    await this.scene.tweens.create(this.scene.characters.eggwoman).to({
+      x: 384
+    }, 3000).start().onComplete.asPromise()
+
+    return EggwomanWentOver
+  }
+}
+
+export class EggwomanWentOver extends SceneState<KitchenScene> {
+  async show() {
+    const eggwoman = this.scene.characters.eggwoman
+
+    eggwoman.visible = false
+    eggwoman.interactionEnabled = false
   }
 }

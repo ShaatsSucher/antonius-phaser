@@ -1,12 +1,22 @@
 import Scene from './scene'
-import { SceneStateManager, SceneState, SceneStateTransition } from '../../utils/stateManager'
+import { SceneStateManager,
+         SceneState,
+         SceneStateTransition,
+         ConditionalStateTransition,
+         TransitionCondition
+       } from '../../utils/stateManager'
 
-import { Audio, Images, Json } from '../../assets'
+import { Audio, Images, Spritesheets, Json } from '../../assets'
+
+import { ArrayUtils } from '../../utils/utils'
 
 import AntoniusCharacter from '../../characters/antonius'
 import SwanCharacter from '../../characters/swan'
 import MusiciansCharacter from '../../characters/musicians'
 import SnakesCharacter from '../../characters/snakes'
+import EggWomanCharacter from '../../characters/eggwoman'
+
+import { EggwomanWentOver } from './kitchen'
 
 import Arrow from '../../gameObjects/arrow'
 import GameObject from '../../gameObjects/gameObject'
@@ -18,7 +28,8 @@ export default class ConcertScene extends Scene {
   public characters: {
     antonius: AntoniusCharacter,
     swan: SwanCharacter,
-    musicians: MusiciansCharacter
+    musicians: MusiciansCharacter,
+    eggwoman: EggWomanCharacter
     // snakes: SnakesCharacter
   } = <any>{}
 
@@ -28,10 +39,24 @@ export default class ConcertScene extends Scene {
   }
 
   veggieItem: GameObject
+  cloud: GameObject
+  caneItem: GameObject
 
   stateManagers = {
     default: new SceneStateManager<ConcertScene>(this, [
       Initial
+    ], [
+
+    ]),
+    // Swan: new SceneStateManager<ConcertScene>(this, [
+    //   InitialSwan,
+    //   SwanGone
+    // ], [
+    //   GettingSmashed
+    // ]),
+    musicians: new SceneStateManager<ConcertScene>(this, [
+      InitialMusicans,
+      MusiciansGone
     ], [
 
     ]),
@@ -40,6 +65,19 @@ export default class ConcertScene extends Scene {
       VeggiesPickedUp
     ], [
       VeggiesBeingPickedUp
+    ]),
+    cane: new SceneStateManager<ConcertScene>(this, [
+      CaneNotThere,
+      CaneThere
+    ], [
+      CaneBeingTaken
+    ]),
+    eggwoman: new SceneStateManager<ConcertScene>(this, [
+      InitialEggwoman,
+      ReadyToFight,
+      EggwomanGone
+    ], [
+      Fight
     ])
   }
 
@@ -52,6 +90,23 @@ export default class ConcertScene extends Scene {
       Json.dialogsConcert.key
     )
   }
+
+  protected registerConditionalStateTransitions(scenes: { [title: string]: Scene }) {
+    this.stateManagers.eggwoman.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        ReadyToFight,
+        TransitionCondition.reachedState(scenes.kitchen.stateManagers.eggwoman, EggwomanWentOver)
+      )
+    )
+
+    // this.stateManagers.cane.registerConditionalTransitions(
+    //   new ConditionalStateTransition(
+    //     CaneThere,
+    //     TransitionCondition.reachedState(this.stateManagers.eggwoman, EggwomanGone)
+    //   )
+    // )
+  }
+
 
   protected createGameObjects() {
     const toKitchenArrow = this.interactiveObjects.toKitchenArrow = new Arrow(this.game, 20, 108)
@@ -72,6 +127,10 @@ export default class ConcertScene extends Scene {
       this.fadeTo('tree')
     })
 
+    const eggwoman = this.characters.eggwoman = new EggWomanCharacter(this, 80, 100)
+    eggwoman.scale = new Phaser.Point(3, 3)
+    this.game.add.existing(eggwoman)
+
     const antonius = this.characters.antonius = new AntoniusCharacter(this, 80, 120)
     antonius.scale = new Phaser.Point(-3, 3)
     antonius.setActiveState('idle')
@@ -81,7 +140,7 @@ export default class ConcertScene extends Scene {
     swan.scale = new Phaser.Point(3, 3)
     this.game.add.existing(swan)
 
-    const musicians = this.characters.musicians = new MusiciansCharacter(this, 110, 30)
+    const musicians = this.characters.musicians = new MusiciansCharacter(this, 110, 10)
     musicians.scale = new Phaser.Point(3, 3)
     this.game.add.existing(musicians)
 
@@ -92,6 +151,18 @@ export default class ConcertScene extends Scene {
     this.veggieItem = new GameObject(this.game, 255, 135, Images.veggies.key)
     this.veggieItem.scale.setTo(2)
     this.game.add.existing(this.veggieItem)
+
+    this.caneItem = new GameObject(this.game, 150, 120, Images.hammer.key)
+    this.caneItem.scale.setTo(2)
+    this.game.add.existing(this.caneItem)
+
+    this.cloud = new GameObject(this.game, 80, 50, Spritesheets.cloudofdust.key)
+    this.cloud.animations.add('fighting', ArrayUtils.range(6, 15), 8, true)
+    this.cloud.animations.add('start', ArrayUtils.range(0, 5), 8, false)
+    this.cloud.scale.setTo(3)
+    this.cloud.setInteractionEnabled(false)
+    this.cloud.visible = false
+    this.game.add.existing(this.cloud)
   }
 }
 
@@ -100,6 +171,54 @@ export class Initial extends SceneState<ConcertScene> {
     const scene = this.scene
   }
 }
+
+// ---------------------------------------------------------------------------
+// Musician States
+// ---------------------------------------------------------------------------
+
+class InitialMusicans extends SceneState<ConcertScene> {
+  public async show() {
+    this.scene.characters.musicians.visible = true
+  }
+}
+
+class MusiciansGone extends SceneState<ConcertScene> {
+  public async show() {
+    this.scene.characters.musicians.visible = false
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Cane States
+// ---------------------------------------------------------------------------
+
+class CaneThere extends SceneState<ConcertScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.caneItem.interactionEnabled = true
+    this.listeners.push(scene.caneItem.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(CaneBeingTaken)
+    ))
+  }
+}
+
+class CaneBeingTaken extends SceneStateTransition<ConcertScene> {
+  public async enter() {
+    Inventory.instance.addItem(Images.hammer.key)
+    return CaneNotThere
+  }
+}
+
+export class CaneNotThere extends SceneState<ConcertScene> {
+  public async show() {
+    this.scene.caneItem.visible = false
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Veggie States
+// ---------------------------------------------------------------------------
 
 class VeggiesPresent extends SceneState<ConcertScene> {
   public async show() {
@@ -122,5 +241,69 @@ class VeggiesBeingPickedUp extends SceneStateTransition<ConcertScene> {
 export class VeggiesPickedUp extends SceneState<ConcertScene> {
   public async show() {
     this.scene.veggieItem.visible = false
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Eggwoman States
+// ---------------------------------------------------------------------------
+
+class InitialEggwoman extends SceneState<ConcertScene> {
+  async show() {
+    const eggwoman = this.scene.characters.eggwoman
+
+    eggwoman.interactionEnabled = false
+    eggwoman.visible = false
+  }
+}
+
+class ReadyToFight extends SceneState<ConcertScene> {
+  async show() {
+    const eggwoman = this.scene.characters.eggwoman
+
+    eggwoman.interactionEnabled = true
+    eggwoman.visible = true
+
+    this.listeners.push(eggwoman.events.onInputUp.addOnce(() => {
+      this.stateManager.trigger(Fight)
+    }))
+  }
+}
+
+class Fight extends SceneStateTransition<ConcertScene> {
+  async enter() {
+    const chars = this.scene.characters
+    const cloud = this.scene.cloud
+
+    await this.scene.playDialogJson('eggwomanIsPissed')
+
+    cloud.visible = true
+    await this.scene.cloud.play('start').onComplete.asPromise()
+
+    chars.eggwoman.visible = false
+    chars.musicians.visible = false
+    this.scene.caneItem.visible = true
+    // this.scene.stateManagers.cane.setActiveState(CaneThere)
+
+    this.scene.cloud.play('fighting')
+    await this.scene.wait(2)
+
+    await this.scene.tweens.create(cloud).to({
+      x: -200, y: 0
+    }, 3000).start().onComplete.asPromise()
+
+    this.scene.stateManagers.cane.setActiveState(CaneThere)
+    this.scene.stateManagers.musicians.setActiveState(MusiciansGone)
+
+    return EggwomanGone
+  }
+}
+
+export class EggwomanGone extends SceneState<ConcertScene> {
+  async show() {
+    const eggwoman = this.scene.characters.eggwoman
+
+    eggwoman.interactionEnabled = false
+    eggwoman.visible = false
   }
 }

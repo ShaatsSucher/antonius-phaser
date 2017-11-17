@@ -22,6 +22,8 @@ export default class EggWomanCharacter extends Character {
     this.animations.add('exit_walking', [16, 15, 14, 13], 8, false)
 
     this.addCharacterState('idle', new IdleState(this))
+    this.addCharacterState('talking', new TalkingState(this))
+    this.addCharacterState('walking', new WalkingState(this))
   }
 }
 

@@ -80,5 +80,41 @@
     [ "cook1",      "Wir können stolz auf uns sein!", 4 ],
 
     [ "antonius",   "Na dann guten Appetit!", [null, "lsss"] ]
+  ],
+  "kidsTheseDays": [
+    [ "antonius",   "Grüß Gott.", [null, "ss"] ],
+
+    [ "eggwoman", [ "Was fällt ihnen eigentlich ein, sich hier",
+                    "in meine Angelegenheiten einzumischen?"
+                  ], 8 ],
+
+    [ "antonius",   "Ich wollte doch nur ...", [null, "ssl"] ],
+
+    [ "eggwoman", [ "Jaja, alle wollen immer nur.",
+                    "Und wer denkt an mich?",
+                    "Mein Leben lang habe ich gegeben.",
+                    "Und was ist der Dank dafür?"
+                  ], 11 ],
+
+    [ "antonius",   "Ich ...", [null, "s"] ],
+
+    [ "eggwoman", [ "Sie haben leicht reden. Sie kommen da",
+                    "aus der Wüste mit ihrer Bibel",
+                    "doch haben sie sich noch nie mit echen Dämonen wie",
+                    "dieser Jugend von heute abgeben müssen",
+                    "Damals zu meiner Zeit herrschte noch Zucht und Ordnung"
+                  ], 22 ],
+
+    [ "antonius",   "Aber ...", [null, "l"] ],
+
+    [ "eggwoman", [ "Kommen sie mir hier nicht mit einem Aber.",
+                    "Gucken sie sich doch nur mal diese Nichtsnutze da drüben an.",
+                    "die machen den ganzen Tag nichts anderes",
+                    "als so lächerlich herum zu tanzen ..."
+                  ], 22 ],
+
+    [ "eggwoman", [ "Sie haben Recht, ich werde hier für Ordnung sorgen.",
+                    "Ab sofort weht hier ein ganz anderer Wind."
+                  ], 8 ]
   ]
 }
