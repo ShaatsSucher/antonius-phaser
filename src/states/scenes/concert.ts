@@ -42,7 +42,7 @@ export default class ConcertScene extends Scene {
   cloud: GameObject
   caneItem: GameObject
 
-  stateManagers = {
+  stateManagers: { [name: string]: SceneStateManager<ConcertScene> } = {
     default: new SceneStateManager<ConcertScene>(this, [
       Initial
     ], [
@@ -99,13 +99,18 @@ export default class ConcertScene extends Scene {
         TransitionCondition.reachedState(scenes.kitchen.stateManagers.eggwoman, EggwomanWentOver)
       )
     )
-
-    // this.stateManagers.cane.registerConditionalTransitions(
-    //   new ConditionalStateTransition(
-    //     CaneThere,
-    //     TransitionCondition.reachedState(this.stateManagers.eggwoman, EggwomanGone)
-    //   )
-    // )
+    this.stateManagers.musicians.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        MusiciansGone,
+        TransitionCondition.reachedState(this.stateManagers.eggwoman, EggwomanGone)
+      )
+    )
+    this.stateManagers.cane.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        CaneThere,
+        TransitionCondition.reachedState(this.stateManagers.eggwoman, EggwomanGone)
+      )
+    )
   }
 
 
@@ -237,7 +242,9 @@ class CaneThere extends SceneState<ConcertScene> {
   public async show() {
     const scene = this.scene
 
+    scene.caneItem.visible = true
     scene.caneItem.interactionEnabled = true
+
     this.listeners.push(scene.caneItem.events.onInputUp.addOnce(
       () => this.stateManager.trigger(CaneBeingTaken)
     ))
@@ -295,6 +302,8 @@ class InitialEggwoman extends SceneState<ConcertScene> {
 
     eggwoman.interactionEnabled = false
     eggwoman.visible = false
+
+    this.scene.cloud.visible = false
   }
 }
 
@@ -304,6 +313,8 @@ class ReadyToFight extends SceneState<ConcertScene> {
 
     eggwoman.interactionEnabled = true
     eggwoman.visible = true
+
+    this.scene.cloud.visible = false
 
     this.listeners.push(eggwoman.events.onInputUp.addOnce(() => {
       this.stateManager.trigger(Fight)
@@ -315,6 +326,9 @@ class Fight extends SceneStateTransition<ConcertScene> {
   async enter() {
     const chars = this.scene.characters
     const cloud = this.scene.cloud
+    // this.scene.stateManagers.cane.setActiveState(CaneThere)
+    // this.scene.stateManagers.musicians.setActiveState(MusiciansGone)
+
 
     await this.scene.playDialogJson('eggwomanIsPissed')
 
@@ -324,7 +338,6 @@ class Fight extends SceneStateTransition<ConcertScene> {
     chars.eggwoman.visible = false
     chars.musicians.visible = false
     this.scene.caneItem.visible = true
-    // this.scene.stateManagers.cane.setActiveState(CaneThere)
 
     this.scene.cloud.play('fighting')
     await this.scene.wait(2)
@@ -332,9 +345,6 @@ class Fight extends SceneStateTransition<ConcertScene> {
     await this.scene.tweens.create(cloud).to({
       x: -200, y: 0
     }, 3000).start().onComplete.asPromise()
-
-    this.scene.stateManagers.cane.setActiveState(CaneThere)
-    this.scene.stateManagers.musicians.setActiveState(MusiciansGone)
 
     return EggwomanGone
   }
@@ -346,5 +356,7 @@ export class EggwomanGone extends SceneState<ConcertScene> {
 
     eggwoman.interactionEnabled = false
     eggwoman.visible = false
+
+    this.scene.cloud.visible = false
   }
 }
