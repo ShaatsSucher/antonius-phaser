@@ -13,7 +13,7 @@
     [ "fish",     [ "Nicht nur spreche ich, ich atme Luft!",
                     "Wasser ist ja *schnauf* so was von altmodisch."
                   ], 8],
-    [ "fish",       "Frischluft, *röchel* die atmet man heutzutage!", 6 ],
+    [ "fish",       "Frischluft *röchel*, die atmet man heutzutage!", 6 ],
 
     [ "antonius", [ "Sicher, dass es dir gut geht?",
                     "Du siehst ein bisschen blass um die Kiemen aus..."
@@ -23,7 +23,7 @@
     [ "fish",       "Mir geht es *keuch* BLEN-DEND!", 5 ]
   ],
   "fishSuffocates": [
-    [ "fish",       "Lust atmen ist *japs* gesund!", 4 ],
+    [ "fish",       "Luft atmen ist *japs* gesund!", 4 ],
     [ "fish",     [ "Es verjüngt die Haut, es reinigt die Poren,",
                     "alles dank der Lunge!"
                   ], 6 ],

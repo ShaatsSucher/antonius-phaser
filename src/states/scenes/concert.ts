@@ -150,7 +150,7 @@ export default class ConcertScene extends Scene {
     // snakes.scale = new Phaser.Point(0.5, 0.2)
     // this.game.add.existing(snakes)
 
-    this.veggieItem = new GameObject(this.game, 255, 135, Images.veggies.key)
+    this.veggieItem = new GameObject(this.game, 255, 135, Images.carrot.key)
     this.veggieItem.scale.setTo(2)
     this.game.add.existing(this.veggieItem)
 
@@ -287,7 +287,7 @@ class VeggiesPresent extends SceneState<ConcertScene> {
 
 class VeggiesBeingPickedUp extends SceneStateTransition<ConcertScene> {
   public async enter() {
-    Inventory.instance.addItem(Images.veggies.key)
+    await Inventory.instance.pickupItem(this.scene.veggieItem, this.scene)
     return VeggiesPickedUp
   }
 }

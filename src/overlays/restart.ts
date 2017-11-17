@@ -4,6 +4,9 @@ import Slider from '../gameObjects/slider'
 
 import { Property } from '../utils/property'
 
+import SettingsOverlay from './settings'
+import Inventory from './inventory'
+
 import { AudioManager } from '../utils/audioManager'
 
 export default class RestartOverlay extends Phaser.Group {
@@ -148,6 +151,10 @@ export default class RestartOverlay extends Phaser.Group {
     console.log('Showing RestartOverlay')
     this.isShowing.value = this.visible = true
     this.timeoutEnabled = false
+
+    SettingsOverlay.instance.hide(true)
+    Inventory.instance.hide()
+
     return this.onMenuClosed.asPromise()
   }
 

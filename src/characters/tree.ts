@@ -26,7 +26,7 @@ export default class TreeCharacter extends Character {
 
   constructor(scene: Scene, x: number, y: number) {
     // TODO: replace with correct spritesheet
-    super(scene, x, y, Assets.Spritesheets.treelowerNew.key)
+    super(scene, x, y, Assets.Spritesheets.treeLow.key)
 
     this.animations.add('idle', [0, 1], 2, true)
     this.animations.add('opening', ArrayUtils.range(2, 10), 8, false)

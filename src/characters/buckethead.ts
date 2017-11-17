@@ -49,7 +49,7 @@ class TalkingBucketState implements CharacterState<BucketheadCharacter> {
 
   async enter() {
     this.character.animations.stop()
-    this.character.play('TalkingBucket')
+    this.character.play('talkingBucket')
   }
 }
 
