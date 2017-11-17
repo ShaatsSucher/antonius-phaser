@@ -48,12 +48,13 @@ export default class ConcertScene extends Scene {
     ], [
 
     ]),
-    // Swan: new SceneStateManager<ConcertScene>(this, [
-    //   InitialSwan,
-    //   SwanGone
-    // ], [
-    //   GettingSmashed
-    // ]),
+    Swan: new SceneStateManager<ConcertScene>(this, [
+      InitialSwan,
+      SwanGone
+    ], [
+      Stuck,
+      GettingSmashed
+    ]),
     musicians: new SceneStateManager<ConcertScene>(this, [
       InitialMusicans,
       MusiciansGone
@@ -169,6 +170,46 @@ export default class ConcertScene extends Scene {
 export class Initial extends SceneState<ConcertScene> {
   public async show() {
     const scene = this.scene
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Musician States
+// ---------------------------------------------------------------------------
+
+class InitialSwan extends SceneState<ConcertScene> {
+  public async show() {
+    const swan = this.scene.characters.swan
+
+    swan.interactionEnabled = true
+
+    this.listeners.push(swan.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(Stuck)
+    ))
+  }
+}
+
+class Stuck extends SceneStateTransition<ConcertScene> {
+  public async enter() {
+    const swan = this.scene.characters.swan
+
+    swan.interactionEnabled = false
+    await swan.play('pulling').onComplete.asPromise()
+
+    return InitialSwan
+  }
+}
+
+class GettingSmashed extends SceneStateTransition<ConcertScene> {
+  public async enter() {
+
+    return SwanGone
+  }
+}
+
+export class SwanGone extends SceneState<ConcertScene> {
+  public async show() {
+
   }
 }
 

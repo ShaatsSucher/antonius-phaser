@@ -17,7 +17,7 @@ export default class SwanCharacter extends Character {
 
     // TODO: correct animations?
     this.animations.add('idle', [0], 0, false)
-    this.animations.add('pulling', ArrayUtils.range(0, 8), 8, true)
+    this.animations.add('pulling', ArrayUtils.range(0, 8), 8, false)
     this.animations.add('talking', [9, 10], 8, true)
     this.animations.add('walking', ArrayUtils.range(11, 22), 8, true)
 
