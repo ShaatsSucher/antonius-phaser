@@ -173,7 +173,7 @@ class HatPresent extends SceneState<CanopyScene> {
 
 class HatBeingPickedUp extends SceneStateTransition<CanopyScene> {
   public async enter() {
-    Inventory.instance.addItem(Images.hat.key)
+    await Inventory.instance.pickupItem(this.scene.hat, this.scene, Images.hat.key)
     return HatPickedUp
   }
 }

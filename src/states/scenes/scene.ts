@@ -5,6 +5,7 @@ import GameObject from '../../gameObjects/gameObject'
 
 import SettingsOverlay from '../../overlays/settings'
 import RestartOverlay from '../../overlays/restart'
+import Help from '../../overlays/help'
 import Inventory from '../../overlays/inventory'
 
 import { SceneStateManager } from '../../utils/stateManager'
@@ -43,10 +44,18 @@ export default abstract class Scene extends Phaser.State implements Pausable {
 
   public settingsButton: Button
   public inventoryButton: Button
+  public helpButton: Button
 
   public onUpdate = new Phaser.Signal()
   public onCreate = new Phaser.Signal()
   public onShutdown = new Phaser.Signal()
+
+  private itemDropHandlers: [GameObject, ((key: string) => Promise<boolean>)[]][] = []
+
+  public static getActiveScene(game: Phaser.Game): Scene {
+    const currentState = game.state.states[game.state.current]
+    return currentState instanceof Scene ? <Scene>currentState : null
+  }
 
   constructor(game: Phaser.Game, private backgroundKey,
               atmoKeys: string | string[] = [], musicKeys: string | string[] = [], dialogJsonKey?: string) {
@@ -67,6 +76,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
       }
       this.settingsButton.isPaused.value = isPaused
       this.inventoryButton.isPaused.value = isPaused
+      this.helpButton.isPaused.value = isPaused
     })
 
     if (dialogJsonKey) {
@@ -99,6 +109,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     this.lockInput()
     this.settingsButton.isPaused.value = true
     this.inventoryButton.isPaused.value = true
+    this.helpButton.isPaused.value = true
 
     // Start the next state as soon as the fade-out is done
     this.game.camera.onFadeComplete.addOnce(() => {
@@ -128,6 +139,14 @@ export default abstract class Scene extends Phaser.State implements Pausable {
       .forEach(object => object.isPaused.value = false)
   }
 
+  public disableInteraction() {
+    const interactableObjects = this.allInteractiveObjects.filter(obj => obj.interactionEnabled)
+    interactableObjects.forEach(obj => obj.interactionEnabled = false)
+    return () => {
+      interactableObjects.forEach(obj => obj.interactionEnabled = true)
+    }
+  }
+
   public create() {
     this.backgroundImage = this.add.sprite(0, 0, this.backgroundKey)
 
@@ -138,13 +157,10 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     this.add.existing(this.settingsButton)
 
     this.settingsButton.events.onInputDown.add(() => {
-      this.isPaused.value = true
-      SettingsOverlay.instance.show().then(() => {
-        this.isPaused.value = false
-      })
+      this.showSettings()
     })
 
-    this.inventoryButton = new Button(this.game, 0, 0, Atlases.wrench.key)
+    this.inventoryButton = new Button(this.game, 0, 0, Atlases.bag.key)
     this.inventoryButton.x = this.game.width - 2 - this.inventoryButton.width / 2
     this.inventoryButton.y = this.game.height - 2 - this.inventoryButton.height / 2
     this.inventoryButton.interactionEnabled = false
@@ -152,17 +168,42 @@ export default abstract class Scene extends Phaser.State implements Pausable {
 
     this.inventoryButton.events.onInputDown.add(() => {
       this.isPaused.value = true
+      let alreadyWasClosed = false
       this.clickedAnywhere(true).then(() => {
+        if (alreadyWasClosed) return
         Inventory.instance.hide()
-        this.isPaused.value = false
+        this.isPaused.value = false || RestartOverlay.instance.isShowing.value
       })
-      Inventory.instance.show()
+      Inventory.instance.show().then(() => {
+        alreadyWasClosed = true
+        this.isPaused.value = false || RestartOverlay.instance.isShowing.value
+      })
+    })
+
+    this.helpButton = new Button(this.game, 0, 0, Atlases.help.key)
+    this.helpButton.x = 2 + this.helpButton.width / 2
+    this.helpButton.y = 2 + this.helpButton.height / 2
+    this.helpButton.interactionEnabled = false
+    this.add.existing(this.helpButton)
+
+    this.helpButton.events.onInputDown.add(() => {
+      this.isPaused.value = true
+      let alreadyWasClosed = false
+      this.clickedAnywhere(true).then(() => {
+        if (alreadyWasClosed) return
+        Help.instance.hide()
+        this.isPaused.value = false || RestartOverlay.instance.isShowing.value
+      })
+      Help.instance.show().then(() => {
+        alreadyWasClosed = true
+        this.isPaused.value = false || RestartOverlay.instance.isShowing.value
+      })
     })
 
     RestartOverlay.instance.isShowing.onValueChanged.add(value => {
       if (this.isVisible) {
         console.log('RestartOverlay isShowing changed to', value)
-        if (!SettingsOverlay.instance.visible) {
+        if (!SettingsOverlay.instance.visible && !Inventory.instance.visible) {
           this.isPaused.value = value
         }
       }
@@ -172,6 +213,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     // Make sure nothing can obstruct the settings and inventory buttons
     this.settingsButton.bringToTop()
     this.inventoryButton.bringToTop()
+    this.helpButton.bringToTop()
 
     this.createGameObjects()
     this.lockInput()
@@ -189,15 +231,36 @@ export default abstract class Scene extends Phaser.State implements Pausable {
 
     this.settingsButton.isPaused.value = true
     this.inventoryButton.isPaused.value = true
+    this.helpButton.isPaused.value = true
     this.camera.onFlashComplete.asPromise().then(() => {
       this.settingsButton.isPaused.value = false
       this.inventoryButton.isPaused.value = false
+      this.helpButton.isPaused.value = false
     }).then(() => {
       this.settingsButton.interactionEnabled = true
       this.inventoryButton.interactionEnabled = true
+      this.helpButton.interactionEnabled = true
+    })
+
+    this.game.input.keyboard.addKey(Phaser.KeyCode.ESC).onDown.add(() => {
+      const visibleOverlays = [Inventory, RestartOverlay, SettingsOverlay, Help]
+        .map(x => x.instance)
+        .filter(o => o.visible)
+
+      visibleOverlays.forEach(o => o.hide())
+      if (visibleOverlays.length === 0) {
+        this.showSettings()
+      }
     })
 
     this.onCreate.dispatch()
+  }
+
+  private showSettings() {
+    this.isPaused.value = true
+    SettingsOverlay.instance.show().then(() => {
+      this.isPaused.value = false || RestartOverlay.instance.isShowing.value
+    })
   }
 
   public update() {
@@ -213,6 +276,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
   }
 
   public async resetStates() {
+    this.itemDropHandlers = []
     await Promise.all(
       Object.keys(this.stateManagers)
         .map(key => this.stateManagers[key])
@@ -224,6 +288,35 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     if (dialog) {
       await this.playDialog.apply(this, dialog)
     }
+  }
+
+  public addItemDropHandler(target: GameObject, handler: (key: string) => Promise<boolean>) {
+    let handlers = this.itemDropHandlers.filter(h => h[0] === target).head()
+    if (!handlers) {
+      handlers = [target, []]
+      this.itemDropHandlers.push(handlers)
+    }
+    handlers[1].push(handler)
+  }
+
+  public async itemDropped(x: number, y: number, key: string): Promise<boolean> {
+    console.log(`Item ${key} dropped at (${x},${y})`)
+    const point: any = new Phaser.Point(x, y)
+    const results = await Promise.all(
+      this.itemDropHandlers
+      .flatMap(handlers => {
+        const tmpPoint = new Phaser.Point()
+        const hit = this.game.input.hitTest(handlers[0], <Phaser.Pointer>point, tmpPoint)
+        if (!hit) return null
+        const inputEnabled = handlers[0].inputEnabled
+        handlers[0].inputEnabled = true
+        const pixelHit = handlers[0].input.checkPixel(tmpPoint.x, tmpPoint.y, <Phaser.Pointer>point)
+        handlers[0].inputEnabled = inputEnabled
+        return pixelHit ? handlers[1] : null
+      })
+      .map(handler => handler(key))
+    )
+    return results.reduce((l, r) => l || r, false)
   }
 
   public async playDialog(...lines: [string, string | string[] | string[][], any | any[]][]) {

@@ -10,7 +10,7 @@ export default class SwanCharacter extends Character {
     ArrayUtils.range(1, 19).map(i =>
       Assets.Audio[`stuckswan${StringUtils.intToString(i, 3)}`].key
     )
-  ))
+  ), undefined, undefined, 'talking')
 
   constructor(scene: Scene, x: number, y: number) {
     super(scene, x, y, Assets.Spritesheets.stuckswan.key)

@@ -16,7 +16,7 @@
 
     [ "goose",      "So weit sind wir ja nicht voneinander entfernt...", 6 ],
 
-    [ "antonius", [ "Stimmt, so weit seid ihr doch",
+    [ "antonius", [ "Stimmt, so weit seid Ihr doch",
                     "nicht voneinander entfernt..."
                   ], [null, "sssssss" ] ],
     [ "antonius",   "Dreht Euch doch einmal um.", [null, "ssl" ] ],
@@ -47,7 +47,7 @@
 
     ["cat",         "...", [1, "silent"] ],
 
-    ["antonius",    "Komm, hohl dir einen leckeren Fisch!", [null, "lsssssssl"] ],
+    ["antonius",    "Komm, hol dir einen leckeren Fisch!", [null, "lsssssssl"] ],
 
     ["cat",         "...", [1, "silent"] ]
   ],
@@ -67,7 +67,7 @@
                  ], 5]
   ],
   "catGoneAfterReversal": [
-    [ "bard",       "Ach da bist du ja, Reitgans!", 3],
+    [ "bard",       "Ach, da bist du ja, Reitgans!", 3],
 
     [ "goose",    [ "... Ja, da bin ich.",
                     "Schon die ganze Zeit."
@@ -77,20 +77,20 @@
                     "wie lange ich nach dir gesucht habe!"
                   ], 5],
 
-    ["goose",       "Ich kann's mir vorstellen.", 3],
+    ["goose",       "Ich kanns mir vorstellen.", 3],
 
     ["bard",        "Komm, lass uns nach Hause gehen!", 3]
   ],
   "meckieIntro": [
     [ "meckie",   [ "Schnibbel schnabbel schnapp!",
-                    "Ich schneid dir die Kapute ab!"
+                    "Ich schneid dir die Kapuze ab!"
                   ], [null, "sssslsll"] ],
 
     [ "antonius", [ "Immer mit der Ruhe!",
                     "Was hast du denn mit dem Messer vor?"
                   ], [null, "sslssl"] ],
 
-    [ "meckie",   [ "Ich käcksel alles, groß und klein",
+    [ "meckie",   [ "Ich häcksel alles, groß und klein",
                     "und du könntest der Nächste sein!"
                   ], [null, "sslsllslsll"] ],
 
@@ -101,7 +101,7 @@
     [ "meckie",   [ "Verschonen könnt ich dich vielleicht,",
                     "einfach was zum Hacken reicht."
                   ], [null, "sisllslssl"] ],
-    [ "meckie",   [ "Wie wär's mit 'nem Zerteil-Versuch",
+    [ "meckie",   [ "Wie wärs mit nem Zerteil-Versuch",
                     "mit deinem kleinen Bibel-Buch? Hähähähä!"
                   ], [null, "isslisslh"] ],
 
@@ -125,22 +125,30 @@
     [ "antonius",   "Toll! Willst du denn damit etwas kochen, oder...?", [null, "ssssl"] ]
   ],
   "cutFishAfterPickup": [
-    [ "meckie",   [ "Was ich tun wollt' hab ich getan,",
+    [ "meckie",   [ "Was ich tun wollt hab ich getan,",
                     "ich bin ja eigentlich vegan."
                   ], [null, "ssslsslsslsl"] ],
 
     [ "antonius",   "Praktisch!", [null, "s"] ]
   ],
   "requestingVeggies": [
-    [ "meckie",     "[placeholder]", [null, "i"] ]
+    [ "meckie",     ["Doch glaubst du, dass mir das schon reicht?",
+                     "Ich spiel dir einen Klingen-Streich!"
+                     ], [null, "sslsssslslslsl"] ],
+     
+    [ "antonius", "Ohje ohje, ich geh ja schon!", [null, "llssss"] ],
+  
+    [ "meckie",     ["Kommst du mit Händen leer zurück,",
+                     "so gibts dich bald nicht mehr am Stück! Hähähä "
+                     ], [null, "isslisslh"] ]
   ],
   "cuttingVeggiesBeforeCutting": [
     [ "meckie",   [ "Ah, du bringst mir Kraut und Rüben,",
                     "da kann ich noch mehr Schneiden üben!"
                   ], [null, "isslslssllsi"] ],
 
-    [ "antonius", [ "Bedien' dich ruhig an dem Gemüse,",
-                    "es ist genug für Alle da!"
+    [ "antonius", [ "Bedien dich ruhig an dem Gemüse,",
+                    "es ist genug für alle da!"
                   ], [null, "sllslssllsssl"] ]
   ],
   "cuttingVeggiesAfterCutting": [

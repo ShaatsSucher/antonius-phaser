@@ -7,6 +7,7 @@ import { SceneStateManager,
        } from '../../utils/stateManager'
 
 import { Audio, Images, Spritesheets, Json } from '../../assets'
+import { AudioManager } from '../../utils/audioManager'
 
 import { ArrayUtils } from '../../utils/utils'
 
@@ -154,7 +155,7 @@ export default class ConcertScene extends Scene {
     // snakes.scale = new Phaser.Point(0.5, 0.2)
     // this.game.add.existing(snakes)
 
-    this.veggieItem = new GameObject(this.game, 255, 135, Images.veggies.key)
+    this.veggieItem = new GameObject(this.game, 255, 135, Images.carrot.key)
     this.veggieItem.scale.setTo(2)
     this.game.add.existing(this.veggieItem)
 
@@ -188,6 +189,7 @@ class InitialSwan extends SceneState<ConcertScene> {
 
     swan.interactionEnabled = true
 
+    // TODO: make GettingSmashed transition trigger when you drag the hammer onto him
     this.listeners.push(swan.events.onInputUp.addOnce(
       () => this.stateManager.trigger(Stuck)
     ))
@@ -207,6 +209,17 @@ class Stuck extends SceneStateTransition<ConcertScene> {
 
 class GettingSmashed extends SceneStateTransition<ConcertScene> {
   public async enter() {
+    const swan = this.scene.characters.swan
+
+      swan.setActiveState('talking')
+
+      await this.scene.playDialogJson('gettingSmashed')
+
+      swan.setActiveState('walking')
+
+      await this.scene.tweens.create(swan).to({
+        x: -200, y: 0
+      }, 3000).start().onComplete.asPromise()
 
     return SwanGone
   }
@@ -214,7 +227,7 @@ class GettingSmashed extends SceneStateTransition<ConcertScene> {
 
 export class SwanGone extends SceneState<ConcertScene> {
   public async show() {
-
+    this.scene.characters.swan.visible = false
   }
 }
 
@@ -281,7 +294,7 @@ class VeggiesPresent extends SceneState<ConcertScene> {
 
 class VeggiesBeingPickedUp extends SceneStateTransition<ConcertScene> {
   public async enter() {
-    Inventory.instance.addItem(Images.veggies.key)
+    await Inventory.instance.pickupItem(this.scene.veggieItem, this.scene)
     return VeggiesPickedUp
   }
 }
