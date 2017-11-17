@@ -166,7 +166,7 @@ export default class HeadScene extends Scene {
       0, 0, 10, 10, 10, 10, 11, 11, 11, 11, 9, 9, 9, 0, 0, -1, -1
     ]
     hellmouth.currentFrame.onValueChanged
-      .map(frame => offsets[frame])
+      .map(frame => offsets[frame - 4] || 0)
       .add(offset => {
         painter.y = 56 - offset
         bucket.y = 51 - offset
