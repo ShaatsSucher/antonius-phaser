@@ -11,7 +11,7 @@ export default class Inventory extends Phaser.Group {
   private static _instance: Inventory = null
   public static get instance(): Inventory {
     if (!Inventory.initialized) {
-      throw 'SettingsOverlay is not yet initialised'
+      throw 'Inventory is not yet initialised'
     }
     return Inventory._instance
   }
@@ -22,7 +22,7 @@ export default class Inventory extends Phaser.Group {
 
   public static init(game: Phaser.Game) {
     if (Inventory.initialized) {
-      throw 'SettingsOverlay is already initialised'
+      throw 'Inventory is already initialised'
     }
     Inventory._instance = new Inventory(game)
   }
