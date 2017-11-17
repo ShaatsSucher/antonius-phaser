@@ -28,7 +28,7 @@
                   ], 5 ],
 
     [ "cook1",      "Mich auch.", 2 ],
-    
+
     [ "cook2",     "Kein Wasser, keine Suppe.", 5 ]
   ],
   "cooksNeedFish": [
@@ -47,8 +47,8 @@
                     "quälen mich so sehr."
                   ], 5 ],
 
-    [ "cook1",      "Mich auch.", 2 ]
-    
+    [ "cook1",      "Mich auch.", 2 ],
+
     [ "cook2",     "Kein Fisch, keine Suppe.", 5 ]
   ],
   "cooksNeedVeggies": [
@@ -65,8 +65,8 @@
                     "quälen mich so sehr."
                   ], 5 ],
 
-    [ "cook1",      "Mich auch.", 2 ]
-    
+    [ "cook1",      "Mich auch.", 2 ],
+
     [ "cook2",     "Kein Gemüse, keine Suppe.", 5 ]
   ],
   "cooksWantVeggiesCut": [
@@ -86,7 +86,7 @@
     [ "cook1",      "Wir können stolz auf uns sein!", 4 ],
 
     [ "antonius",   "Na dann guten Appetit!", [null, "lsss"] ],
-    
+
     [ "cook2",      "Unsere Aufgabe ist erledigt.", 5 ]
   ]
 }
