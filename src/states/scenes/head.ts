@@ -162,6 +162,16 @@ export default class HeadScene extends Scene {
     // bucket.scale.setTo(1)
     this.game.add.existing(bucket)
 
+    const offsets = [
+      0, 0, 10, 10, 10, 10, 11, 11, 11, 11, 9, 9, 9, 0, 0, -1, -1
+    ]
+    hellmouth.currentFrame.onValueChanged
+      .map(frame => offsets[frame])
+      .add(offset => {
+        painter.y = 56 - offset
+        bucket.y = 51 - offset
+      })
+
     // Add navigation arrows
     const arrow = this.interactiveObjects.toBardArrow = new Arrow(this.game, 300, 95)
     arrow.interactionEnabled = true
