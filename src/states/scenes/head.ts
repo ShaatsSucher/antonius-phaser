@@ -62,6 +62,7 @@ export default class HeadScene extends Scene {
       Credits
     ]),
     painter: new SceneStateManager<HeadScene>(this, [
+      PainterBeforeIntro,
       PainterIsAnnoyed,
       PainterIsComplaining,
       PainterNeedsColor,
@@ -125,6 +126,10 @@ export default class HeadScene extends Scene {
     )
 
     this.stateManagers.painter.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        PainterIsAnnoyed,
+        TransitionCondition.reachedState(this.stateManagers.head, Silent)
+      ),
       new ConditionalStateTransition(
         PainterNeedsColor,
         TransitionCondition.reachedState(this.stateManagers.buckethead, BucketheadIsStealthy)
@@ -250,6 +255,13 @@ class FishHintSpeech extends SceneStateTransition<HeadScene> {
 // ---------------------------------------------------------------------------
 // Painter States
 // ---------------------------------------------------------------------------
+
+class PainterBeforeIntro extends SceneState<HeadScene> {
+  public async show() {
+    const scene = this.scene
+    scene.characters.painter.interactionEnabled = false
+  }
+}
 
 class PainterIsAnnoyed extends SceneState<HeadScene> {
   public async show() {
