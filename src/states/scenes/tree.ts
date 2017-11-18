@@ -144,21 +144,21 @@ export default class TreeScene extends Scene {
   }
 
   protected createGameObjects() {
-    const antonius = this.characters.antonius = new AntoniusCharacter(this, 100, 100)
-    antonius.scale = new Phaser.Point(-3, 3)
-    this.game.add.existing(antonius)
-
-    const goat = this.characters.goat = new GoatCharacter(this, 298, 70)
-    goat.scale = new Phaser.Point(3, 3)
+    const goat = this.characters.goat = new GoatCharacter(this, 260, 76)
+    goat.scale.setTo(2)
     this.game.add.existing(goat)
 
-    const tree = this.characters.tree = new TreeCharacter(this, 150, 0)
-    tree.scale = new Phaser.Point(2, 2)
+    const tree = this.characters.tree = new TreeCharacter(this, 112, -2)
+    tree.scale.setTo(2)
     this.game.add.existing(tree)
 
-    const woman = this.characters.woman = new WomanCharacter(this, 250, 120)
-    woman.scale = new Phaser.Point(3, 3)
+    const woman = this.characters.woman = new WomanCharacter(this, 175, 110)
+    woman.scale.setTo(2)
     this.game.add.existing(woman)
+
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 160, 115)
+    antonius.scale = new Phaser.Point(-2, 2)
+    this.game.add.existing(antonius)
 
     const toBardArrow = this.interactiveObjects.toBardArrow = new Arrow(this.game, 20, 95)
     toBardArrow.rotation = Math.PI
@@ -499,8 +499,8 @@ class Eating extends SceneStateTransition<TreeScene> {
     c.woman.setActiveState('walking')
 
     await scene.tweens.create(c.woman).to({
-      x: -Math.abs(c.woman.width * c.woman.anchor.x)
-    }, 3000).start().onComplete.asPromise()
+      x: -200
+    }, 4000).start().onComplete.asPromise()
 
     await scene.playDialogJson('antoniusWondersAboutWomansInvitation')
 
@@ -540,16 +540,16 @@ class GoatState extends SceneState<TreeScene> {
 
     const goat = this.scene.characters.goat
     goat.interactionEnabled = true
-    goat.position.x = 298
+    goat.position.x = 272
 
     const peekGoat = () => {
       this.listeners.push(() => console.log('listeners cleared'))
       const tick = this.timer.add(30 * Phaser.Timer.SECOND, () => {
-        const tween = this.scene.tweens.create(goat.position).to({ x: 280 }, 1000, Phaser.Easing.Quadratic.In, true)
+        const tween = this.scene.tweens.create(goat.position).to({ x: 260 }, 1000, Phaser.Easing.Quadratic.In, true)
         this.listeners.push(() => tween.stop())
         this.listeners.push(tween.onComplete.addOnce(() => {
           const tick2 = this.timer.add(1 * Phaser.Timer.SECOND, () => {
-            const tween2 = this.scene.tweens.create(goat.position).to({ x: 298 }, 1000, Phaser.Easing.Quadratic.In, true)
+            const tween2 = this.scene.tweens.create(goat.position).to({ x: 272 }, 1000, Phaser.Easing.Quadratic.In, true)
             this.listeners.push(() => tween2.stop())
             this.listeners.push(tween2.onComplete.addOnce(() => {
               peekGoat()
@@ -583,11 +583,11 @@ class GoatTransition extends SceneStateTransition<TreeScene> {
   }
 
   public async enter() {
-    this.scene.characters.goat.position.x = 280
+    this.scene.characters.goat.position.x = 260
     await this.scene.playDialogJson(this.dialogKey)
     await this.scene.tweens
       .create(this.scene.characters.goat.position)
-      .to({ x: 298 }, 1000, Phaser.Easing.Quadratic.In, true)
+      .to({ x: 272 }, 1000, Phaser.Easing.Quadratic.In, true)
       .onComplete
       .asPromise()
 
