@@ -143,6 +143,9 @@ export default class ConcertScene extends Scene {
     antonius.setActiveState('idle')
     this.game.add.existing(antonius)
 
+    this.veggieItem = new GameObject(this.game, 248, 55, Images.carrot.key)
+    this.game.add.existing(this.veggieItem)
+
     const swan = this.characters.swan = new SwanCharacter(this, 265, 32)
     swan.scale = new Phaser.Point(2, 2)
     this.game.add.existing(swan)
@@ -154,9 +157,6 @@ export default class ConcertScene extends Scene {
     // const snakes = this.characters.snakes = new SnakesCharacter(this.game, 60, 180)
     // snakes.scale = new Phaser.Point(0.5, 0.2)
     // this.game.add.existing(snakes)
-
-    this.veggieItem = new GameObject(this.game, 248, 55, Images.carrot.key)
-    this.game.add.existing(this.veggieItem)
 
     this.caneItem = new GameObject(this.game, 80, 60, Images.hammer.key)
     this.game.add.existing(this.caneItem)
@@ -178,7 +178,7 @@ export class Initial extends SceneState<ConcertScene> {
 }
 
 // ---------------------------------------------------------------------------
-// Musician States
+// Swan States
 // ---------------------------------------------------------------------------
 
 class InitialSwan extends SceneState<ConcertScene> {
@@ -187,7 +187,13 @@ class InitialSwan extends SceneState<ConcertScene> {
 
     swan.interactionEnabled = true
 
-    // TODO: make GettingSmashed transition trigger when you drag the hammer onto him
+    this.listeners.push(this.scene.addItemDropHandler(swan, async (key) => {
+      if(key !== Images.hammer.key) return false
+      this.stateManager.trigger(GettingSmashed)
+      Inventory.instance.takeItem(Images.hammer.key)
+      return true
+    }))
+
     this.listeners.push(swan.events.onInputUp.addOnce(
       () => this.stateManager.trigger(Stuck)
     ))
@@ -264,7 +270,7 @@ class CaneThere extends SceneState<ConcertScene> {
 
 class CaneBeingTaken extends SceneStateTransition<ConcertScene> {
   public async enter() {
-    Inventory.instance.addItem(Images.hammer.key)
+    await Inventory.instance.pickupItem(this.scene.caneItem, this.scene)
     return CaneNotThere
   }
 }
