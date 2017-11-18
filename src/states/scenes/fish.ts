@@ -5,7 +5,6 @@ import { SceneStateManager
        , ConditionalStateTransition
        , TransitionCondition
        } from '../../utils/stateManager'
-import { AntoniusBroughtFish } from './bard'
 import { Silent } from './head'
 
 import { Audio, Images, Json } from '../../assets'

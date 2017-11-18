@@ -48,7 +48,6 @@ export default class BardScene extends Scene {
       InitialBard,
       CatInTheWay,
       CatGone,
-      FiletInThePocket,
       BardGone
     ], [
       BardConversation,
@@ -60,9 +59,7 @@ export default class BardScene extends Scene {
     meckie: new SceneStateManager<BardScene>(this, [
       InitialMeckie,
       WaitingForFish,
-      AntoniusBroughtFish,
       WaitingForVeggies,
-      AntoniusBroughtVeggies,
       MeckieGone
     ], [
       MeckieIntroduction,
@@ -75,28 +72,6 @@ export default class BardScene extends Scene {
 
   constructor(game: Phaser.Game) {
     super(game, Images.backgroundsBG02.key, Audio.soundscapesScene6.key, [], Json.dialogsBard.key)
-  }
-
-  protected registerConditionalStateTransitions(scenes: { [title: string]: Scene }) {
-    this.stateManagers.bard.registerConditionalTransitions(
-      new ConditionalStateTransition(
-        FiletInThePocket,
-        TransitionCondition.reachedState(this.stateManagers.meckie, WaitingForVeggies)
-      )
-    )
-
-    this.stateManagers.meckie.registerConditionalTransitions(
-      new ConditionalStateTransition(
-        AntoniusBroughtFish,
-        TransitionCondition.isState(this.stateManagers.meckie, WaitingForFish)
-        .and(TransitionCondition.reachedState(scenes.fish.stateManagers.fish, FishGone))
-      ),
-      new ConditionalStateTransition(
-        AntoniusBroughtVeggies,
-        TransitionCondition.reachedState(this.stateManagers.meckie, WaitingForVeggies)
-        .and(TransitionCondition.reachedState(scenes.concert.stateManagers.veggies, VeggiesPickedUp))
-      )
-    )
   }
 
   protected createGameObjects() {
@@ -203,6 +178,11 @@ export class CatInTheWay extends SceneState<BardScene> {
     this.listeners.push(scene.characters.cat.events.onInputUp.addOnce(
       () => scene.stateManagers.bard.trigger(AnnoyedCat)
     ))
+    this.listeners.push(scene.addItemDropHandler(scene.characters.cat, async (key) => {
+      if (key !== Images.filet.key) return false
+      this.stateManager.trigger(CatFeast)
+      return true
+    }))
 
     scene.characters.bard.interactionEnabled = true
     this.listeners.push(scene.characters.bard.events.onInputUp.addOnce(
@@ -228,18 +208,6 @@ class SadBard extends SceneStateTransition<BardScene> {
     await scene.playDialogJson('sadBard')
 
     return CatInTheWay
-  }
-}
-
-export class FiletInThePocket extends SceneState<BardScene> {
-  public async show() {
-    const scene = this.scene
-
-    scene.characters.cat.interactionEnabled = true
-    this.clearListeners()
-    this.listeners.push(scene.characters.cat.events.onInputUp.addOnce(
-      () => { this.stateManager.trigger(CatFeast) }
-    ))
   }
 }
 
@@ -377,17 +345,11 @@ export class WaitingForFish extends SceneState<BardScene> {
     this.listeners.push(scene.characters.meckie.events.onInputDown.addOnce(
       () => this.stateManager.trigger(MeckieRequest)
     ))
-  }
-}
-
-export class AntoniusBroughtFish extends SceneState<BardScene> {
-  public async show() {
-    const scene = this.scene
-
-    scene.characters.meckie.interactionEnabled = true
-    this.listeners.push(scene.characters.meckie.events.onInputUp.addOnce(
-      () => this.stateManager.trigger(CutFish)
-    ))
+    this.listeners.push(scene.addItemDropHandler(scene.characters.meckie, async (key) => {
+      if (key !== Images.fish.key) return false
+      this.stateManager.trigger(CutFish)
+      return true
+    }))
   }
 }
 
@@ -420,6 +382,11 @@ class WaitingForVeggies extends SceneState<BardScene> {
     this.listeners.push(scene.characters.meckie.events.onInputUp.addOnce(
       () => this.stateManager.trigger(RequestingVeggies)
     ))
+    this.listeners.push(scene.addItemDropHandler(scene.characters.meckie, async (key) => {
+      if (key !== Images.carrot.key) return false
+      this.stateManager.trigger(CuttingVeggies)
+      return true
+    }))
   }
 }
 
@@ -430,17 +397,6 @@ class RequestingVeggies extends SceneStateTransition<BardScene> {
     await scene.playDialogJson('requestingVeggies')
 
     return WaitingForVeggies
-  }
-}
-
-class AntoniusBroughtVeggies extends SceneState<BardScene> {
-  public async show() {
-    const scene = this.scene
-
-    scene.characters.meckie.interactionEnabled = true
-    this.listeners.push(scene.characters.meckie.events.onInputUp.addOnce(
-      () => this.stateManager.trigger(CuttingVeggies)
-    ))
   }
 }
 
