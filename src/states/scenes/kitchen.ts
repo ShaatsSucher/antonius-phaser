@@ -145,22 +145,25 @@ export class WaitingForWater extends SceneState<KitchenScene> {
 
     // Inventory.instance.addItem(Images.cupWater.key)
 
-    this.listeners.push(c.cook1.events.onInputUp.addOnce(() => {
-      if (Inventory.instance.hasItem(Images.cupWater.key)) {
-        this.stateManager.trigger(WeNeedFish)
-        Inventory.instance.takeItem(Images.cupWater.key)
-      } else {
-        this.stateManager.trigger(StillNeedWater)
-      }
+    this.listeners.push(this.scene.addItemDropHandler(c.cook1, async (key) => {
+      if (key !== Images.cupWater.key) return false
+      this.stateManager.trigger(WeNeedFish)
+      Inventory.instance.takeItem(Images.cupWater.key)
+      return true
     }))
-    this.listeners.push(c.cook2.events.onInputUp.addOnce(() => {
-      if (Inventory.instance.hasItem(Images.cupWater.key)) {
-        this.stateManager.trigger(WeNeedFish)
-        Inventory.instance.takeItem(Images.cupWater.key)
-      } else {
-        this.stateManager.trigger(StillNeedWater)
-      }
+    this.listeners.push(this.scene.addItemDropHandler(c.cook2, async (key) => {
+      if (key !== Images.cupWater.key) return false
+      this.stateManager.trigger(WeNeedFish)
+      Inventory.instance.takeItem(Images.cupWater.key)
+      return true
     }))
+
+    this.listeners.push(c.cook1.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(StillNeedWater)
+    ))
+    this.listeners.push(c.cook2.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(StillNeedWater)
+    ))
   }
 }
 
@@ -193,22 +196,25 @@ export class WaitingForFish extends SceneState<KitchenScene> {
 
     // Inventory.instance.addItem(Images.filet.key)
 
-    this.listeners.push(c.cook1.events.onInputUp.addOnce(() => {
-      if (Inventory.instance.hasItem(Images.filet.key)) {
-        this.stateManager.trigger(WeNeedVeggies)
-        Inventory.instance.takeItem(Images.filet.key)
-      } else {
-        this.stateManager.trigger(StillNeedFish)
-      }
+    this.listeners.push(this.scene.addItemDropHandler(c.cook1, async (key) => {
+      if (key !== Images.filet.key) return false
+      this.stateManager.trigger(WeNeedVeggies)
+      Inventory.instance.takeItem(Images.filet.key)
+      return true
     }))
-    this.listeners.push(c.cook2.events.onInputUp.addOnce(() => {
-      if (Inventory.instance.hasItem(Images.filet.key)) {
-        this.stateManager.trigger(WeNeedVeggies)
-        Inventory.instance.takeItem(Images.filet.key)
-      } else {
-        this.stateManager.trigger(StillNeedFish)
-      }
+    this.listeners.push(this.scene.addItemDropHandler(c.cook2, async (key) => {
+      if (key !== Images.filet.key) return false
+      this.stateManager.trigger(WeNeedVeggies)
+      Inventory.instance.takeItem(Images.filet.key)
+      return true
     }))
+
+    this.listeners.push(c.cook1.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(StillNeedFish)
+    ))
+    this.listeners.push(c.cook2.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(StillNeedFish)
+    ))
   }
 }
 
@@ -241,26 +247,33 @@ export class WaitingForVeggies extends SceneState<KitchenScene> {
 
     // Inventory.instance.addItem(Images.carrotSliced.key)
 
-    this.listeners.push(c.cook1.events.onInputUp.addOnce(() => {
-      if (Inventory.instance.hasItem(Images.carrotSliced.key)) {
+    this.listeners.push(this.scene.addItemDropHandler(c.cook1, async (key) => {
+      if (key === Images.carrotSliced.key) {
         this.stateManager.trigger(FinishCooking)
         Inventory.instance.takeItem(Images.carrotSliced.key)
-      } else if (Inventory.instance.hasItem(Images.carrot.key)) {
+        return true
+      } else if (key === Images.carrot.key) {
         this.stateManager.trigger(VeggiesNotCut)
-      } else {
-        this.stateManager.trigger(StillNeedFish)
-      }
+        return false
+      } else return false
     }))
-    this.listeners.push(c.cook2.events.onInputUp.addOnce(() => {
-      if (Inventory.instance.hasItem(Images.carrotSliced.key)) {
+    this.listeners.push(this.scene.addItemDropHandler(c.cook2, async (key) => {
+      if (key === Images.carrotSliced.key) {
         this.stateManager.trigger(FinishCooking)
         Inventory.instance.takeItem(Images.carrotSliced.key)
-      } else if (Inventory.instance.hasItem(Images.carrot.key)) {
+        return true
+      } else if (key === Images.carrot.key) {
         this.stateManager.trigger(VeggiesNotCut)
-      } else {
-        this.stateManager.trigger(StillNeedFish)
-      }
+        return false
+      } else return false
     }))
+
+    this.listeners.push(c.cook1.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(StillNeedFish)
+    ))
+    this.listeners.push(c.cook2.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(StillNeedFish)
+    ))
   }
 }
 
