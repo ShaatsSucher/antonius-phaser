@@ -8,7 +8,7 @@ import { SceneStateManager
 
 import { WaitingForWater } from './kitchen'
 
-import { Audio, Images, Json } from '../../assets'
+import { Audio, Images, Spritesheets, Json } from '../../assets'
 
 import AntoniusCharacter from '../../characters/antonius'
 import TreeCharacter from '../../characters/tree'
@@ -450,6 +450,7 @@ class TakeMyCup extends SceneStateTransition<TreeScene> {
 
     await scene.playDialogJson('antoniusOffersToGetFood')
 
+    // await Inventory.instance.pickupItem(scene.characters.woman, this.scene, Images.cupEmpty.key)
     Inventory.instance.addItem(Images.cupEmpty.key)
 
     return ImaptientWoman
@@ -460,16 +461,20 @@ export class ImaptientWoman extends SceneState<TreeScene> {
   public async show() {
     const c = this.scene.characters
 
+    c.woman.loadTexture(Spritesheets.ladynocup.key)
+
     c.woman.interactionEnabled = true
 
-    this.listeners.push(c.woman.events.onInputUp.addOnce(() => {
-      if (Inventory.instance.hasItem(Images.cupSoup.key)) {
-        Inventory.instance.takeItem(Images.cupSoup.key)
-        this.stateManager.trigger(Eating)
-      } else {
-        this.stateManager.trigger(StillWaitig)
-      }
+    this.listeners.push(this.scene.addItemDropHandler(c.woman, async (key) => {
+      if (key !== Images.cupSoup.key) return false
+      Inventory.instance.takeItem(Images.cupSoup.key)
+      this.stateManager.trigger(Eating)
+      return true
     }))
+
+    this.listeners.push(c.woman.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(StillWaitig)
+    ))
   }
 }
 
