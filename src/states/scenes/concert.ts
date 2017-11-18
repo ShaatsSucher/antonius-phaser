@@ -134,39 +134,37 @@ export default class ConcertScene extends Scene {
       this.fadeTo('tree')
     })
 
-    const eggwoman = this.characters.eggwoman = new EggWomanCharacter(this, 80, 100)
-    eggwoman.scale = new Phaser.Point(3, 3)
+    const eggwoman = this.characters.eggwoman = new EggWomanCharacter(this, 35, 30)
+    eggwoman.scale = new Phaser.Point(2, 2)
     this.game.add.existing(eggwoman)
 
     const antonius = this.characters.antonius = new AntoniusCharacter(this, 80, 120)
-    antonius.scale = new Phaser.Point(-3, 3)
+    antonius.scale = new Phaser.Point(-2, 2)
     antonius.setActiveState('idle')
     this.game.add.existing(antonius)
 
-    const swan = this.characters.swan = new SwanCharacter(this, 270, 70)
-    swan.scale = new Phaser.Point(3, 3)
+    const swan = this.characters.swan = new SwanCharacter(this, 265, 32)
+    swan.scale = new Phaser.Point(2, 2)
     this.game.add.existing(swan)
 
-    const musicians = this.characters.musicians = new MusiciansCharacter(this, 110, 10)
-    musicians.scale = new Phaser.Point(3, 3)
+    const musicians = this.characters.musicians = new MusiciansCharacter(this, 60, 29)
+    musicians.scale = new Phaser.Point(2, 2)
     this.game.add.existing(musicians)
 
     // const snakes = this.characters.snakes = new SnakesCharacter(this.game, 60, 180)
     // snakes.scale = new Phaser.Point(0.5, 0.2)
     // this.game.add.existing(snakes)
 
-    this.veggieItem = new GameObject(this.game, 255, 135, Images.carrot.key)
-    this.veggieItem.scale.setTo(2)
+    this.veggieItem = new GameObject(this.game, 248, 55, Images.carrot.key)
     this.game.add.existing(this.veggieItem)
 
-    this.caneItem = new GameObject(this.game, 150, 120, Images.hammer.key)
-    this.caneItem.scale.setTo(2)
+    this.caneItem = new GameObject(this.game, 80, 60, Images.hammer.key)
     this.game.add.existing(this.caneItem)
 
-    this.cloud = new GameObject(this.game, 80, 50, Spritesheets.cloudofdust.key)
+    this.cloud = new GameObject(this.game, 35, 0, Spritesheets.cloudofdust.key)
     this.cloud.animations.add('fighting', ArrayUtils.range(6, 15), 8, true)
     this.cloud.animations.add('start', ArrayUtils.range(0, 5), 8, false)
-    this.cloud.scale.setTo(3)
+    this.cloud.scale.setTo(2)
     this.cloud.setInteractionEnabled(false)
     this.cloud.visible = false
     this.game.add.existing(this.cloud)
