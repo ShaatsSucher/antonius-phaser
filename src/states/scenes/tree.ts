@@ -4,6 +4,7 @@ import { SceneStateManager
        , SceneStateTransition
        , ConditionalStateTransition
        , TransitionCondition
+       , Extending
        } from '../../utils/stateManager'
 
 import { WaitingForWater } from './kitchen'
@@ -147,6 +148,10 @@ export default class TreeScene extends Scene {
     antonius.scale = new Phaser.Point(-3, 3)
     this.game.add.existing(antonius)
 
+    const goat = this.characters.goat = new GoatCharacter(this, 298, 70)
+    goat.scale = new Phaser.Point(3, 3)
+    this.game.add.existing(goat)
+
     const tree = this.characters.tree = new TreeCharacter(this, 150, 0)
     tree.scale = new Phaser.Point(2, 2)
     this.game.add.existing(tree)
@@ -154,10 +159,6 @@ export default class TreeScene extends Scene {
     const woman = this.characters.woman = new WomanCharacter(this, 250, 120)
     woman.scale = new Phaser.Point(3, 3)
     this.game.add.existing(woman)
-
-    const goat = this.characters.goat = new GoatCharacter(this, 280, 70)
-    goat.scale = new Phaser.Point(3, 3)
-    this.game.add.existing(goat)
 
     const toBardArrow = this.interactiveObjects.toBardArrow = new Arrow(this.game, 20, 95)
     toBardArrow.rotation = Math.PI
@@ -517,116 +518,151 @@ export class SatisfiedWoman extends SceneState<TreeScene> {
 // Goat States
 // ---------------------------------------------------------------------------
 
-class Goat1 extends SceneState<TreeScene> {
+class GoatState extends SceneState<TreeScene> {
+  private timer: Phaser.Timer
+
+  public constructor(
+    scene: TreeScene,
+    stateManager: SceneStateManager<TreeScene>,
+    private targetTransition: Extending<SceneStateTransition<TreeScene>>
+  ) {
+    super(scene, stateManager)
+  }
+
   public async show() {
+    if (this.timer) {
+      this.timer.destroy()
+      this.timer = null
+    }
+
+    this.timer = this.scene.game.time.create(false)
+    this.timer.start()
+
     const goat = this.scene.characters.goat
     goat.interactionEnabled = true
+    goat.position.x = 298
+
+    const peekGoat = () => {
+      this.listeners.push(() => console.log('listeners cleared'))
+      const tick = this.timer.add(30 * Phaser.Timer.SECOND, () => {
+        const tween = this.scene.tweens.create(goat.position).to({ x: 280 }, 1000, Phaser.Easing.Quadratic.In, true)
+        this.listeners.push(() => tween.stop())
+        this.listeners.push(tween.onComplete.addOnce(() => {
+          const tick2 = this.timer.add(1 * Phaser.Timer.SECOND, () => {
+            const tween2 = this.scene.tweens.create(goat.position).to({ x: 298 }, 1000, Phaser.Easing.Quadratic.In, true)
+            this.listeners.push(() => tween2.stop())
+            this.listeners.push(tween2.onComplete.addOnce(() => {
+              peekGoat()
+            }))
+          })
+          this.listeners.push(() => this.timer.remove(tick2))
+        }))
+      })
+      this.listeners.push(() => this.timer.remove(tick))
+    }
+    peekGoat()
 
     this.listeners.push(goat.events.onInputUp.addOnce(() => {
-      this.stateManager.trigger(GoatTransition1)
+      this.clearListeners()
+      if (this.timer) {
+        this.timer.destroy()
+        this.timer = null
+      }
+      this.stateManager.trigger(this.targetTransition)
     }))
   }
 }
 
-class GoatTransition1 extends SceneStateTransition<TreeScene> {
+class GoatTransition extends SceneStateTransition<TreeScene> {
+  public constructor(
+    scene: TreeScene,
+    private dialogKey: string,
+    private targetState: Extending<SceneStateTransition<TreeScene>>
+  ) {
+    super(scene)
+  }
+
   public async enter() {
-    await this.scene.playDialogJson('goat1')
+    this.scene.characters.goat.position.x = 280
+    await this.scene.playDialogJson(this.dialogKey)
+    await this.scene.tweens
+      .create(this.scene.characters.goat.position)
+      .to({ x: 298 }, 1000, Phaser.Easing.Quadratic.In, true)
+      .onComplete
+      .asPromise()
 
-    return Goat2
+    return this.targetState
   }
 }
 
-class Goat2 extends SceneState<TreeScene> {
-  public async show() {
-    const goat = this.scene.characters.goat
-    goat.interactionEnabled = true
-
-    this.listeners.push(goat.events.onInputUp.addOnce(() => {
-      this.stateManager.trigger(GoatTransition2)
-    }))
+class Goat1 extends GoatState {
+  constructor(scene: TreeScene, stateManager: SceneStateManager<TreeScene>) {
+    super(scene, stateManager, GoatTransition1)
   }
 }
 
-class GoatTransition2 extends SceneStateTransition<TreeScene> {
-  public async enter() {
-    await this.scene.playDialogJson('goat2')
-
-    return Goat3
+class GoatTransition1 extends GoatTransition {
+  constructor(scene: TreeScene) {
+    super(scene, 'goat1', Goat2)
   }
 }
 
-class Goat3 extends SceneState<TreeScene> {
-  public async show() {
-    const goat = this.scene.characters.goat
-    goat.interactionEnabled = true
-
-    this.listeners.push(goat.events.onInputUp.addOnce(() => {
-      this.stateManager.trigger(GoatTransition3)
-    }))
+class Goat2 extends GoatState {
+  constructor(scene: TreeScene, stateManager: SceneStateManager<TreeScene>) {
+    super(scene, stateManager, GoatTransition2)
   }
 }
 
-class GoatTransition3 extends SceneStateTransition<TreeScene> {
-  public async enter() {
-    await this.scene.playDialogJson('goat3')
-
-    return Goat4
+class GoatTransition2 extends GoatTransition {
+  constructor(scene: TreeScene) {
+    super(scene, 'goat2', Goat3)
   }
 }
 
-class Goat4 extends SceneState<TreeScene> {
-  public async show() {
-    const goat = this.scene.characters.goat
-    goat.interactionEnabled = true
-
-    this.listeners.push(goat.events.onInputUp.addOnce(() => {
-      this.stateManager.trigger(GoatTransition4)
-    }))
+class Goat3 extends GoatState {
+  constructor(scene: TreeScene, stateManager: SceneStateManager<TreeScene>) {
+    super(scene, stateManager, GoatTransition3)
   }
 }
 
-class GoatTransition4 extends SceneStateTransition<TreeScene> {
-  public async enter() {
-    await this.scene.playDialogJson('goat4')
-
-    return Goat5
+class GoatTransition3 extends GoatTransition {
+  constructor(scene: TreeScene) {
+    super(scene, 'goat3', Goat4)
   }
 }
 
-class Goat5 extends SceneState<TreeScene> {
-  public async show() {
-    const goat = this.scene.characters.goat
-    goat.interactionEnabled = true
-
-    this.listeners.push(goat.events.onInputUp.addOnce(() => {
-      this.stateManager.trigger(GoatTransition5)
-    }))
+class Goat4 extends GoatState {
+  constructor(scene: TreeScene, stateManager: SceneStateManager<TreeScene>) {
+    super(scene, stateManager, GoatTransition4)
   }
 }
 
-class GoatTransition5 extends SceneStateTransition<TreeScene> {
-  public async enter() {
-    await this.scene.playDialogJson('goat5')
-
-    return FinalGoat
+class GoatTransition4 extends GoatTransition {
+  constructor(scene: TreeScene) {
+    super(scene, 'goat4', Goat5)
   }
 }
 
-class FinalGoat extends SceneState<TreeScene> {
-  public async show() {
-    const goat = this.scene.characters.goat
-    goat.interactionEnabled = true
-
-    this.listeners.push(goat.events.onInputUp.addOnce(() => {
-      this.stateManager.trigger(FinalGoatTransition)
-    }))
+class Goat5 extends GoatState {
+  constructor(scene: TreeScene, stateManager: SceneStateManager<TreeScene>) {
+    super(scene, stateManager, GoatTransition5)
   }
 }
 
-class FinalGoatTransition extends SceneStateTransition<TreeScene> {
-  public async enter() {
-    await this.scene.playDialogJson('finalGoat')
+class GoatTransition5 extends GoatTransition {
+  constructor(scene: TreeScene) {
+    super(scene, 'goat5', FinalGoat)
+  }
+}
 
-    return FinalGoat
+class FinalGoat extends GoatState {
+  constructor(scene: TreeScene, stateManager: SceneStateManager<TreeScene>) {
+    super(scene, stateManager, FinalGoatTransition)
+  }
+}
+
+class FinalGoatTransition extends GoatTransition {
+  constructor(scene: TreeScene) {
+    super(scene, 'finalGoat', FinalGoat)
   }
 }
