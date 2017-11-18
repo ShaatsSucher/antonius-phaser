@@ -14,7 +14,7 @@ import FishCharacter from '../../characters/fish'
 import AlphaPigCharacter from '../../characters/alphapig'
 import NailGooseCharacter from '../../characters/nailgoose'
 
-import { WaitingForFish, CatInTheWay } from './bard'
+import { WaitingForFishOrVeggies, CatInTheWay } from './bard'
 
 import Arrow from '../../gameObjects/arrow'
 
@@ -76,7 +76,7 @@ export default class FishScene extends Scene {
       new ConditionalStateTransition(
         FishDying,
         TransitionCondition.isState(this.stateManagers.fish, FishAlive)
-        .and(TransitionCondition.reachedState(scenes.bard.stateManagers.meckie, WaitingForFish))
+        .and(TransitionCondition.reachedState(scenes.bard.stateManagers.meckie, WaitingForFishOrVeggies))
         .and(TransitionCondition.reachedState(scenes.bard.stateManagers.bard, CatInTheWay))
       )
     )

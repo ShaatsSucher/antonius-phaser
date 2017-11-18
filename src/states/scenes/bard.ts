@@ -58,15 +58,20 @@ export default class BardScene extends Scene {
     ]),
     meckie: new SceneStateManager<BardScene>(this, [
       InitialMeckie,
+      WaitingForFishOrVeggies,
       WaitingForFish,
       WaitingForVeggies,
       MeckieGone
     ], [
       MeckieIntroduction,
       MeckieRequest,
+      CutFishFirst,
+      CutVeggiesFirst,
       CutFish,
+      RequestingFish,
       RequestingVeggies,
-      CuttingVeggies
+      CuttingVeggies,
+      MeckieGoing
     ])
   }
 
@@ -333,11 +338,11 @@ class MeckieRequest extends SceneStateTransition<BardScene> {
 
     await scene.playDialogJson('meckieRequest')
 
-    return WaitingForFish
+    return WaitingForFishOrVeggies
   }
 }
 
-export class WaitingForFish extends SceneState<BardScene> {
+export class WaitingForFishOrVeggies extends SceneState<BardScene> {
   public async show() {
     const scene = this.scene
 
@@ -346,14 +351,19 @@ export class WaitingForFish extends SceneState<BardScene> {
       () => this.stateManager.trigger(MeckieRequest)
     ))
     this.listeners.push(scene.addItemDropHandler(scene.characters.meckie, async (key) => {
-      if (key !== Images.fish.key) return false
-      this.stateManager.trigger(CutFish)
-      return true
+      if (key === Images.fish.key) {
+        this.stateManager.trigger(CutFishFirst)
+        return true
+      } else if (key === Images.carrot.key) {
+        this.stateManager.trigger(CutVeggiesFirst)
+        return true
+      }
+      return false
     }))
   }
 }
 
-class CutFish extends SceneStateTransition<BardScene> {
+class CutFishFirst extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
 
@@ -370,7 +380,80 @@ class CutFish extends SceneStateTransition<BardScene> {
 
     await scene.playDialogJson('cutFishAfterPickup')
 
-    return WaitingForVeggies
+    return RequestingVeggies
+  }
+}
+
+class CutVeggiesFirst extends SceneStateTransition<BardScene> {
+  public async enter() {
+    const scene = this.scene
+
+    await scene.playDialogJson('cuttingVeggiesBeforeCutting')
+
+    Inventory.instance.takeItem(Images.carrot.key)
+
+    scene.characters.meckie.setActiveState('swinging')
+    await scene.wait(1)
+
+    Inventory.instance.addItem(Images.carrotSliced.key)
+
+    await scene.playDialogJson('cuttingVeggiesAfterCutting')
+
+    return RequestingFish
+  }
+}
+
+class WaitingForFish extends SceneState<BardScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.characters.meckie.interactionEnabled = true
+    this.listeners.push(scene.characters.meckie.events.onInputDown.addOnce(
+      () => this.stateManager.trigger(RequestingFish)
+    ))
+    this.listeners.push(scene.addItemDropHandler(scene.characters.meckie, async (key) => {
+      if (key !== Images.fish.key) return false
+      this.stateManager.trigger(CutFish)
+      return true
+    }))
+  }
+}
+
+export class RequestingFish extends SceneStateTransition<BardScene> {
+  public async enter() {
+    const scene = this.scene
+
+    await scene.playDialogJson('requestingBeforeSwing')
+
+    scene.characters.meckie.setActiveState('swinging')
+    await scene.wait(0.5)
+    scene.characters.meckie.setActiveState('idle')
+
+    await scene.playDialogJson('requestingAfterSwing')
+
+    return WaitingForFish
+  }
+}
+
+class CutFish extends SceneStateTransition<BardScene> {
+  public async enter() {
+    const scene = this.scene
+
+    await scene.playDialogJson('cutFishBeforeCutting')
+
+    Inventory.instance.takeItem(Images.fish.key)
+
+    scene.characters.meckie.setActiveState('swinging')
+    await scene.wait(1)
+    scene.characters.meckie.setActiveState('idle')
+
+    await scene.playDialogJson('cutFishAfterCutting')
+
+    Inventory.instance.addItem(Images.filet.key, 2)
+
+    await scene.playDialogJson('cutFishAfterPickup')
+
+    return MeckieGoing
   }
 }
 
@@ -394,7 +477,13 @@ class RequestingVeggies extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.playDialogJson('requestingVeggies')
+    await scene.playDialogJson('requestingBeforeSwing')
+
+    scene.characters.meckie.setActiveState('swinging')
+    await scene.wait(0.5)
+    scene.characters.meckie.setActiveState('idle')
+
+    await scene.playDialogJson('requestingAfterSwing')
 
     return WaitingForVeggies
   }
@@ -414,6 +503,16 @@ class CuttingVeggies extends SceneStateTransition<BardScene> {
     Inventory.instance.addItem(Images.carrotSliced.key)
 
     await scene.playDialogJson('cuttingVeggiesAfterCutting')
+
+    return MeckieGoing
+  }
+}
+
+class MeckieGoing extends SceneStateTransition<BardScene> {
+  public async enter() {
+    const scene = this.scene
+
+    await scene.playDialogJson('meckieGoing')
 
     scene.characters.meckie.scale.x = -3
     scene.characters.meckie.setActiveState('walking')
