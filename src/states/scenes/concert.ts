@@ -350,6 +350,8 @@ class Fight extends SceneStateTransition<ConcertScene> {
     await this.scene.playDialogJson('eggwomanIsPissed')
 
     cloud.visible = true
+
+    this.scene.characters.musicians.speech.say('', 5.5)
     await this.scene.cloud.play('start').onComplete.asPromise()
 
     chars.eggwoman.visible = false
