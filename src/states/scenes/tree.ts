@@ -143,21 +143,21 @@ export default class TreeScene extends Scene {
   }
 
   protected createGameObjects() {
-    const antonius = this.characters.antonius = new AntoniusCharacter(this, 100, 100)
-    antonius.scale = new Phaser.Point(-3, 3)
-    this.game.add.existing(antonius)
-
-    const tree = this.characters.tree = new TreeCharacter(this, 150, 0)
-    tree.scale = new Phaser.Point(2, 2)
+    const tree = this.characters.tree = new TreeCharacter(this, 112, -2)
+    tree.scale.setTo(2)
     this.game.add.existing(tree)
 
-    const woman = this.characters.woman = new WomanCharacter(this, 250, 120)
-    woman.scale = new Phaser.Point(3, 3)
+    const woman = this.characters.woman = new WomanCharacter(this, 175, 110)
+    woman.scale.setTo(2)
     this.game.add.existing(woman)
 
-    const goat = this.characters.goat = new GoatCharacter(this, 280, 70)
-    goat.scale = new Phaser.Point(3, 3)
+    const goat = this.characters.goat = new GoatCharacter(this, 260, 76)
+    goat.scale.setTo(2)
     this.game.add.existing(goat)
+
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 160, 115)
+    antonius.scale = new Phaser.Point(-2, 2)
+    this.game.add.existing(antonius)
 
     const toBardArrow = this.interactiveObjects.toBardArrow = new Arrow(this.game, 20, 95)
     toBardArrow.rotation = Math.PI
@@ -498,8 +498,8 @@ class Eating extends SceneStateTransition<TreeScene> {
     c.woman.setActiveState('walking')
 
     await scene.tweens.create(c.woman).to({
-      x: -Math.abs(c.woman.width * c.woman.anchor.x)
-    }, 3000).start().onComplete.asPromise()
+      x: -200
+    }, 4000).start().onComplete.asPromise()
 
     await scene.playDialogJson('antoniusWondersAboutWomansInvitation')
 
