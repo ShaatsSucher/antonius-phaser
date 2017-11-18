@@ -33,7 +33,6 @@ export default class CanopyScene extends Scene {
   stateManagers = {
     owl: new SceneStateManager<CanopyScene>(this, [
       OwlPeeingOnTree,
-      OwlWillPeeInBucket,
       OwlPeeingInBucket
     ], [
       AntoniusBeingDisgusted,
@@ -57,15 +56,6 @@ export default class CanopyScene extends Scene {
       Audio.soundscapesScene3.key,
       [],
       Json.dialogsCanopy.key
-    )
-  }
-
-  protected registerConditionalStateTransitions(scenes: { [title: string]: Scene }) {
-    this.stateManagers.owl.registerConditionalTransitions(
-      new ConditionalStateTransition(
-        OwlWillPeeInBucket,
-        TransitionCondition.reachedState(scenes.head.stateManagers.buckethead, BucketheadIsStealthy)
-      )
     )
   }
 
@@ -110,9 +100,8 @@ class OwlPeeingOnTree extends SceneState<CanopyScene> {
     const scene = this.scene
 
     scene.bucket.visible = false
-    // TODO: play peeing sound
 
-    Inventory.instance.addItem(Images.bucket.key)
+    this.scene.setAtmoClips(Audio.owlPeeOnTree.key)
 
     scene.characters.owl.interactionEnabled = true
     this.listeners.push(scene.characters.owl.events.onInputUp.add(
@@ -136,19 +125,6 @@ class AntoniusBeingDisgusted extends SceneStateTransition<CanopyScene> {
   }
 }
 
-class OwlWillPeeInBucket extends SceneState<CanopyScene> {
-  public async show() {
-    const scene = this.scene
-
-    scene.bucket.visible = false
-
-    scene.characters.owl.interactionEnabled = true
-    this.listeners.push(scene.characters.owl.events.onInputUp.add(
-      () => this.stateManager.trigger(BucketBeingPutUnderOwl)
-    ))
-  }
-}
-
 class BucketBeingPutUnderOwl extends SceneStateTransition<CanopyScene> {
   public async enter() {
     Inventory.instance.takeItem(Images.bucket.key)
@@ -159,7 +135,8 @@ class BucketBeingPutUnderOwl extends SceneStateTransition<CanopyScene> {
 export class OwlPeeingInBucket extends SceneState<CanopyScene> {
   public async show() {
     this.scene.bucket.visible = true
-    // TODO: play peeing in bucket sound
+
+    this.scene.setAtmoClips(Audio.owlPeeInBucket.key)
   }
 }
 
