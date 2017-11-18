@@ -53,7 +53,7 @@ export default class CanopyScene extends Scene {
   constructor(game: Phaser.Game) {
     super(
       game,
-      Images.backgroundsBackgroundTree.key,
+      Images.backgroundsBG032.key,
       Audio.soundscapesScene3.key,
       [],
       Json.dialogsCanopy.key
@@ -70,24 +70,24 @@ export default class CanopyScene extends Scene {
   }
 
   protected createGameObjects() {
-    const tree = this.characters.tree = new UpperTreeCharacter(this, 0, 54)
-    tree.scale.setTo(3)
+    const tree = this.characters.tree = new UpperTreeCharacter(this, 110, 58)
+    tree.scale.setTo(2)
     this.game.add.existing(tree)
 
-    this.bucket = new GameObject(this.game, 255, 180, Images.bucket.key)
-    this.bucket.scale.setTo(2)
+    this.bucket = new GameObject(this.game, 290, 175, Images.bucket.key)
+    // this.bucket.scale.setTo(2)
     this.game.add.existing(this.bucket)
 
-    this.hat = new GameObject(this.game, 74, 167, Images.hat.key)
+    this.hat = new GameObject(this.game, 120, 167, Images.hat.key)
     this.hat.scale.setTo(2)
     this.game.add.existing(this.hat)
 
-    const antonius = this.characters.antonius = new AntoniusCharacter(this, 100, 100)
-    antonius.scale.setTo(3)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 300, 100)
+    antonius.scale = new Phaser.Point(-2, 2)
     this.game.add.existing(antonius)
 
-    const owl = this.characters.owl = new OwlCharacter(this, 260, 100)
-    owl.scale.setTo(3)
+    const owl = this.characters.owl = new OwlCharacter(this, 290, 120)
+    owl.scale.setTo(2)
     this.game.add.existing(owl)
 
     const toTreeArrow = this.interactiveObjects.toTreeArrow = new Arrow(this.game, 240, 200)
@@ -112,10 +112,17 @@ class OwlPeeingOnTree extends SceneState<CanopyScene> {
     scene.bucket.visible = false
     // TODO: play peeing sound
 
+    Inventory.instance.addItem(Images.bucket.key)
+
     scene.characters.owl.interactionEnabled = true
     this.listeners.push(scene.characters.owl.events.onInputUp.add(
       () => this.stateManager.trigger(AntoniusBeingDisgusted)
     ))
+    this.listeners.push(this.scene.addItemDropHandler(this.scene.characters.owl, async (key) => {
+      if (key !== Images.bucket.key) return false
+      this.stateManager.trigger(BucketBeingPutUnderOwl)
+      return true
+    }))
   }
 }
 
