@@ -6,7 +6,7 @@ import { SceneStateManager
        , TransitionCondition
        } from '../../utils/stateManager'
 
-import { Audio, Images, Json } from '../../assets'
+import { Audio, CustomWebFonts, Images, Json } from '../../assets'
 
 import HellmouthCharacter from '../../characters/hellmouth'
 import AntoniusCharacter from '../../characters/antonius'
@@ -15,6 +15,9 @@ import { FishDead } from './fish'
 import { CatInTheWay, BardGone, MeckieGone } from './bard'
 
 import Character from '../../characters/character'
+import AlphapigCharacter from '../../characters/alphapig'
+import NailgooseCharacter from '../../characters/nailgoose'
+import SwanCharacter from '../../characters/swan'
 import BardCharacter from '../../characters/bard'
 import GooseCharacter from '../../characters/goose'
 import CatCharacter from '../../characters/cat'
@@ -31,6 +34,8 @@ import { ColorPickedUp } from './cave'
 import gameObject from '../../gameObjects/gameObject'
 import Arrow from '../../gameObjects/arrow'
 import Inventory from '../../overlays/inventory'
+import Settings from '../../overlays/settings'
+import Help from '../../overlays/help'
 import { AudioManager } from '../../utils/audioManager'
 
 import { ArrayUtils, StringUtils } from '../../utils/utils'
@@ -424,70 +429,189 @@ export class Suction extends SceneState<HeadScene> {
 }
 
 class Credits extends SceneStateTransition<HeadScene> {
+  private async swallowCharacters() {
+    const scene = this.scene
+
+    const swallow = async (characters: Character[] | Character, anchorY: number, walkStartY = 170) => {
+      let chars = characters instanceof Character ? [characters] : characters
+
+      await Promise.all(chars.map(async character => {
+        // Flip  + scale characters
+        character.scale.x *= -2
+        character.scale.y *= 2
+
+        // Center the character's anchor
+        character.anchor.setTo(0.5, anchorY)
+
+        // Place character just right of the frame
+        character.x = scene.game.width + character.anchor.x * character.width * character.scale.x
+        character.y = walkStartY
+
+        await character.setActiveState('walking')
+        scene.add.existing(character)
+
+        // Move the character in front of the mouth
+        await scene.tweens.create(character).to({
+          x: 190,
+          y: 143
+        }, 3000).start().onComplete.asPromise()
+        await character.setActiveState('idle')
+      }))
+
+      scene.characters.hellmouth.setActiveState('open mouth')
+      AudioManager.instance.tracks.speech.playClip(Audio.hellmouthWhirlwind001.key)
+
+      await Promise.all(chars.map(async character => {
+        await Promise.all([
+          scene.tweens.create(character).to({ rotation: Math.PI * 10 }, 5000, Phaser.Easing.Cubic.In, true).onComplete.asPromise(),
+          scene.tweens.create(character.scale).to({ x: 0, y: 0}, 5000, Phaser.Easing.Cubic.In, true).onComplete.asPromise()
+        ])
+      }))
+
+      await scene.characters.hellmouth.setActiveState('close mouth')
+    }
+
+    await swallow(new MeckieCharacter(scene, 0, 0), 0.3)
+    await swallow(new CatCharacter(scene, 0, 0), 0)
+    const bard = new BardCharacter(scene, 0, 0)
+    bard.anchor.setTo(0, 0)
+    bard.scale.x *= -1
+    await swallow([
+      new GooseCharacter(scene, 0, 0),
+      bard
+    ], 0.4, 150)
+    await swallow(new Cook1Character(scene, 0, 0), 0)
+    const cook1 = new Cook2Character(scene, 0, 0)
+    cook1.scale.x *= -1
+    await swallow(cook1, 0)
+    await swallow(new WomanCharacter(scene, 0, 0), 0)
+    await swallow(new AlphapigCharacter(scene, 0, 0), 0)
+    const nailgoose = new NailgooseCharacter(scene, 0, 0)
+    nailgoose.scale.x *= -1
+    await swallow(nailgoose, 0)
+    const swan = new SwanCharacter(scene, 0, 0)
+    swan.scale.x *= -1
+    await swallow(swan, 0) // FIXME: swan sticks its head back into the vase
+  }
+
+  private async showCreditSegment(lines: string[], align: string = 'left') {
+    const textStyle = {
+      font: `8px ${CustomWebFonts.pixelOperator8Bold.family}`,
+      fill: '#fff',
+      stroke: '#000',
+      strokeThickness: 2
+    }
+
+    const labels = lines.map(line => new Phaser.Text(this.scene.game, 0, 0, line, textStyle))
+    const totalHeight = labels.reduce((h, l) => h + l.height, 0)
+
+    let previousLabel = null
+    for (const label of labels) {
+      if (!previousLabel) {
+        label.position.setTo(
+          align === 'left' ? 5 : align === 'right' ? this.scene.game.width - 5 - label.width : (this.scene.game.width - label.width) / 2,
+          (this.scene.game.height - totalHeight) / 2
+        )
+      } else {
+        label.position.setTo(
+          align === 'left' ? 10 : align === 'right' ? this.scene.game.width - 10 - label.width : (this.scene.game.width - label.width) / 2,
+          previousLabel.position.y + previousLabel.height
+        )
+      }
+      if (align === 'center' && label.width % 2 === 1) {
+        label.position.x -= 0.5
+      }
+      label.alpha = 0
+      previousLabel = label
+    }
+
+    labels.forEach(label => this.scene.add.existing(label))
+
+    await Promise.all(labels.map(label => {
+      const fadeIn = this.scene.game.tweens.create(label)
+        .to({ alpha: 0.999 }, 1000, Phaser.Easing.Quadratic.Out, true)
+      return fadeIn.onComplete.asPromise()
+    }))
+
+    await this.scene.wait(4)
+
+    await Promise.all(labels.map(label => {
+      const fadeIn = this.scene.game.tweens.create(label)
+        .to({ alpha: 0 }, 1000, Phaser.Easing.Quadratic.In, true)
+      return fadeIn.onComplete.asPromise()
+    }))
+
+    labels.forEach(label => label.destroy())
+  }
+
+  private async rollCredits() {
+    const textStyle = {
+      font: `8px ${CustomWebFonts.pixelOperator8Bold.family}`,
+      fill: '#fff',
+      stroke: '#000',
+      strokeThickness: 2
+    }
+
+    const jonas = 'Jonas Auer'
+    const nabil = 'Nabil Afnan-Samandari'
+    const kay = 'Kay Fleck'
+    const mathilde = 'Mathilde Hoffmann'
+    const valentin = 'Valentin Spadt'
+    const marina = 'Marina Strohm'
+
+    await this.showCreditSegment(['STORY UND DIALOG', jonas, nabil, mathilde, valentin, marina])
+    await this.showCreditSegment(['PROGRAMMIERUNG', jonas, valentin], 'right')
+    await this.showCreditSegment(['ANIMATION', nabil, kay, mathilde])
+    await this.showCreditSegment(['HINTERGRÜNDE', kay, marina], 'right')
+    await this.showCreditSegment(['SPRITES', marina, mathilde, nabil, kay])
+    await this.showCreditSegment(['MUSIK UND SOUND DESIGN', mathilde], 'right')
+    await this.showCreditSegment(['VOICE ACTING', nabil, 'Felix Barbarino', mathilde, valentin])
+    await this.showCreditSegment(['MENTORIN', 'Greta Hoffmann'], 'right')
+
+    // TODO: kunsthalle Logo
+    await this.showCreditSegment(['IN KOOPERATION MIT DER', 'STAATLICHEN KUNSTHALLE KARLSRUHE', 'Tabea Mernberger', 'Sandra Trevisan'])
+
+    // TODO: code for culture logo
+    await this.showCreditSegment(['EIN SPIEL IM RAHMEN DES', 'CODE FOR CULTURE GAME JAMS'], 'right')
+
+    await this.showCreditSegment(['VON STUDIERENDEN DER HOCHSCHULEN',
+      'Universität Stuttgart',
+      'Hochschule der Medien Stuttgart',
+      'Eberhard Karls Universität Tübingen',
+      'Staatliche Hochschule für Musik Trossingen',
+      'Staatliche Hochschule für Gestaltung Karlsruhe'
+    ])
+
+    // TODO: fade to black (or original image?)
+    await this.showCreditSegment(['SPEZIELLEN DANK AN',
+      'Yasi Schneidt',
+      'Die Organisatoren des Game Jams',
+      'Staatliche Kunsthalle Karlsruhe',
+      'Gamelab Karlsruhe',
+      'Shackspace Stuttgart',
+      'Die Schülerinnen und Schüler beim Test-Nachmittag',
+      'Joos van Craesbeeck',
+      'Den heiligen Antonius'
+    ], 'center')
+  }
+
   public async enter(visible: boolean) {
     this.scene.allInteractiveObjects.forEach(obj => obj.visible = false)
 
     if (visible) {
       const scene = this.scene
 
-      scene.settingsButton.visible = false
-      Inventory.instance.visible = false
+      // Hide all overlays and UI buttons
+      ; [
+        Settings.instance, scene.settingsButton,
+        Inventory.instance, scene.inventoryButton,
+        Help.instance, scene.helpButton
+      ].forEach(thing => thing.visible = false)
 
-      scene.characters.antonius.x = 280
-
-      const swallow = async (characters: Character[] | Character, anchorY: number, walkStartY = 170) => {
-        let chars = characters instanceof Character ? [characters] : characters
-
-        await Promise.all(chars.map(async character => {
-          // Flip  + scale characters
-          character.scale.x *= -2
-          character.scale.y *= 2
-
-          // Center the character's anchor
-          character.anchor.setTo(0.5, anchorY)
-
-          // Place character just right of the frame
-          character.x = scene.game.width + character.anchor.x * character.width * character.scale.x
-          character.y = walkStartY
-
-          await character.setActiveState('walking')
-          scene.add.existing(character)
-
-          // Move the character in front of the mouth
-          await scene.tweens.create(character).to({
-            x: 198,
-            y: 143
-          }, 3000).start().onComplete.asPromise()
-          await character.setActiveState('idle')
-        }))
-
-        scene.characters.hellmouth.setActiveState('open mouth')
-        AudioManager.instance.tracks.speech.playClip(Audio.hellmouthWhirlwind001.key)
-
-        await Promise.all(chars.map(async character => {
-          await Promise.all([
-            scene.tweens.create(character).to({ rotation: Math.PI * 10 }, 5000, Phaser.Easing.Cubic.In, true).onComplete.asPromise(),
-            scene.tweens.create(character.scale).to({ x: 0, y: 0}, 5000, Phaser.Easing.Cubic.In, true).onComplete.asPromise()
-          ])
-        }))
-
-        await scene.characters.hellmouth.setActiveState('close mouth')
-      }
-
-      await swallow(new MeckieCharacter(scene, 0, 0), 0.3)
-      await swallow(new CatCharacter(scene, 0, 0), 0)
-      const bard = new BardCharacter(scene, 0, 0)
-      bard.anchor.setTo(0, 0)
-      bard.scale.x *= -1
-      await swallow([
-        new GooseCharacter(scene, 0, 0),
-        bard
-      ], 0.4, 150)
-      await swallow(new Cook1Character(scene, 0, 0), 0)
-      const cook1 = new Cook2Character(scene, 0, 0)
-      cook1.scale.x *= -1
-      await swallow(cook1, 0)
-      await swallow(new WomanCharacter(scene, 0, 0), 0)
+      await Promise.all([
+        this.swallowCharacters(),
+        this.rollCredits()
+      ])
 
       return TheEnd
     }
