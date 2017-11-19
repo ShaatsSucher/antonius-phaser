@@ -310,6 +310,7 @@ class AntoniusRequestsEntryForTheFirstTime extends SceneStateTransition<TreeScen
     const scene = this.scene
 
     await scene.playDialogJson('antoniusRequestsEntryForTheFirstTime')
+    await scene.playDialogJson('treeDeniesEntry')
 
     return AntoniusRequestedEntryForTheFirstTime
   }
@@ -318,6 +319,11 @@ class AntoniusRequestsEntryForTheFirstTime extends SceneStateTransition<TreeScen
 class AntoniusRequestedEntryForTheFirstTime extends SceneState<TreeScene> {
   public async enter() {
     this.scene.interactiveObjects.toCaveArrow.visible = false
+
+    this.scene.characters.tree.interactionEnabled = true
+    this.listeners.push(this.scene.characters.tree.events.onInputUp.add(
+      () => this.stateManager.trigger(AntoniusRequestsEntry)
+    ))
   }
 }
 
