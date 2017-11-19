@@ -471,6 +471,8 @@ class Credits extends SceneStateTransition<HeadScene> {
   private async swallowCharacters() {
     const scene = this.scene
 
+    scene.setMusicClips(Audio.musicCredits.key)
+
     const swallow = async (characters: Character[] | Character, anchorY: number, walkStartY = 170, idleState = 'idle') => {
       let chars = characters instanceof Character ? [characters] : characters
 
