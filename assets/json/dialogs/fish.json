@@ -45,5 +45,57 @@
     [ "antonius",   "Wolltest du denn wegfahren?", [null, "slslsl"] ],
 
     [ "alphapig",   "Nein, ich wollte nur meine Ruder!", 3 ]
+  ],
+  "nailgooseIntro1": [
+    [ "nailgoose",  "Ahhh...", 2 ],
+
+    [ "antonius",   "Stör ich?", [null, "sl"] ],
+
+    [ "nailgoose", ["Aber nein! Ich träume", "bloß vom Duft der Tannen."], 5],
+
+    [ "antonius", [ "Oh, schön. Und was machst du",
+                    "mit den Nägeln in deiner Hand?"
+                  ], [null, "sllssssslllsll"] ],
+
+    [ "nailgoose", [ "Nadeln! Mein größter Traum:",
+                     "ein Nadelbaum."
+                   ], 4],
+    [ "nailgoose", [ "Jedoch weiß ich nicht, wie aus diesen",
+                     "Nadeln ein Baum werden soll.",
+                     "Kannst du mir helfen?"
+                   ], 5],
+
+    [ "antonius", [ "Ein Baum entsteht, wenn ein Samen an eine",
+                    "Stelle gepflanzt wird, die Licht und Wasser erreicht."
+                  ], [null, "sssllsllsslssslsssllsssl"] ],
+
+    [ "nailgoose", [ "Licht? Hab ich noch nie gehört.",
+                     "Aber weißt du was? Du kennst dich ja wohl aus,",
+                     "Nimm eine meiner Nadeln und mach einen Baum draus!"
+                   ], 10],
+
+    [ "antonius",   "Hey, warum machst du es nicht selbst?", [null, "lsslsssl"] ]
+  ],
+  "nailgooseIntro2": [
+    [ "antonius",   "...", [null, ""] ]
+  ],
+  "nailgooseIntro3": [
+    [ "antonius", [ "Die ist wohl schon wieder in",
+                    "ihrem eigenen Wald."
+                  ], [null, "sslsslsslssll"] ]
+  ],
+  "nailgooseStillWaiting": [
+    [ "nailgoose", "Hast du schon einen Nadelbaum gepflanzt?", 4 ],
+
+    [ "antonius", "Nein, aber -", [null, "ssl"] ],
+
+    [ "nailgoose", "Viel Glück!", 2 ]
+  ],
+  "nailgooseLeavingTowardsConcert": [
+    [ "nailgoose", "Und, wie steht's um meinen Baum?", 3 ],
+
+    [ "antonius", "Die Nadel ist eingepflanzt.", [null, "sslsssl"] ],
+
+    [ "nailgoose", "Ehrlich? Das will ich sehen!", 3 ]
   ]
 }
