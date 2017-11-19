@@ -24,5 +24,11 @@
 
     [ "nailgoose",  "Na gut, dann komm ich später wieder." , 3 ],
     [ "nailgoose",  "Tschüss!" , 1 ]
+  ],
+  "lookingGood": [
+    [ "antonius", "Dieses wasser sieht sehr rein aus.", [null, "sslss"] ]
+  ],
+  "NotSaltyEnough": [
+    [ "antonius", "Die Köche wollen sicher eine salzigere Brühe kochen.", [null, "sslssss"] ]
   ]
 }
