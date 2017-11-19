@@ -581,7 +581,7 @@ class Credits extends SceneStateTransition<HeadScene> {
       return fadeIn.onComplete.asPromise()
     }))
 
-    await this.scene.wait(6)
+    await this.scene.wait(11)
 
     await Promise.all(labels.map(label => {
       const fadeIn = this.scene.game.tweens.create(label)
