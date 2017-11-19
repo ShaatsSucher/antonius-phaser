@@ -535,8 +535,10 @@ class Credits extends SceneStateTransition<HeadScene> {
     await swallow(swan, 0, 170, 'talking')
     await swallow(new FightCloudCharacter(scene, 0, 0), 0.4, 160)
 
-    await scene.characters.buckethead.setActiveState('vanish')
-
+    await Promise.all([
+      scene.characters.buckethead.setActiveState('vanish'),
+      scene.characters.painter.setActiveState('vanish')
+    ])
     await scene.characters.hellmouth.setActiveState('close forehead')
   }
 
