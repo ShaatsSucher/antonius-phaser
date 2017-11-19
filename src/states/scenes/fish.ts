@@ -207,7 +207,7 @@ class TakingRudder extends SceneStateTransition<FishScene> {
   public async enter() {
     const rudder = this.scene.interactiveObjects.rudder
 
-    Inventory.instance.pickupItem(rudder, this.scene)
+    Inventory.instance.pickupItem(rudder, this.scene, Images.rudderIcon.key)
 
     return RudderGone
   }
