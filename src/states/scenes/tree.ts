@@ -95,7 +95,7 @@ export default class TreeScene extends Scene {
       game,
       Images.backgroundsBG03.key,
       Audio.soundscapesScene7.key,
-      [],
+      Audio.musicTree.key,
       Json.dialogsTree.key
     )
   }

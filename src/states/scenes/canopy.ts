@@ -54,7 +54,7 @@ export default class CanopyScene extends Scene {
       game,
       Images.backgroundsBG032.key,
       Audio.soundscapesScene3.key,
-      [],
+      Audio.musicTree.key,
       Json.dialogsCanopy.key
     )
   }

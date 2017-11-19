@@ -57,7 +57,7 @@ export default class KitchenScene extends Scene {
       game,
       Images.backgroundsBG05.key,
       Audio.soundscapesScene10.key,
-      [],
+      Audio.musicHead.key,
       Json.dialogsKitchen.key
     )
   }

@@ -88,7 +88,7 @@ export default class ConcertScene extends Scene {
       game,
       Images.backgroundsBG06.key, // same as bard ???
       Audio.soundscapesScene3.key, // TODO: replace with correct soundscape
-      [],
+      Audio.musicBard.key,
       Json.dialogsConcert.key
     )
   }

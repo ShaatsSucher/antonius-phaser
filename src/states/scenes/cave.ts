@@ -35,7 +35,7 @@ export default class CaveScene extends Scene {
       game,
       Images.backgroundsBG033.key,
       Audio.soundscapesScene7.key, // TODO: replace with correct soundscape
-      [],
+      Audio.musicTree.key,
       Json.dialogsCave.key
     )
   }
