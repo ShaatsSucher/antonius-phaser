@@ -33,9 +33,9 @@ export default class CaveScene extends Scene {
   constructor(game: Phaser.Game) {
     super(
       game,
-      Images.backgroundsBackgroundCaveNeu.key,
+      Images.backgroundsBG033.key,
       Audio.soundscapesScene7.key, // TODO: replace with correct soundscape
-      [],
+      Audio.musicTree.key,
       Json.dialogsCave.key
     )
   }
@@ -50,13 +50,15 @@ export default class CaveScene extends Scene {
       this.fadeTo('tree')
     })
 
-    const antonius = this.characters.antonius = new AntoniusCharacter(this, 100, 100)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 192, 92)
     antonius.scale = new Phaser.Point(-3, 3)
     this.game.add.existing(antonius)
 
-    this.color = new GameObject(this.game, 330, 110, Images.colour.key)
-    this.color.scale.setTo(2)
+    this.color = new GameObject(this.game, 206, 163, Images.colour.key)
     this.game.add.existing(this.color)
+
+    const light = new Phaser.Sprite(this.game, 77, 68, Images.backgroundsLightCave.key)
+    this.game.add.existing(light)
   }
 }
 

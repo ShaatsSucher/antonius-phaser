@@ -20,7 +20,9 @@
                     "...äh... verrenkt."
                   ], 5 ],
 
-    [ "antonius",   "Ich kümmere mich darum.", [null, "slss"] ]
+    [ "antonius", [ "Bei der Suppe kann ich euch helfen.",
+                    "Ein Arzt bin ich aber nicht."
+                  ], [null, "lssslllslslllssl"] ]
   ],
   "cooksWaitingForWater": [
     [ "cook2",    [ "Ach, meine Beine",
@@ -29,7 +31,7 @@
 
     [ "cook1",      "Mich auch.", 2 ],
 
-    [ "cook2",     "Kein Wasser, keine Suppe.", 5 ]
+    [ "cook2",      "Kein Wasser, keine Suppe.", 5 ]
   ],
   "cooksNeedFish": [
     [ "antonius", [ "Ich habe hier etwas Wasser.",
@@ -49,7 +51,7 @@
 
     [ "cook1",      "Mich auch.", 2 ],
 
-    [ "cook2",     "Kein Fisch, keine Suppe.", 5 ]
+    [ "cook2",      "Kein Fisch, keine Suppe.", 5 ]
   ],
   "cooksNeedVeggies": [
     [ "cook1",      "Jetzt fehlt nur noch Gemüse!", 4 ],
@@ -67,7 +69,7 @@
 
     [ "cook1",      "Mich auch.", 2 ],
 
-    [ "cook2",     "Kein Gemüse, keine Suppe.", 5 ]
+    [ "cook2",      "Kein Gemüse, keine Suppe.", 5 ]
   ],
   "cooksWantVeggiesCut": [
     [ "cook1",      "Das ist ja noch gar nicht geschnitten!", 5 ],
@@ -88,5 +90,42 @@
     [ "antonius",   "Na dann guten Appetit!", [null, "lsss"] ],
 
     [ "cook2",      "Unsere Aufgabe ist erledigt.", 5 ]
+  ],
+
+  "kidsTheseDays": [
+    [ "antonius",   "Grüß Gott.", [null, "ss"] ],
+
+    [ "eggwoman", [ "Was fällt Ihnen eigentlich ein, sich hier",
+                    "in meine Angelegenheiten einzumischen?"
+                  ], 8 ],
+
+    [ "antonius",   "Ich wollte doch nur ...", [null, "ssl"] ],
+
+    [ "eggwoman", [ "Jaja, alle wollen immer nur.",
+                    "Und wer denkt an mich?",
+                    "Mein Leben lang habe ich gegeben.",
+                    "Und was ist der Dank dafür?"
+                  ], 11 ],
+
+    [ "antonius",   "Ich ...", [null, "s"] ],
+
+    [ "eggwoman", [ "Sie haben leicht reden. Sie kommen da",
+                    "aus der Wüste mit Ihrer Bibel,",
+                    "doch haben Sie sich noch nie mit echten Dämonen, wie",
+                    "dieser Jugend von heute abgeben müssen.",
+                    "Damals, zu meiner Zeit, herrschte noch Zucht und Ordnung!"
+                  ], 22 ],
+
+    [ "antonius",   "Aber ...", [null, "l"] ],
+
+    [ "eggwoman", [ "Kommen Sie mir hier nicht mit einem Aber.",
+                    "Gucken Sie sich doch nur mal diese Nichtsnutze da drüben an!",
+                    "Die machen den ganzen Tag nichts anderes",
+                    "als so lächerlich herum zu tanzen ..."
+                  ], 22 ],
+
+    [ "eggwoman", [ "Sie haben Recht, ich werde hier für Ordnung sorgen.",
+                    "Ab sofort weht hier ein ganz anderer Wind."
+                  ], 8 ]
   ]
 }

@@ -9,7 +9,7 @@ import { SceneStateManager
 import { FishHintAvailable, Suction } from './head'
 import { FishAlive, FishDying } from './fish'
 
-import { Audio, Images, Json } from '../../assets'
+import { Audio, Images, Spritesheets, Json } from '../../assets'
 
 import AntoniusCharacter from '../../characters/antonius'
 import BardCharacter from '../../characters/bard'
@@ -21,6 +21,7 @@ import { FishGone } from './fish'
 import { VeggiesPickedUp } from './concert'
 
 import Arrow from '../../gameObjects/arrow'
+import GameObject from '../../gameObjects/gameObject'
 
 import SheechHelper from '../../utils/speechHelper'
 import { AudioManager } from '../../utils/audioManager'
@@ -48,7 +49,6 @@ export default class BardScene extends Scene {
       InitialBard,
       CatInTheWay,
       CatGone,
-      FiletInThePocket,
       BardGone
     ], [
       BardConversation,
@@ -59,76 +59,62 @@ export default class BardScene extends Scene {
     ]),
     meckie: new SceneStateManager<BardScene>(this, [
       InitialMeckie,
+      WaitingForFishOrVeggies,
       WaitingForFish,
-      AntoniusBroughtFish,
       WaitingForVeggies,
-      AntoniusBroughtVeggies,
       MeckieGone
     ], [
       MeckieIntroduction,
       MeckieRequest,
+      CutFishFirst,
+      CutVeggiesFirst,
       CutFish,
+      RequestingFish,
       RequestingVeggies,
-      CuttingVeggies
+      CuttingVeggies,
+      MeckieGoing
     ])
   }
 
   constructor(game: Phaser.Game) {
-    super(game, Images.backgroundsBard.key, Audio.soundscapesScene6.key, [], Json.dialogsBard.key)
-  }
-
-  protected registerConditionalStateTransitions(scenes: { [title: string]: Scene }) {
-    this.stateManagers.bard.registerConditionalTransitions(
-      new ConditionalStateTransition(
-        FiletInThePocket,
-        TransitionCondition.reachedState(this.stateManagers.meckie, WaitingForVeggies)
-      )
-    )
-
-    this.stateManagers.meckie.registerConditionalTransitions(
-      new ConditionalStateTransition(
-        AntoniusBroughtFish,
-        TransitionCondition.isState(this.stateManagers.meckie, WaitingForFish)
-        .and(TransitionCondition.reachedState(scenes.fish.stateManagers.fish, FishGone))
-      ),
-      new ConditionalStateTransition(
-        AntoniusBroughtVeggies,
-        TransitionCondition.reachedState(this.stateManagers.meckie, WaitingForVeggies)
-        .and(TransitionCondition.reachedState(scenes.concert.stateManagers.veggies, VeggiesPickedUp))
-      )
-    )
+    super(game, Images.backgroundsBG02.key, Audio.soundscapesScene6.key, [], Json.dialogsBard.key)
   }
 
   protected createGameObjects() {
-    const goose = this.characters.goose = new GooseCharacter(this, 144, 10)
-    goose.scale = new Phaser.Point(3, 3)
+    const goose = this.characters.goose = new GooseCharacter(this, 200, 60)
+    goose.scale.setTo(2)
     goose.anchor.setTo(0.5, 0)
     goose.setActiveState('idle')
     goose.inputEnabled = false
     this.add.existing(goose)
 
-    const bard = this.characters.bard = new BardCharacter(this, 144, 10)
-    bard.scale = new Phaser.Point(3, 3)
+    const bard = this.characters.bard = new BardCharacter(this, 200, 60)
+    bard.scale.setTo(2)
     bard.anchor.setTo(0.5, 0)
     bard.setActiveState('idle')
     this.add.existing(bard)
 
-    const cat = this.characters.cat = new CatCharacter(this, 144, 64)
-    cat.scale = new Phaser.Point(3, 3)
+    const cat = this.characters.cat = new CatCharacter(this, 200, 96)
+    cat.scale.setTo(2)
     cat.anchor.setTo(0.5, 0)
     cat.setActiveState('idle')
     this.add.existing(cat)
 
     const meckie = this.characters.meckie = new MeckieCharacter(this, 78, 120)
-    meckie.scale = new Phaser.Point(3, 3)
+    meckie.scale.setTo(2)
     meckie.anchor.setTo(0.5, 0)
     meckie.setActiveState('idle')
     this.add.existing(meckie)
 
     const antonius = this.characters.antonius = new AntoniusCharacter(this, 292, 120)
-    antonius.scale = new Phaser.Point(3, 3)
+    antonius.scale.setTo(2)
     antonius.setActiveState('idle')
     this.add.existing(antonius)
+
+    const snail = new GameObject(this.game, 260, 160, Spritesheets.snail.key)
+    snail.animations.add('idle', [0, 1], 1, true)
+    snail.play('idle')
+    this.game.add.existing(snail)
 
     const toHeadArrow = this.interactiveObjects.toHeadArrow = new Arrow(this.game, 20, 95)
     toHeadArrow.rotation = Math.PI
@@ -175,15 +161,45 @@ export class InitialBard extends SceneState<BardScene> {
 class BardConversation extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
+    const bard = scene.characters.bard
 
-    scene.characters.bard.setActiveState('singing')
-    scene.characters.bard.interactionEnabled = true
+    bard.setActiveState('singing')
     const bardSong = AudioManager.instance.tracks.speech.addClip(Audio.bardSongShort.key)
-    bardSong.stopped.then(() => { scene.characters.bard.setActiveState('idle') })
+    bardSong.stopped.then(() => { bard.setActiveState('idle') })
+
+    const lines: [{ time: number, text: string }] = [
+      { time: 0, text: 'Traurigkeit im Übermaß' },
+      { time: 4100, text: 'Auf ihrem Rücken ich doch saß' },
+      { time: 8600, text: 'Ihr Stimmchen ich zu hören wähne' },
+      { time: 13500, text: 'Sogleich entweicht mir eine Träne' }
+    ]
+
+    let label: Phaser.Text
+    const updateHandler = scene.onUpdate.add(() => {
+      if (lines.length > 0 && lines[0].time <= bardSong.sound.currentTime) {
+        if (label) label.kill()
+
+        const line = lines.shift()
+        label = scene.add.text(0, 0, line.text, bard.speech.textStyle)
+
+        label.anchor.setTo(0.5, 0)
+
+        label.alignTo(
+          bard, Phaser.TOP_CENTER,
+          scene.characters.bard.speech.textAnchor.x,
+          scene.characters.bard.speech.textAnchor.y
+        )
+        if (label.width % 2 !== 0) {
+          label.x = Math.floor(label.x) + 0.5
+        }
+      }
+    })
+
+    await bardSong.stopped
+    updateHandler.detach()
 
     await scene.clickedAnywhere()
-    bardSong.stop()
-    scene.characters.bard.setInteractionEnabled(false)
+    if (label) label.kill()
 
     this.scene.setMusicClips(Audio.musicBard.key)
 
@@ -203,6 +219,11 @@ export class CatInTheWay extends SceneState<BardScene> {
     this.listeners.push(scene.characters.cat.events.onInputUp.addOnce(
       () => scene.stateManagers.bard.trigger(AnnoyedCat)
     ))
+    this.listeners.push(scene.addItemDropHandler(scene.characters.cat, async (key) => {
+      if (key !== Images.filet.key) return false
+      this.stateManager.trigger(CatFeast)
+      return true
+    }))
 
     scene.characters.bard.interactionEnabled = true
     this.listeners.push(scene.characters.bard.events.onInputUp.addOnce(
@@ -228,18 +249,6 @@ class SadBard extends SceneStateTransition<BardScene> {
     await scene.playDialogJson('sadBard')
 
     return CatInTheWay
-  }
-}
-
-export class FiletInThePocket extends SceneState<BardScene> {
-  public async show() {
-    const scene = this.scene
-
-    scene.characters.cat.interactionEnabled = true
-    this.clearListeners()
-    this.listeners.push(scene.characters.cat.events.onInputUp.addOnce(
-      () => { this.stateManager.trigger(CatFeast) }
-    ))
   }
 }
 
@@ -365,11 +374,11 @@ class MeckieRequest extends SceneStateTransition<BardScene> {
 
     await scene.playDialogJson('meckieRequest')
 
-    return WaitingForFish
+    return WaitingForFishOrVeggies
   }
 }
 
-export class WaitingForFish extends SceneState<BardScene> {
+export class WaitingForFishOrVeggies extends SceneState<BardScene> {
   public async show() {
     const scene = this.scene
 
@@ -377,21 +386,20 @@ export class WaitingForFish extends SceneState<BardScene> {
     this.listeners.push(scene.characters.meckie.events.onInputDown.addOnce(
       () => this.stateManager.trigger(MeckieRequest)
     ))
+    this.listeners.push(scene.addItemDropHandler(scene.characters.meckie, async (key) => {
+      if (key === Images.fish.key) {
+        this.stateManager.trigger(CutFishFirst)
+        return true
+      } else if (key === Images.carrot.key) {
+        this.stateManager.trigger(CutVeggiesFirst)
+        return true
+      }
+      return false
+    }))
   }
 }
 
-export class AntoniusBroughtFish extends SceneState<BardScene> {
-  public async show() {
-    const scene = this.scene
-
-    scene.characters.meckie.interactionEnabled = true
-    this.listeners.push(scene.characters.meckie.events.onInputUp.addOnce(
-      () => this.stateManager.trigger(CutFish)
-    ))
-  }
-}
-
-class CutFish extends SceneStateTransition<BardScene> {
+class CutFishFirst extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
 
@@ -408,7 +416,80 @@ class CutFish extends SceneStateTransition<BardScene> {
 
     await scene.playDialogJson('cutFishAfterPickup')
 
-    return WaitingForVeggies
+    return RequestingVeggies
+  }
+}
+
+class CutVeggiesFirst extends SceneStateTransition<BardScene> {
+  public async enter() {
+    const scene = this.scene
+
+    await scene.playDialogJson('cuttingVeggiesBeforeCutting')
+
+    Inventory.instance.takeItem(Images.carrot.key)
+
+    scene.characters.meckie.setActiveState('swinging')
+    await scene.wait(1)
+
+    Inventory.instance.addItem(Images.carrotSliced.key)
+
+    await scene.playDialogJson('cuttingVeggiesAfterCutting')
+
+    return RequestingFish
+  }
+}
+
+class WaitingForFish extends SceneState<BardScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.characters.meckie.interactionEnabled = true
+    this.listeners.push(scene.characters.meckie.events.onInputDown.addOnce(
+      () => this.stateManager.trigger(RequestingFish)
+    ))
+    this.listeners.push(scene.addItemDropHandler(scene.characters.meckie, async (key) => {
+      if (key !== Images.fish.key) return false
+      this.stateManager.trigger(CutFish)
+      return true
+    }))
+  }
+}
+
+export class RequestingFish extends SceneStateTransition<BardScene> {
+  public async enter() {
+    const scene = this.scene
+
+    await scene.playDialogJson('requestingBeforeSwing')
+
+    scene.characters.meckie.setActiveState('swinging')
+    await scene.wait(0.5)
+    scene.characters.meckie.setActiveState('idle')
+
+    await scene.playDialogJson('requestingAfterSwing')
+
+    return WaitingForFish
+  }
+}
+
+class CutFish extends SceneStateTransition<BardScene> {
+  public async enter() {
+    const scene = this.scene
+
+    await scene.playDialogJson('cutFishBeforeCutting')
+
+    Inventory.instance.takeItem(Images.fish.key)
+
+    scene.characters.meckie.setActiveState('swinging')
+    await scene.wait(1)
+    scene.characters.meckie.setActiveState('idle')
+
+    await scene.playDialogJson('cutFishAfterCutting')
+
+    Inventory.instance.addItem(Images.filet.key, 2)
+
+    await scene.playDialogJson('cutFishAfterPickup')
+
+    return MeckieGoing
   }
 }
 
@@ -420,6 +501,11 @@ class WaitingForVeggies extends SceneState<BardScene> {
     this.listeners.push(scene.characters.meckie.events.onInputUp.addOnce(
       () => this.stateManager.trigger(RequestingVeggies)
     ))
+    this.listeners.push(scene.addItemDropHandler(scene.characters.meckie, async (key) => {
+      if (key !== Images.carrot.key) return false
+      this.stateManager.trigger(CuttingVeggies)
+      return true
+    }))
   }
 }
 
@@ -427,20 +513,15 @@ class RequestingVeggies extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.playDialogJson('requestingVeggies')
+    await scene.playDialogJson('requestingBeforeSwing')
+
+    scene.characters.meckie.setActiveState('swinging')
+    await scene.wait(0.5)
+    scene.characters.meckie.setActiveState('idle')
+
+    await scene.playDialogJson('requestingAfterSwing')
 
     return WaitingForVeggies
-  }
-}
-
-class AntoniusBroughtVeggies extends SceneState<BardScene> {
-  public async show() {
-    const scene = this.scene
-
-    scene.characters.meckie.interactionEnabled = true
-    this.listeners.push(scene.characters.meckie.events.onInputUp.addOnce(
-      () => this.stateManager.trigger(CuttingVeggies)
-    ))
   }
 }
 
@@ -458,6 +539,16 @@ class CuttingVeggies extends SceneStateTransition<BardScene> {
     Inventory.instance.addItem(Images.carrotSliced.key)
 
     await scene.playDialogJson('cuttingVeggiesAfterCutting')
+
+    return MeckieGoing
+  }
+}
+
+class MeckieGoing extends SceneStateTransition<BardScene> {
+  public async enter() {
+    const scene = this.scene
+
+    await scene.playDialogJson('meckieGoing')
 
     scene.characters.meckie.scale.x = -3
     scene.characters.meckie.setActiveState('walking')

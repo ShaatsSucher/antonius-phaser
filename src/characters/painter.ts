@@ -25,10 +25,12 @@ export default class PainterCharacter extends Character {
     this.animations.add('idle', [0], 0, false)
     this.animations.add('talking', [0, 8], 8, true)
     this.animations.add('painting', ArrayUtils.range(0, 7), 8, true)
+    this.animations.add('vanish', ArrayUtils.range(9, 21), 8, false)
 
     this.addCharacterState('idle', new IdleState(this))
     this.addCharacterState('talking', new TalkingState(this))
     this.addCharacterState('painting', new PaintingState(this))
+    this.addCharacterState('vanish', new VanishState(this))
 
     this.play('idle')
   }
@@ -57,5 +59,14 @@ class TalkingState implements CharacterState<PainterCharacter> {
   async enter() {
     this.character.animations.stop()
     this.character.play('talking')
+  }
+}
+
+class VanishState implements CharacterState<PainterCharacter> {
+  constructor(public character: PainterCharacter) {}
+
+  enter() {
+    this.character.animations.stop()
+    return this.character.play('vanish').onComplete.asPromise()
   }
 }

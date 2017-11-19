@@ -40,11 +40,13 @@ export default abstract class Scene extends Phaser.State implements Pausable {
 
   private dialogs: { [name: string]: [string, string | string[] | string[][], any | any[]][] } = {}
 
-  private backgroundImage: Phaser.Sprite
+  protected backgroundImage: Phaser.Sprite
 
   public settingsButton: Button
   public inventoryButton: Button
   public helpButton: Button
+
+  public escapeKeyEnabled = true
 
   public onUpdate = new Phaser.Signal()
   public onCreate = new Phaser.Signal()
@@ -243,6 +245,8 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     })
 
     this.game.input.keyboard.addKey(Phaser.KeyCode.ESC).onDown.add(() => {
+      if (!this.escapeKeyEnabled) return
+
       const visibleOverlays = [Inventory, RestartOverlay, SettingsOverlay, Help]
         .map(x => x.instance)
         .filter(o => o.visible)
@@ -290,13 +294,19 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     }
   }
 
-  public addItemDropHandler(target: GameObject, handler: (key: string) => Promise<boolean>) {
+  public addItemDropHandler(target: GameObject, handler: (key: string) => Promise<boolean>): () => void {
     let handlers = this.itemDropHandlers.filter(h => h[0] === target).head()
     if (!handlers) {
       handlers = [target, []]
       this.itemDropHandlers.push(handlers)
     }
     handlers[1].push(handler)
+
+    return () => {
+      const handlers = this.itemDropHandlers.filter(h => h[0] === target).head()
+      if (!handlers) return
+      handlers[1] = handlers[1].filter(h => h !== handler)
+    }
   }
 
   public async itemDropped(x: number, y: number, key: string): Promise<boolean> {

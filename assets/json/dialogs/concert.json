@@ -1,2 +1,34 @@
 {
+  "eggwomanIsPissed": [
+    [ "eggwoman", "Schluss mit lustig!", 2 ]
+  ],
+
+  "gettingSmashed": [
+    [ "swan", "Glückliches Quaken!", 2]
+  ],
+  "antoniusInspectingDirt": [
+    [ "antonius", [ "Das sieht nach einem sehr",
+                    "fruchtbaren Boden aus."
+                  ], [null, "lsssllssllss"] ]
+  ],
+  "antoniusPlantedTree": [
+    [ "antonius",   "Die Nadel wird hier sicherlich gut wachsen.", [null, "lslslssllsl"] ]
+  ],
+  "nailgooseNotSeeingTree": [
+    [ "nailgoose",  "Ja aber ich sehe noch gar keinen Baum.", 4 ],
+
+    [ "antonius", [ "Ein Baum braucht viele Jahre zum Wachsen.",
+                    "Wenn du in 25 Jahren wieder kommst, steht",
+                    "da bestimmt eine prächtige Tanne."
+                  ], [null, "lslslssllsl"] ],
+
+    [ "nailgoose",  "Na gut, dann komm ich später wieder." , 3 ],
+    [ "nailgoose",  "Tschüss!" , 1 ]
+  ],
+  "lookingGood": [
+    [ "antonius", "Dieses wasser sieht sehr rein aus.", [null, "sslss"] ]
+  ],
+  "NotSaltyEnough": [
+    [ "antonius", "Die Köche wollen sicher eine salzigere Brühe kochen.", [null, "sslssss"] ]
+  ]
 }

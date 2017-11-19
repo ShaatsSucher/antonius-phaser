@@ -28,7 +28,7 @@
                   ], [null, "ssssss" ] ]
   ],
   "annoyedCat": [
-    [ "cat",        "[genervtes Miauen]", 4.9 ],
+    [ "cat",        "[genervtes Miauen]", 0.6 ],
 
     [ "antonius",   "Das wird wohl schwieriger als gedacht...", [null, "sssssl"] ]
   ],
@@ -132,15 +132,23 @@
     [ "antonius",   "Praktisch!", [null, "s"] ]
   ],
   "requestingVeggies": [
-    [ "meckie",     ["Doch glaubst du, dass mir das schon reicht?",
-                     "Ich spiel dir einen Klingen-Streich!"
-                     ], [null, "sslsssslslslsl"] ],
-     
-    [ "antonius", "Ohje ohje, ich geh ja schon!", [null, "llssss"] ],
-  
-    [ "meckie",     ["Kommst du mit Händen leer zurück,",
-                     "so gibts dich bald nicht mehr am Stück! Hähähä "
-                     ], [null, "isslisslh"] ]
+    [ "meckie",   [ "Doch glaubst du, dass mir das schon reicht?",
+                    "Ich spiel dir einen Klingen-Streich!"
+                  ], [null, "lllslslsslssslslh"] ],
+
+    [ "antonius",   "Ohje ohje, ich geh ja schon!", [null, "llssss"] ],
+
+    [ "meckie",   [ "Kommst du mit Händen leer zurück,",
+                    "so gibts dich bald nicht mehr am Stück! Hähähä "
+                  ], [null, "isslisslh"] ]
+  ],
+  "requestingBeforeSwing": [
+    [ "meckie",   [ "Doch glaubst du, dass mir das schon reicht?",
+                    "Ich spiel dir einen Klingen-Streich!"
+                  ], [null, "lllslslsslssslslh"] ]
+  ],
+  "requestingAfterSwing": [
+    [ "antonius",   "Ohje ohje, ich geh ja schon!", [null, "llssss"] ]
   ],
   "cuttingVeggiesBeforeCutting": [
     [ "meckie",   [ "Ah, du bringst mir Kraut und Rüben,",
@@ -154,7 +162,9 @@
   "cuttingVeggiesAfterCutting": [
     [ "meckie",   [ "Danke für den Proviant,",
                     "das ist wie im Schlaraffenland!"
-                  ], [null, "sslslslsllslssl"] ],
+                  ], [null, "sslslslsllslssl"] ]
+  ],
+  "meckieGoing": [
     [ "meckie",   [ "Das war jetzt auch mein letzter Reim,",
                     "den Rest zerschnibbel ich daheim."
                   ], [null, "slsslsslslssl"] ],

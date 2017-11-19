@@ -4,11 +4,12 @@ import { SceneStateManager
        , SceneStateTransition
        , ConditionalStateTransition
        , TransitionCondition
+       , Extending
        } from '../../utils/stateManager'
 
 import { WaitingForWater } from './kitchen'
 
-import { Audio, Images, Json } from '../../assets'
+import { Audio, Images, Spritesheets, Json } from '../../assets'
 
 import AntoniusCharacter from '../../characters/antonius'
 import TreeCharacter from '../../characters/tree'
@@ -28,7 +29,7 @@ export default class TreeScene extends Scene {
     antonius: AntoniusCharacter,
     tree: TreeCharacter,
     woman: WomanCharacter,
-    // goat: GoatCharacter
+    goat: GoatCharacter
   } = <any>{}
 
   public interactiveObjects = {
@@ -71,15 +72,30 @@ export default class TreeScene extends Scene {
       TakeMyCup,
       StillWaitig,
       Eating
+    ]),
+    goat: new SceneStateManager<TreeScene>(this, [
+      Goat1,
+      Goat2,
+      Goat3,
+      Goat4,
+      Goat5,
+      FinalGoat,
+    ], [
+      GoatTransition1,
+      GoatTransition2,
+      GoatTransition3,
+      GoatTransition4,
+      GoatTransition5,
+      FinalGoatTransition
     ])
   }
 
   constructor(game: Phaser.Game) {
     super(
       game,
-      Images.backgroundsWoman.key,
+      Images.backgroundsBG03.key,
       Audio.soundscapesScene7.key,
-      [],
+      Audio.musicTree.key,
       Json.dialogsTree.key
     )
   }
@@ -123,26 +139,27 @@ export default class TreeScene extends Scene {
       new ConditionalStateTransition(
         NewKnowledge,
         TransitionCondition.reachedState(scenes.kitchen.stateManagers.cooks, WaitingForWater)
+          .and(TransitionCondition.reachedState(this.stateManagers.woman, HungryWoman))
       )
     )
   }
 
   protected createGameObjects() {
-    const antonius = this.characters.antonius = new AntoniusCharacter(this, 100, 100)
-    antonius.scale = new Phaser.Point(-3, 3)
-    this.game.add.existing(antonius)
+    const goat = this.characters.goat = new GoatCharacter(this, 260, 76)
+    goat.scale.setTo(2)
+    this.game.add.existing(goat)
 
-    const tree = this.characters.tree = new TreeCharacter(this, 150, 0)
-    tree.scale = new Phaser.Point(2, 2)
+    const tree = this.characters.tree = new TreeCharacter(this, 112, -2)
+    tree.scale.setTo(2)
     this.game.add.existing(tree)
 
-    const woman = this.characters.woman = new WomanCharacter(this, 250, 120)
-    woman.scale = new Phaser.Point(3, 3)
+    const woman = this.characters.woman = new WomanCharacter(this, 175, 110)
+    woman.scale.setTo(2)
     this.game.add.existing(woman)
 
-    // const goat = this.characters.goat = new GoatCharacter(this, 280, 70)
-    // goat.scale = new Phaser.Point(3, 3)
-    // this.game.add.existing(goat)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 160, 115)
+    antonius.scale = new Phaser.Point(-2, 2)
+    this.game.add.existing(antonius)
 
     const toBardArrow = this.interactiveObjects.toBardArrow = new Arrow(this.game, 20, 95)
     toBardArrow.rotation = Math.PI
@@ -293,6 +310,7 @@ class AntoniusRequestsEntryForTheFirstTime extends SceneStateTransition<TreeScen
     const scene = this.scene
 
     await scene.playDialogJson('antoniusRequestsEntryForTheFirstTime')
+    await scene.playDialogJson('treeDeniesEntry')
 
     return AntoniusRequestedEntryForTheFirstTime
   }
@@ -301,6 +319,11 @@ class AntoniusRequestsEntryForTheFirstTime extends SceneStateTransition<TreeScen
 class AntoniusRequestedEntryForTheFirstTime extends SceneState<TreeScene> {
   public async enter() {
     this.scene.interactiveObjects.toCaveArrow.visible = false
+
+    this.scene.characters.tree.interactionEnabled = true
+    this.listeners.push(this.scene.characters.tree.events.onInputUp.add(
+      () => this.stateManager.trigger(AntoniusRequestsEntry)
+    ))
   }
 }
 
@@ -435,6 +458,7 @@ class TakeMyCup extends SceneStateTransition<TreeScene> {
 
     await scene.playDialogJson('antoniusOffersToGetFood')
 
+    // await Inventory.instance.pickupItem(scene.characters.woman, this.scene, Images.cupEmpty.key)
     Inventory.instance.addItem(Images.cupEmpty.key)
 
     return ImaptientWoman
@@ -445,16 +469,20 @@ export class ImaptientWoman extends SceneState<TreeScene> {
   public async show() {
     const c = this.scene.characters
 
+    c.woman.loadTexture(Spritesheets.ladynocup.key)
+
     c.woman.interactionEnabled = true
 
-    this.listeners.push(c.woman.events.onInputUp.addOnce(() => {
-      if (Inventory.instance.hasItem(Images.cupSoup.key)) {
-        Inventory.instance.takeItem(Images.cupSoup.key)
-        this.stateManager.trigger(Eating)
-      } else {
-        this.stateManager.trigger(StillWaitig)
-      }
+    this.listeners.push(this.scene.addItemDropHandler(c.woman, async (key) => {
+      if (key !== Images.cupSoup.key) return false
+      Inventory.instance.takeItem(Images.cupSoup.key)
+      this.stateManager.trigger(Eating)
+      return true
     }))
+
+    this.listeners.push(c.woman.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(StillWaitig)
+    ))
   }
 }
 
@@ -478,8 +506,8 @@ class Eating extends SceneStateTransition<TreeScene> {
     c.woman.setActiveState('walking')
 
     await scene.tweens.create(c.woman).to({
-      x: -Math.abs(c.woman.width * c.woman.anchor.x)
-    }, 3000).start().onComplete.asPromise()
+      x: -200
+    }, 4000).start().onComplete.asPromise()
 
     await scene.playDialogJson('antoniusWondersAboutWomansInvitation')
 
@@ -490,5 +518,158 @@ class Eating extends SceneStateTransition<TreeScene> {
 export class SatisfiedWoman extends SceneState<TreeScene> {
   public async show() {
     this.scene.characters.woman.visible = false
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Goat States
+// ---------------------------------------------------------------------------
+
+class GoatState extends SceneState<TreeScene> {
+  private timer: Phaser.Timer
+
+  public constructor(
+    scene: TreeScene,
+    stateManager: SceneStateManager<TreeScene>,
+    private targetTransition: Extending<SceneStateTransition<TreeScene>>
+  ) {
+    super(scene, stateManager)
+  }
+
+  public async show() {
+    if (this.timer) {
+      this.timer.destroy()
+      this.timer = null
+    }
+
+    this.timer = this.scene.game.time.create(false)
+    this.timer.start()
+
+    const goat = this.scene.characters.goat
+    goat.interactionEnabled = true
+    goat.position.x = 272
+
+    const peekGoat = () => {
+      this.listeners.push(() => console.log('listeners cleared'))
+      const tick = this.timer.add(30 * Phaser.Timer.SECOND, () => {
+        const tween = this.scene.tweens.create(goat.position).to({ x: 260 }, 1000, Phaser.Easing.Quadratic.In, true)
+        this.listeners.push(() => tween.stop())
+        this.listeners.push(tween.onComplete.addOnce(() => {
+          const tick2 = this.timer.add(1 * Phaser.Timer.SECOND, () => {
+            const tween2 = this.scene.tweens.create(goat.position).to({ x: 272 }, 1000, Phaser.Easing.Quadratic.In, true)
+            this.listeners.push(() => tween2.stop())
+            this.listeners.push(tween2.onComplete.addOnce(() => {
+              peekGoat()
+            }))
+          })
+          this.listeners.push(() => this.timer.remove(tick2))
+        }))
+      })
+      this.listeners.push(() => this.timer.remove(tick))
+    }
+    peekGoat()
+
+    this.listeners.push(goat.events.onInputUp.addOnce(() => {
+      this.clearListeners()
+      if (this.timer) {
+        this.timer.destroy()
+        this.timer = null
+      }
+      this.stateManager.trigger(this.targetTransition)
+    }))
+  }
+}
+
+class GoatTransition extends SceneStateTransition<TreeScene> {
+  public constructor(
+    scene: TreeScene,
+    private dialogKey: string,
+    private targetState: Extending<SceneStateTransition<TreeScene>>
+  ) {
+    super(scene)
+  }
+
+  public async enter() {
+    this.scene.characters.goat.position.x = 260
+    await this.scene.playDialogJson(this.dialogKey)
+    await this.scene.tweens
+      .create(this.scene.characters.goat.position)
+      .to({ x: 272 }, 1000, Phaser.Easing.Quadratic.In, true)
+      .onComplete
+      .asPromise()
+
+    return this.targetState
+  }
+}
+
+class Goat1 extends GoatState {
+  constructor(scene: TreeScene, stateManager: SceneStateManager<TreeScene>) {
+    super(scene, stateManager, GoatTransition1)
+  }
+}
+
+class GoatTransition1 extends GoatTransition {
+  constructor(scene: TreeScene) {
+    super(scene, 'goat1', Goat2)
+  }
+}
+
+class Goat2 extends GoatState {
+  constructor(scene: TreeScene, stateManager: SceneStateManager<TreeScene>) {
+    super(scene, stateManager, GoatTransition2)
+  }
+}
+
+class GoatTransition2 extends GoatTransition {
+  constructor(scene: TreeScene) {
+    super(scene, 'goat2', Goat3)
+  }
+}
+
+class Goat3 extends GoatState {
+  constructor(scene: TreeScene, stateManager: SceneStateManager<TreeScene>) {
+    super(scene, stateManager, GoatTransition3)
+  }
+}
+
+class GoatTransition3 extends GoatTransition {
+  constructor(scene: TreeScene) {
+    super(scene, 'goat3', Goat4)
+  }
+}
+
+class Goat4 extends GoatState {
+  constructor(scene: TreeScene, stateManager: SceneStateManager<TreeScene>) {
+    super(scene, stateManager, GoatTransition4)
+  }
+}
+
+class GoatTransition4 extends GoatTransition {
+  constructor(scene: TreeScene) {
+    super(scene, 'goat4', Goat5)
+  }
+}
+
+class Goat5 extends GoatState {
+  constructor(scene: TreeScene, stateManager: SceneStateManager<TreeScene>) {
+    super(scene, stateManager, GoatTransition5)
+  }
+}
+
+class GoatTransition5 extends GoatTransition {
+  constructor(scene: TreeScene) {
+    super(scene, 'goat5', FinalGoat)
+  }
+}
+
+class FinalGoat extends GoatState {
+  constructor(scene: TreeScene, stateManager: SceneStateManager<TreeScene>) {
+    super(scene, stateManager, FinalGoatTransition)
+  }
+}
+
+class FinalGoatTransition extends GoatTransition {
+  constructor(scene: TreeScene) {
+    super(scene, 'finalGoat', FinalGoat)
   }
 }

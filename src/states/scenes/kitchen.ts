@@ -43,15 +43,21 @@ export default class KitchenScene extends Scene {
       StillNeedVeggies,
       VeggiesNotCut,
       FinishCooking
+    ]),
+    eggwoman: new SceneStateManager<KitchenScene>(this, [
+      InitialEggwoman,
+      EggwomanWentOver
+    ], [
+      KidsTheseDays
     ])
   }
 
   constructor(game: Phaser.Game) {
     super(
       game,
-      Images.backgroundsBackgroundChef.key,
+      Images.backgroundsBG05.key,
       Audio.soundscapesScene10.key,
-      [],
+      Audio.musicHead.key,
       Json.dialogsKitchen.key
     )
   }
@@ -84,21 +90,21 @@ export default class KitchenScene extends Scene {
       this.fadeTo('concert')
     })
 
-    const antonius = this.characters.antonius = new AntoniusCharacter(this, 270, 120)
-    antonius.scale = new Phaser.Point(3, 3)
+    const eggwoman = this.characters.eggwoman = new EggWomanCharacter(this, 200, 100)
+    eggwoman.scale.setTo(2)
+    this.game.add.existing(eggwoman)
+
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 270, 110)
+    antonius.scale.setTo(2)
     antonius.setActiveState('idle')
     this.game.add.existing(antonius)
 
-    const eggwoman = this.characters.eggwoman = new EggWomanCharacter(this, 200, 100)
-    eggwoman.scale = new Phaser.Point(3, 3)
-    this.game.add.existing(eggwoman)
-
-    const cook1 = this.characters.cook1 = new Cook1Character(this, 100, 100)
-    cook1.scale = new Phaser.Point(2, 2)
+    const cook1 = this.characters.cook1 = new Cook1Character(this, 50, 96)
+    cook1.scale.setTo(2)
     this.game.add.existing(cook1)
 
-    const cook2 = this.characters.cook2 = new Cook2Character(this, 130, 100)
-    cook2.scale = new Phaser.Point(2, 2)
+    const cook2 = this.characters.cook2 = new Cook2Character(this, 85, 110)
+    cook2.scale.setTo(2)
     this.game.add.existing(cook2)
   }
 }
@@ -139,22 +145,25 @@ export class WaitingForWater extends SceneState<KitchenScene> {
 
     // Inventory.instance.addItem(Images.cupWater.key)
 
-    this.listeners.push(c.cook1.events.onInputUp.addOnce(() => {
-      if (Inventory.instance.hasItem(Images.cupWater.key)) {
-        this.stateManager.trigger(WeNeedFish)
-        Inventory.instance.takeItem(Images.cupWater.key)
-      } else {
-        this.stateManager.trigger(StillNeedWater)
-      }
+    this.listeners.push(this.scene.addItemDropHandler(c.cook1, async (key) => {
+      if (key !== Images.cupWater.key) return false
+      this.stateManager.trigger(WeNeedFish)
+      Inventory.instance.takeItem(Images.cupWater.key)
+      return true
     }))
-    this.listeners.push(c.cook2.events.onInputUp.addOnce(() => {
-      if (Inventory.instance.hasItem(Images.cupWater.key)) {
-        this.stateManager.trigger(WeNeedFish)
-        Inventory.instance.takeItem(Images.cupWater.key)
-      } else {
-        this.stateManager.trigger(StillNeedWater)
-      }
+    this.listeners.push(this.scene.addItemDropHandler(c.cook2, async (key) => {
+      if (key !== Images.cupWater.key) return false
+      this.stateManager.trigger(WeNeedFish)
+      Inventory.instance.takeItem(Images.cupWater.key)
+      return true
     }))
+
+    this.listeners.push(c.cook1.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(StillNeedWater)
+    ))
+    this.listeners.push(c.cook2.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(StillNeedWater)
+    ))
   }
 }
 
@@ -187,22 +196,25 @@ export class WaitingForFish extends SceneState<KitchenScene> {
 
     // Inventory.instance.addItem(Images.filet.key)
 
-    this.listeners.push(c.cook1.events.onInputUp.addOnce(() => {
-      if (Inventory.instance.hasItem(Images.filet.key)) {
-        this.stateManager.trigger(WeNeedVeggies)
-        Inventory.instance.takeItem(Images.filet.key)
-      } else {
-        this.stateManager.trigger(StillNeedFish)
-      }
+    this.listeners.push(this.scene.addItemDropHandler(c.cook1, async (key) => {
+      if (key !== Images.filet.key) return false
+      this.stateManager.trigger(WeNeedVeggies)
+      Inventory.instance.takeItem(Images.filet.key)
+      return true
     }))
-    this.listeners.push(c.cook2.events.onInputUp.addOnce(() => {
-      if (Inventory.instance.hasItem(Images.filet.key)) {
-        this.stateManager.trigger(WeNeedVeggies)
-        Inventory.instance.takeItem(Images.filet.key)
-      } else {
-        this.stateManager.trigger(StillNeedFish)
-      }
+    this.listeners.push(this.scene.addItemDropHandler(c.cook2, async (key) => {
+      if (key !== Images.filet.key) return false
+      this.stateManager.trigger(WeNeedVeggies)
+      Inventory.instance.takeItem(Images.filet.key)
+      return true
     }))
+
+    this.listeners.push(c.cook1.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(StillNeedFish)
+    ))
+    this.listeners.push(c.cook2.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(StillNeedFish)
+    ))
   }
 }
 
@@ -235,26 +247,33 @@ export class WaitingForVeggies extends SceneState<KitchenScene> {
 
     // Inventory.instance.addItem(Images.carrotSliced.key)
 
-    this.listeners.push(c.cook1.events.onInputUp.addOnce(() => {
-      if (Inventory.instance.hasItem(Images.carrotSliced.key)) {
+    this.listeners.push(this.scene.addItemDropHandler(c.cook1, async (key) => {
+      if (key === Images.carrotSliced.key) {
         this.stateManager.trigger(FinishCooking)
         Inventory.instance.takeItem(Images.carrotSliced.key)
-      } else if (Inventory.instance.hasItem(Images.carrot.key)) {
+        return true
+      } else if (key === Images.carrot.key) {
         this.stateManager.trigger(VeggiesNotCut)
-      } else {
-        this.stateManager.trigger(StillNeedFish)
-      }
+        return false
+      } else return false
     }))
-    this.listeners.push(c.cook2.events.onInputUp.addOnce(() => {
-      if (Inventory.instance.hasItem(Images.carrotSliced.key)) {
+    this.listeners.push(this.scene.addItemDropHandler(c.cook2, async (key) => {
+      if (key === Images.carrotSliced.key) {
         this.stateManager.trigger(FinishCooking)
         Inventory.instance.takeItem(Images.carrotSliced.key)
-      } else if (Inventory.instance.hasItem(Images.carrot.key)) {
+        return true
+      } else if (key === Images.carrot.key) {
         this.stateManager.trigger(VeggiesNotCut)
-      } else {
-        this.stateManager.trigger(StillNeedFish)
-      }
+        return false
+      } else return false
     }))
+
+    this.listeners.push(c.cook1.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(StillNeedVeggies)
+    ))
+    this.listeners.push(c.cook2.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(StillNeedVeggies)
+    ))
   }
 }
 
@@ -285,7 +304,7 @@ class FinishCooking extends SceneStateTransition<KitchenScene> {
 
     await scene.playDialogJson('cooksCooking')
 
-    c.cook1.scale.x = -3
+    c.cook1.scale.x *= -1
     c.cook1.setActiveState('walking')
     c.cook2.setActiveState('walking')
 
@@ -308,5 +327,43 @@ export class DoneCooking extends SceneState<KitchenScene> {
 
     c.cook1.visible = false
     c.cook2.visible = false
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Eggwoman States
+// ---------------------------------------------------------------------------
+
+class InitialEggwoman extends SceneState<KitchenScene> {
+  async show() {
+    const eggwoman = this.scene.characters.eggwoman
+
+    eggwoman.interactionEnabled = true
+
+    this.listeners.push(eggwoman.events.onInputUp.addOnce(() => {
+      this.stateManager.trigger(KidsTheseDays)
+    }))
+  }
+}
+
+class KidsTheseDays extends SceneStateTransition<KitchenScene> {
+  async enter() {
+    await this.scene.playDialogJson('kidsTheseDays')
+
+    this.scene.characters.eggwoman.setActiveState('walking')
+    await this.scene.tweens.create(this.scene.characters.eggwoman).to({
+      x: 384
+    }, 3000).start().onComplete.asPromise()
+
+    return EggwomanWentOver
+  }
+}
+
+export class EggwomanWentOver extends SceneState<KitchenScene> {
+  async show() {
+    const eggwoman = this.scene.characters.eggwoman
+
+    eggwoman.visible = false
+    eggwoman.interactionEnabled = false
   }
 }

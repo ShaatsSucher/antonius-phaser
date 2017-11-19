@@ -61,5 +61,7 @@ class SmellingState implements CharacterState<NailGooseCharacter> {
   async enter() {
     this.character.animations.stop() // reset animation if necessary
     const anim = this.character.play('smelling')
+    anim.onComplete.addOnce(() => this.character.setActiveState('idle'))
+    await anim.onComplete.asPromise()
   }
 }
