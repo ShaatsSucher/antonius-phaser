@@ -25,7 +25,7 @@ export default class HellmouthCharacter extends Character {
     this.animations.add('open mouth', ArrayUtils.range(4, 13), 16, false)
     this.animations.add('close mouth', ArrayUtils.range(14, 20), 16, false)
 
-    this.animations.add('close forehead', ArrayUtils.range(21, 80), 0, false)
+    this.animations.add('close forehead', ArrayUtils.range(21, 79), 0, false)
 
     const animations = <{ [name: string]: Phaser.Animation }>this.animations['_anims']
     Object.keys(animations)
@@ -98,7 +98,7 @@ class CloseForeheadState implements CharacterState<HellmouthCharacter> {
     const clip = AudioManager.instance.tracks.speech.addClip(Assets.Audio.hellmouthCloseForehead001.key)
 
     const updateListener = this.character.scene.onUpdate.add(() => {
-      this.character.frame = Math.min(21 + Math.floor(75 * clip.sound.currentTime / clip.sound.durationMS), 80)
+      this.character.frame = Math.min(21 + Math.floor(75 * clip.sound.currentTime / clip.sound.durationMS), 79)
     })
 
     await clip.stopped
