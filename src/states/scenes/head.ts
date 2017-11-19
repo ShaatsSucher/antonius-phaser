@@ -260,8 +260,6 @@ export class Introduction extends SceneState<HeadScene> {
     this.listeners.push(this.scene.characters.hellmouth.events.onInputDown.addOnce(
       () => this.scene.stateManagers.head.trigger(IntroductionSpeech)
     ))
-
-    this.scene.wait(1).then(() => this.stateManager.trigger(Credits))
   }
 }
 
