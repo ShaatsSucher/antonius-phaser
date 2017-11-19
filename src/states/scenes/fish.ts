@@ -142,28 +142,28 @@ export default class FishScene extends Scene {
       this.fadeTo('kitchen')
     })
 
-    const rudder = this.interactiveObjects.rudder = new GameObject(this.game, 100, 100, Images.rudder.key)
+    const rudder = this.interactiveObjects.rudder = new GameObject(this.game, 125, 150, Images.rudder.key)
     rudder.visible = false
     this.game.add.existing(rudder)
-    
-    const goose = this.characters.nailgoose = new NailGooseCharacter(this, 208, 80)
-    goose.scale = new Phaser.Point(3, 3)
+
+    const goose = this.characters.nailgoose = new NailGooseCharacter(this, 95, 5)
+    goose.scale.setTo(2)
     goose.anchor.x = 0.5
     this.game.add.existing(goose)
 
     // Add antonius
-    const antonius = this.characters.antonius = new AntoniusCharacter(this, 328, 110)
-    antonius.scale = new Phaser.Point(3, 3)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 310, 90)
+    antonius.scale.setTo(2)
     antonius.anchor.x = 0.5
     antonius.setActiveState('idle')
     this.game.add.existing(antonius)
 
-    const fish = this.characters.fish = new FishCharacter(this, 200, 120)
-    fish.scale = new Phaser.Point(3, 3)
+    const fish = this.characters.fish = new FishCharacter(this, 130, 107)
+    // fish.scale = new Phaser.Point(3, 3)
     this.game.add.existing(fish)
 
-    const pig = this.characters.alphapig = new AlphaPigCharacter(this, 105, 130)
-    pig.scale = new Phaser.Point(3, 3)
+    const pig = this.characters.alphapig = new AlphaPigCharacter(this, 70, 125)
+    pig.scale.setTo(2)
     this.game.add.existing(pig)
   }
 }
