@@ -188,7 +188,7 @@ class InitialSwan extends SceneState<ConcertScene> {
     swan.interactionEnabled = true
 
     this.listeners.push(this.scene.addItemDropHandler(swan, async (key) => {
-      if(key !== Images.hammer.key) return false
+      if (key !== Images.hammer.key) return false
       this.stateManager.trigger(GettingSmashed)
       Inventory.instance.takeItem(Images.hammer.key)
       return true
