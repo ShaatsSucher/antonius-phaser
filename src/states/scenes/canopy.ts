@@ -12,8 +12,6 @@ import AntoniusCharacter from '../../characters/antonius'
 import OwlCharacter from '../../characters/owl'
 import UpperTreeCharacter from '../../characters/upperTree'
 
-import { BucketheadIsStealthy } from './forehead'
-
 import GameObject from '../../gameObjects/gameObject'
 import Arrow from '../../gameObjects/arrow'
 
