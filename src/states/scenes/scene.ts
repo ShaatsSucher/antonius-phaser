@@ -40,7 +40,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
 
   private dialogs: { [name: string]: [string, string | string[] | string[][], any | any[]][] } = {}
 
-  private backgroundImage: Phaser.Sprite
+  protected backgroundImage: Phaser.Sprite
 
   public settingsButton: Button
   public inventoryButton: Button
