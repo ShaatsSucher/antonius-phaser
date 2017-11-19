@@ -268,7 +268,7 @@ class CatFeast extends SceneStateTransition<BardScene> {
       y: 150
     }, 500, i => (1 + 2 / 3) * i * i - (2 / 3) * i).start().onComplete.asPromise()
 
-    scene.characters.cat.scale.x =  -3
+    scene.characters.cat.scale.x *= -1
     scene.characters.cat.setActiveState('walking')
     await scene.tweens.create(scene.characters.cat).to({
       x: -Math.abs(scene.characters.cat.width * scene.characters.cat.anchor.x)
@@ -298,16 +298,16 @@ class HelloThere extends SceneStateTransition<BardScene> {
 
     await scene.playDialogJson('catGoneBeforeReversal')
 
-    scene.characters.bard.scale.x = -3
-    scene.characters.bard.x = 124
-    scene.characters.bard.y = 7
+    scene.characters.bard.scale.x *= -1
+    scene.characters.bard.x = 180
+    scene.characters.bard.y = 60
     await scene.wait(0.5)
 
     await scene.playDialogJson('catGoneAfterReversal')
 
-    scene.characters.bard.scale.x = 3
-    scene.characters.bard.x = 164
-    scene.characters.goose.scale.x = -3
+    scene.characters.bard.scale.x *= -1
+    scene.characters.bard.x = 204
+    scene.characters.goose.scale.x *= -1
     scene.characters.bard.setActiveState('walking')
     scene.characters.goose.setActiveState('walking')
 
@@ -550,7 +550,7 @@ class MeckieGoing extends SceneStateTransition<BardScene> {
 
     await scene.playDialogJson('meckieGoing')
 
-    scene.characters.meckie.scale.x = -3
+    scene.characters.meckie.scale.x *= -1
     scene.characters.meckie.setActiveState('walking')
 
     await this.scene.tweens.create(scene.characters.meckie).to({
