@@ -27,6 +27,7 @@ import Cook2Character from '../../characters/cook2'
 import WomanCharacter from '../../characters/woman'
 import PainterCharacter from '../../characters/painter'
 import BucketheadCharacter from '../../characters/buckethead'
+import FightCloudCharacter from '../../characters/fightcloud'
 
 import { HatPickedUp } from './canopy'
 import { ColorPickedUp } from './cave'
@@ -259,6 +260,8 @@ export class Introduction extends SceneState<HeadScene> {
     this.listeners.push(this.scene.characters.hellmouth.events.onInputDown.addOnce(
       () => this.scene.stateManagers.head.trigger(IntroductionSpeech)
     ))
+
+    this.scene.wait(1).then(() => this.stateManager.trigger(Credits))
   }
 }
 
@@ -468,7 +471,7 @@ class Credits extends SceneStateTransition<HeadScene> {
   private async swallowCharacters() {
     const scene = this.scene
 
-    const swallow = async (characters: Character[] | Character, anchorY: number, walkStartY = 170) => {
+    const swallow = async (characters: Character[] | Character, anchorY: number, walkStartY = 170, idleState = 'idle') => {
       let chars = characters instanceof Character ? [characters] : characters
 
       await Promise.all(chars.map(async character => {
@@ -491,7 +494,7 @@ class Credits extends SceneStateTransition<HeadScene> {
           x: 190,
           y: 143
         }, 3000).start().onComplete.asPromise()
-        await character.setActiveState('idle')
+        await character.setActiveState(idleState)
       }))
 
       scene.characters.hellmouth.setActiveState('open mouth')
@@ -520,14 +523,17 @@ class Credits extends SceneStateTransition<HeadScene> {
     const cook1 = new Cook2Character(scene, 0, 0)
     cook1.scale.x *= -1
     await swallow(cook1, 0)
-    await swallow(new WomanCharacter(scene, 0, 0), 0)
+    const woman = new WomanCharacter(scene, 0, 0)
+    woman.scale.x *= -1
+    await swallow(woman, 0)
     await swallow(new AlphapigCharacter(scene, 0, 0), 0)
     const nailgoose = new NailgooseCharacter(scene, 0, 0)
     nailgoose.scale.x *= -1
     await swallow(nailgoose, 0)
     const swan = new SwanCharacter(scene, 0, 0)
     swan.scale.x *= -1
-    await swallow(swan, 0) // FIXME: swan sticks its head back into the vase
+    await swallow(swan, 0, 170, 'talking')
+    await swallow(new FightCloudCharacter(scene, 0, 0), 0.4, 160)
   }
 
   private async showCreditSegment(lines: string[], align: string = 'left') {
@@ -565,11 +571,11 @@ class Credits extends SceneStateTransition<HeadScene> {
 
     await Promise.all(labels.map(label => {
       const fadeIn = this.scene.game.tweens.create(label)
-        .to({ alpha: 0.999 }, 1000, Phaser.Easing.Quadratic.Out, true)
+        .to({ alpha: 1 }, 1000, Phaser.Easing.Quadratic.Out, true)
       return fadeIn.onComplete.asPromise()
     }))
 
-    await this.scene.wait(4)
+    await this.scene.wait(6)
 
     await Promise.all(labels.map(label => {
       const fadeIn = this.scene.game.tweens.create(label)
@@ -604,10 +610,8 @@ class Credits extends SceneStateTransition<HeadScene> {
     await this.showCreditSegment(['VOICE ACTING', nabil, 'Felix Barbarino', mathilde, valentin])
     await this.showCreditSegment(['MENTORIN', 'Greta Hoffmann'], 'right')
 
-    // TODO: kunsthalle Logo
     await this.showCreditSegment(['IN KOOPERATION MIT DER', 'STAATLICHEN KUNSTHALLE KARLSRUHE', 'Tabea Mernberger', 'Sandra Trevisan'])
 
-    // TODO: code for culture logo
     await this.showCreditSegment(['EIN SPIEL IM RAHMEN DES', 'CODE FOR CULTURE GAME JAMS'], 'right')
 
     await this.showCreditSegment(['VON STUDIERENDEN DER HOCHSCHULEN',
@@ -616,7 +620,7 @@ class Credits extends SceneStateTransition<HeadScene> {
       'Eberhard Karls Universität Tübingen',
       'Staatliche Hochschule für Musik Trossingen',
       'Staatliche Hochschule für Gestaltung Karlsruhe'
-    ])
+    ], 'center')
 
     // TODO: fade to black (or original image?)
     await this.showCreditSegment(['SPEZIELLEN DANK AN',
