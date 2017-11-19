@@ -304,7 +304,7 @@ class FinishCooking extends SceneStateTransition<KitchenScene> {
 
     await scene.playDialogJson('cooksCooking')
 
-    c.cook1.scale.x = -3
+    c.cook1.scale.x *= -1
     c.cook1.setActiveState('walking')
     c.cook2.setActiveState('walking')
 
