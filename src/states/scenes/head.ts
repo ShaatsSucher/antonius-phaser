@@ -73,7 +73,6 @@ export default class HeadScene extends Scene {
       PainterIsAnnoyed,
       PainterIsComplaining,
       PainterNeedsColor,
-      AntoniusBroughtColor,
       PainterIsDoneWithPainting
     ], [
       PainterComplains,
@@ -83,7 +82,6 @@ export default class HeadScene extends Scene {
     buckethead: new SceneStateManager<HeadScene>(this, [
       BucketheadDingDingDing,
       BucketheadIsAnnoying,
-      AntoniusBroughtHat,
       BucketheadIsStealthy
     ], [
       BucketheadAsksForHelp,
@@ -130,11 +128,6 @@ export default class HeadScene extends Scene {
       new ConditionalStateTransition(
         BucketheadIsAnnoying,
         TransitionCondition.reachedState(this.stateManagers.painter, PainterIsComplaining)
-      ),
-      new ConditionalStateTransition(
-        AntoniusBroughtHat,
-        TransitionCondition.reachedState(this.stateManagers.buckethead, BucketheadIsAnnoying)
-        .and(TransitionCondition.reachedState(scenes.canopy.stateManagers.hat, HatPickedUp))
       )
     )
 
@@ -146,10 +139,6 @@ export default class HeadScene extends Scene {
       new ConditionalStateTransition(
         PainterNeedsColor,
         TransitionCondition.reachedState(this.stateManagers.buckethead, BucketheadIsStealthy)
-      ),
-      new ConditionalStateTransition(
-        AntoniusBroughtColor,
-        TransitionCondition.reachedState(scenes.cave.stateManagers.color, ColorPickedUp)
       )
     )
   }
@@ -206,7 +195,7 @@ export default class HeadScene extends Scene {
 }
 
 // ---------------------------------------------------------------------------
-// Hellmouth States
+// Water States
 // ---------------------------------------------------------------------------
 
 class WaterActive extends SceneState<HeadScene> {
@@ -358,6 +347,12 @@ class PainterNeedsColor extends SceneState<HeadScene> {
     this.listeners.push(scene.characters.painter.events.onInputUp.add(
       () => this.stateManager.trigger(PainterAsksForColor)
     ))
+
+    this.listeners.push(scene.addItemDropHandler(scene.characters.painter, async (key) => {
+      if (key !== Images.colour.key) return false
+      this.stateManager.trigger(PainterPaints)
+      return true
+    }))
   }
 }
 
@@ -371,20 +366,11 @@ class PainterAsksForColor extends SceneStateTransition<HeadScene> {
   }
 }
 
-class AntoniusBroughtColor extends SceneState<HeadScene> {
-  public async show() {
-    const scene = this.scene
-
-    scene.characters.painter.interactionEnabled = true
-    this.listeners.push(scene.characters.painter.events.onInputUp.add(
-      () => this.stateManager.trigger(PainterPaints)
-    ))
-  }
-}
-
 class PainterPaints extends SceneStateTransition<HeadScene> {
   public async enter() {
     const scene = this.scene
+
+    Inventory.instance.takeItem(Images.colour.key)
 
     await scene.playDialogJson('painterBeforePainting')
 
@@ -424,6 +410,12 @@ class BucketheadIsAnnoying extends SceneState<HeadScene> {
     this.listeners.push(scene.characters.buckethead.events.onInputUp.add(
       () => this.stateManager.trigger(BucketheadAsksForHelp)
     ))
+
+    this.listeners.push(scene.addItemDropHandler(scene.characters.buckethead, async (key) => {
+      if (key !== Images.hat.key) return false
+      this.stateManager.trigger(BucketheadGetsAHat)
+      return true
+    }))
   }
 }
 
@@ -434,17 +426,6 @@ class BucketheadAsksForHelp extends SceneStateTransition<HeadScene> {
     await scene.playDialogJson('bucketheadAsksForHelp')
 
     return BucketheadIsAnnoying
-  }
-}
-
-class AntoniusBroughtHat extends SceneState<HeadScene> {
-  public async show() {
-    const scene = this.scene
-
-    scene.characters.buckethead.interactionEnabled = true
-    this.listeners.push(scene.characters.buckethead.events.onInputUp.add(
-      () => this.stateManager.trigger(BucketheadGetsAHat)
-    ))
   }
 }
 
