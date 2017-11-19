@@ -231,9 +231,17 @@ export class SceneStateManager<T extends Scene> {
 
     await this.resetScene()
 
+    const buttons = [
+      this.scene.settingsButton,
+      this.scene.inventoryButton,
+      this.scene.helpButton
+    ]
+
     console.log('entering transition', transition)
+    buttons.forEach(button => button.isPaused.value = true)
     const NextStateOrTransition = await transition.enter(this.scene.isVisible)
     console.log('setting next state or transition')
+    buttons.forEach(button => button.isPaused.value = false)
     await this.setStateOrTransition(NextStateOrTransition)
   }
 
