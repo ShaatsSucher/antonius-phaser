@@ -9,7 +9,7 @@ import { SceneStateManager
 import { FishHintAvailable, Suction } from './head'
 import { FishAlive, FishDying } from './fish'
 
-import { Audio, Images, Json } from '../../assets'
+import { Audio, Images, Spritesheets, Json } from '../../assets'
 
 import AntoniusCharacter from '../../characters/antonius'
 import BardCharacter from '../../characters/bard'
@@ -21,6 +21,7 @@ import { FishGone } from './fish'
 import { VeggiesPickedUp } from './concert'
 
 import Arrow from '../../gameObjects/arrow'
+import GameObject from '../../gameObjects/gameObject'
 
 import SheechHelper from '../../utils/speechHelper'
 import { AudioManager } from '../../utils/audioManager'
@@ -80,35 +81,40 @@ export default class BardScene extends Scene {
   }
 
   protected createGameObjects() {
-    const goose = this.characters.goose = new GooseCharacter(this, 144, 10)
-    goose.scale = new Phaser.Point(3, 3)
+    const goose = this.characters.goose = new GooseCharacter(this, 200, 60)
+    goose.scale.setTo(2)
     goose.anchor.setTo(0.5, 0)
     goose.setActiveState('idle')
     goose.inputEnabled = false
     this.add.existing(goose)
 
-    const bard = this.characters.bard = new BardCharacter(this, 144, 10)
-    bard.scale = new Phaser.Point(3, 3)
+    const bard = this.characters.bard = new BardCharacter(this, 200, 60)
+    bard.scale.setTo(2)
     bard.anchor.setTo(0.5, 0)
     bard.setActiveState('idle')
     this.add.existing(bard)
 
-    const cat = this.characters.cat = new CatCharacter(this, 144, 64)
-    cat.scale = new Phaser.Point(3, 3)
+    const cat = this.characters.cat = new CatCharacter(this, 200, 96)
+    cat.scale.setTo(2)
     cat.anchor.setTo(0.5, 0)
     cat.setActiveState('idle')
     this.add.existing(cat)
 
     const meckie = this.characters.meckie = new MeckieCharacter(this, 78, 120)
-    meckie.scale = new Phaser.Point(3, 3)
+    meckie.scale.setTo(2)
     meckie.anchor.setTo(0.5, 0)
     meckie.setActiveState('idle')
     this.add.existing(meckie)
 
     const antonius = this.characters.antonius = new AntoniusCharacter(this, 292, 120)
-    antonius.scale = new Phaser.Point(3, 3)
+    antonius.scale.setTo(2)
     antonius.setActiveState('idle')
     this.add.existing(antonius)
+
+    const snail = new GameObject(this.game, 260, 160, Spritesheets.snail.key)
+    snail.animations.add('idle', [0, 1], 1, true)
+    snail.play('idle')
+    this.game.add.existing(snail)
 
     const toHeadArrow = this.interactiveObjects.toHeadArrow = new Arrow(this.game, 20, 95)
     toHeadArrow.rotation = Math.PI
