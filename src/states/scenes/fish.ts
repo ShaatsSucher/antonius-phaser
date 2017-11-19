@@ -18,6 +18,7 @@ import { WaitingForFishOrVeggies, CatInTheWay } from './bard'
 import { NailgooseGone, NailPlanted } from './concert'
 
 import Arrow from '../../gameObjects/arrow'
+import GameObject from '../../gameObjects/gameObject'
 
 import Inventory from '../../overlays/inventory'
 import { ArrayUtils, StringUtils } from '../../utils/utils'
@@ -33,12 +34,20 @@ export default class FishScene extends Scene {
 
   interactiveObjects = {
     toHeadArrow: null,
-    toKitchenArrow: null
+    toKitchenArrow: null,
+    rudder: null
   }
 
   readonly stateManagers: {
     [name: string]: SceneStateManager<FishScene>
   } = {
+    rudder: new SceneStateManager<FishScene>(this, [
+      RudderInacsessible,
+      RudderGone,
+      RudderThere
+    ], [
+      TakingRudder
+    ]),
     fish: new SceneStateManager<FishScene>(this, [
       InitialFish,
       FishAlive,
@@ -53,8 +62,6 @@ export default class FishScene extends Scene {
     ]),
     alphapig: new SceneStateManager<FishScene>(this, [
       InitialAlphaPig,
-      AlphaPigWaiting,
-      RuddersAvailable,
       AlphaPigGone
     ], [
       NotWithoutMyRudders,
@@ -98,11 +105,10 @@ export default class FishScene extends Scene {
         .and(TransitionCondition.reachedState(scenes.bard.stateManagers.bard, CatInTheWay))
       )
     )
-    this.stateManagers.alphapig.registerConditionalTransitions(
+    this.stateManagers.rudder.registerConditionalTransitions(
       new ConditionalStateTransition(
-        RuddersAvailable,
-        TransitionCondition.isState(this.stateManagers.alphapig, AlphaPigWaiting)
-        .and(TransitionCondition.reachedState(this.stateManagers.fish, FishGone))
+        RudderThere,
+        TransitionCondition.reachedState(this.stateManagers.fish, FishGone)
       )
     )
     this.stateManagers.nailgoose.registerConditionalTransitions(
@@ -136,6 +142,10 @@ export default class FishScene extends Scene {
       this.fadeTo('kitchen')
     })
 
+    const rudder = this.interactiveObjects.rudder = new GameObject(this.game, 100, 100, Images.rudder.key)
+    rudder.visible = false
+    this.game.add.existing(rudder)
+    
     const goose = this.characters.nailgoose = new NailGooseCharacter(this, 208, 80)
     goose.scale = new Phaser.Point(3, 3)
     goose.anchor.x = 0.5
@@ -155,6 +165,51 @@ export default class FishScene extends Scene {
     const pig = this.characters.alphapig = new AlphaPigCharacter(this, 105, 130)
     pig.scale = new Phaser.Point(3, 3)
     this.game.add.existing(pig)
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Rudder States
+// ---------------------------------------------------------------------------
+
+class RudderInacsessible extends SceneState<FishScene> {
+  public async show() {
+    const rudder = this.scene.interactiveObjects.rudder
+
+    rudder.interactionEnabled = false
+    rudder.visible = true
+  }
+}
+
+class RudderGone extends SceneState<FishScene> {
+  public async show() {
+    const rudder = this.scene.interactiveObjects.rudder
+
+    rudder.interactionEnabled = false
+    rudder.visible = true
+  }
+}
+
+class RudderThere extends SceneState<FishScene> {
+  public async show() {
+    const rudder = this.scene.interactiveObjects.rudder
+
+    rudder.interactionEnabled = true
+    rudder.visible = true
+
+    this.listeners.push(rudder.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(TakingRudder)
+    ))
+  }
+}
+
+class TakingRudder extends SceneStateTransition<FishScene> {
+  public async enter() {
+    const rudder = this.scene.interactiveObjects.rudder
+
+    Inventory.instance.pickupItem(rudder, this.scene)
+
+    return RudderGone
   }
 }
 
@@ -271,13 +326,18 @@ export class FishGone extends SceneState<FishScene> {
 
 export class InitialAlphaPig extends SceneState<FishScene> {
   public async show() {
-    const scene = this.scene
+    const alphapig = this.scene.characters.alphapig
 
-    scene.characters.alphapig.interactionEnabled = true
+    alphapig.interactionEnabled = true
 
-    this.listeners.push(scene.characters.alphapig.events.onInputDown.addOnce(
+    this.listeners.push(alphapig.events.onInputDown.addOnce(
       () => this.stateManager.trigger(NotWithoutMyRudders)
     ))
+    this.listeners.push(this.scene.addItemDropHandler(alphapig, async (key) => {
+      if (key !== Images.rudder.key) return false
+      this.stateManager.trigger(AlphaPigJourney)
+      return true
+    }))
   }
 }
 
@@ -287,34 +347,15 @@ class NotWithoutMyRudders extends SceneStateTransition<FishScene> {
 
     await scene.playDialogJson('pigWontGo')
 
-    return AlphaPigWaiting
-  }
-}
-
-class AlphaPigWaiting extends SceneState<FishScene> {
-  public async show() {
-    const scene = this.scene
-
-    scene.characters.alphapig.interactionEnabled = true
-
-    this.listeners.push(scene.characters.alphapig.events.onInputDown.addOnce(
-      () => this.stateManager.trigger(NotWithoutMyRudders)
-    ))
-  }
-}
-
-class RuddersAvailable extends SceneState<FishScene> {
-  public async show() {
-    this.scene.characters.alphapig.interactionEnabled = true
-    this.listeners.push(this.scene.characters.alphapig.events.onInputDown.addOnce(
-      () => this.stateManager.trigger(AlphaPigJourney)
-    ))
+    return InitialAlphaPig
   }
 }
 
 class AlphaPigJourney extends SceneStateTransition<FishScene> {
   public async enter() {
     const scene = this.scene
+
+    Inventory.instance.takeItem(Images.rudder.key)
 
     await scene.playDialogJson('pigLeaves')
 
