@@ -24,7 +24,7 @@ export default class BucketheadCharacter extends Character {
     super(scene, x, y, Assets.Spritesheets.bucketman.key, null, 'idleBucket')
 
     this.animations.add('idleBucket', ArrayUtils.repeat(0, 20).concat(ArrayUtils.range(2, 13)), 8, true)
-    this.animations.add('idleHat', ArrayUtils.repeat(0, 20).concat(ArrayUtils.range(16, 27)), 8, true)
+    this.animations.add('idleHat', ArrayUtils.repeat(14, 20).concat(ArrayUtils.range(16, 27)), 8, true)
     this.animations.add('talkingBucket', [0, 1], 8, true)
     this.animations.add('talkingHat', [14, 15], 8, true)
 
