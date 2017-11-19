@@ -292,6 +292,9 @@ class GettingSmashed extends SceneStateTransition<ConcertScene> {
   public async enter() {
     const swan = this.scene.characters.swan
 
+      const breakSound = AudioManager.instance.tracks.atmo.addClip(Audio.jarBreaks.key)
+      await breakSound.stopped
+
       swan.setActiveState('talking')
 
       await this.scene.playDialogJson('gettingSmashed')
