@@ -269,10 +269,10 @@ export class WaitingForVeggies extends SceneState<KitchenScene> {
     }))
 
     this.listeners.push(c.cook1.events.onInputUp.addOnce(
-      () => this.stateManager.trigger(StillNeedFish)
+      () => this.stateManager.trigger(StillNeedVeggies)
     ))
     this.listeners.push(c.cook2.events.onInputUp.addOnce(
-      () => this.stateManager.trigger(StillNeedFish)
+      () => this.stateManager.trigger(StillNeedVeggies)
     ))
   }
 }
