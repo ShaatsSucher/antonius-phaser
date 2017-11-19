@@ -7,7 +7,7 @@ import { SceneStateManager
        } from '../../utils/stateManager'
 import { Silent } from './head'
 
-import { Audio, Images, Json } from '../../assets'
+import { Audio, Images, Json, Spritesheets } from '../../assets'
 
 import AntoniusCharacter from '../../characters/antonius'
 import FishCharacter from '../../characters/fish'
@@ -64,11 +64,17 @@ export default class FishScene extends Scene {
   constructor(game: Phaser.Game) {
     super(
       game,
-      Images.backgroundsBG04.key,
+      Spritesheets.backgroundsBG04.key,
       Audio.soundscapesScene9.key,
       Audio.musicHead.key,
       Json.dialogsFish.key
     )
+  }
+
+  public create() {
+    super.create()
+    this.backgroundImage.animations.add('default', [0, 1], 0.5, true)
+    this.backgroundImage.animations.play('default')
   }
 
   protected registerConditionalStateTransitions(scenes: { [title: string]: Scene }) {
