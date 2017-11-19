@@ -6,9 +6,9 @@ export class AudioManager {
   private readonly timer: Phaser.Timer
 
   public readonly tracks = {
-    atmo: new AudioTrack(this, 'atmo'),
-    music: new AudioTrack(this, 'music', 0.5),
-    speech: new AudioTrack(this, 'speech')
+    atmo: new AudioTrack(this, 'atmo', 0.2),
+    music: new AudioTrack(this, 'music', 0.75),
+    speech: new AudioTrack(this, 'speech', 1.0)
   }
 
   private constructor(readonly soundManager: Phaser.SoundManager) {
