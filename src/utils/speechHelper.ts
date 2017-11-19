@@ -69,21 +69,24 @@ export default class SpeechHelper implements Pausable {
     return this.character.scene.clickedAnywhere()
   }
 
-  private displayText(text: string, shouldHide: Promise<void>) {
-    const frameMargin = 5
-    const textStyle = {
+  public get textStyle() {
+    return {
       font: `8px ${CustomWebFonts.pixelOperator8Bold.family}`,
       fill: this.textColor,
       stroke: '#000',
       strokeThickness: 2
     }
+  }
+
+  private displayText(text: string, shouldHide: Promise<void>) {
+    const frameMargin = 5
 
     // For reasons of font-rendering, we need to render each line of the text
     // separately.
     const lines = text.split('\n')
     let groupWidth = 0
     const labels = lines.map(line => {
-      const label = new Phaser.Text(this.character.game, 0, 0, line, textStyle)
+      const label = new Phaser.Text(this.character.game, 0, 0, line, this.textStyle)
       label.anchor.setTo(0.5, 0)
       groupWidth = Math.max(groupWidth, label.width)
       return label

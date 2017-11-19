@@ -155,13 +155,46 @@ export class InitialBard extends SceneState<BardScene> {
 class BardConversation extends SceneStateTransition<BardScene> {
   public async enter() {
     const scene = this.scene
+    const bard = scene.characters.bard
 
-    scene.characters.bard.setActiveState('singing')
-    scene.characters.bard.interactionEnabled = true
+    bard.setActiveState('singing')
+    bard.interactionEnabled = true
     const bardSong = AudioManager.instance.tracks.speech.addClip(Audio.bardSongShort.key)
-    bardSong.stopped.then(() => { scene.characters.bard.setActiveState('idle') })
+    bardSong.stopped.then(() => { bard.setActiveState('idle') })
+
+    const lines: [{ time: number, text: string }] = [
+      { time: 0, text: 'Traurigkeit im Übermaß' },
+      { time: 4100, text: 'Auf ihrem Rücken ich doch saß' },
+      { time: 8600, text: 'Ihr Stimmchen ich zu höhren wähne' },
+      { time: 13500, text: 'Sogleich entweicht mir eine Träne' }
+    ]
+
+    let label: Phaser.Text
+    const updateHandler = scene.onUpdate.add(() => {
+      if (lines.length > 0 && lines[0].time <= bardSong.sound.currentTime) {
+        if (label) label.kill()
+
+        const line = lines.shift()
+        label = scene.add.text(0, 0, line.text, bard.speech.textStyle)
+
+        label.anchor.setTo(0.5, 0)
+
+        label.alignTo(
+          bard, Phaser.TOP_CENTER,
+          scene.characters.bard.speech.textAnchor.x,
+          scene.characters.bard.speech.textAnchor.y
+        )
+        if (label.width % 2 !== 0) {
+          label.x = Math.floor(label.x) + 0.5
+        }
+      }
+    })
 
     await scene.clickedAnywhere()
+
+    updateHandler.detach()
+    if (label) label.kill()
+
     bardSong.stop()
     scene.characters.bard.setInteractionEnabled(false)
 
