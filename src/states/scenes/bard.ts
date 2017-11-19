@@ -164,7 +164,7 @@ class BardConversation extends SceneStateTransition<BardScene> {
     const lines: [{ time: number, text: string }] = [
       { time: 0, text: 'Traurigkeit im Übermaß' },
       { time: 4100, text: 'Auf ihrem Rücken ich doch saß' },
-      { time: 8600, text: 'Ihr Stimmchen ich zu höhren wähne' },
+      { time: 8600, text: 'Ihr Stimmchen ich zu hören wähne' },
       { time: 13500, text: 'Sogleich entweicht mir eine Träne' }
     ]
 
