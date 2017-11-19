@@ -61,6 +61,13 @@ export default class HeadScene extends Scene {
       FishHintSpeech,
       Credits
     ]),
+    water: new SceneStateManager<HeadScene>(this, [
+      WaterActive,
+      WaterPassive
+    ], [
+      WaterLooksSalty,
+      ScoopingWater
+    ]),
     painter: new SceneStateManager<HeadScene>(this, [
       PainterBeforeIntro,
       PainterIsAnnoyed,
@@ -143,14 +150,7 @@ export default class HeadScene extends Scene {
 
   protected createGameObjects() {
     const seaClickBox = this.interactiveObjects.seaClickBox = new gameObject(this.game, 0, 169, Images.water.key)
-    seaClickBox.interactionEnabled = true
     this.game.add.existing(seaClickBox)
-    seaClickBox.events.onInputUp.add(() => {
-      if (Inventory.instance.hasItem(Images.cupEmpty.key)) {
-        Inventory.instance.takeItem(Images.cupEmpty.key)
-        Inventory.instance.addItem(Images.cupWater.key)
-      }
-    })
 
     // Add hellmouth
     const hellmouth = this.characters.hellmouth = new HellmouthCharacter(this, 127, 43)
@@ -195,6 +195,54 @@ export default class HeadScene extends Scene {
       arrow2.interactionEnabled = false
       this.fadeTo('fish')
     })
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Hellmouth States
+// ---------------------------------------------------------------------------
+
+class WaterActive extends SceneState<HeadScene> {
+  public async show() {
+    const sea = this.scene.interactiveObjects.seaClickBox
+
+    sea.interactionEnabled = true
+
+    this.listeners.push(this.scene.addItemDropHandler(sea, async (key) => {
+      if (key !== Images.cupEmpty.key) return false
+      this.stateManager.trigger(ScoopingWater)
+      return true
+    }))
+
+    this.listeners.push(sea.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(WaterLooksSalty)
+    ))
+  }
+}
+
+class WaterLooksSalty extends SceneStateTransition<HeadScene> {
+  public async enter() {
+    this.scene.playDialogJson('waterLooksSalty')
+
+    return WaterActive
+  }
+}
+
+class ScoopingWater extends SceneStateTransition<HeadScene> {
+  public async enter() {
+    Inventory.instance.takeItem(Images.cupEmpty.key)
+
+    AudioManager.instance.tracks.speech.addClip(Audio.scoopingWater.key)
+    Inventory.instance.addItem(Images.cupWater.key)
+
+    return WaterPassive
+  }
+}
+
+class WaterPassive extends SceneState<HeadScene> {
+  public async show() {
+    this.scene.interactiveObjects.seaClickBox.interactionEnabled = false
+    this.scene.interactiveObjects.seaClickBox.visible = false
   }
 }
 
