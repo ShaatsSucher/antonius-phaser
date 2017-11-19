@@ -27,6 +27,7 @@ export default class BucketheadCharacter extends Character {
     this.animations.add('idleHat', ArrayUtils.repeat(14, 20).concat(ArrayUtils.range(16, 27)), 8, true)
     this.animations.add('talkingBucket', [0, 1], 8, true)
     this.animations.add('talkingHat', [14, 15], 8, true)
+    this.animations.add('vanish', ArrayUtils.range(28, 40), 8, false)
 
     const currentFrame = new Property(0)
     const animations = <{ [name: string]: Phaser.Animation }>this.animations['_anims']
@@ -51,6 +52,7 @@ export default class BucketheadCharacter extends Character {
     this.addCharacterState('talkingBucket', new TalkingBucketState(this))
     this.addCharacterState('idleHat', new IdleHatState(this))
     this.addCharacterState('talkingHat', new IdleHatState(this))
+    this.addCharacterState('vanish', new VanishState(this))
 
     this.play('idleBucket')
   }
@@ -89,5 +91,14 @@ class TalkingHatState implements CharacterState<BucketheadCharacter> {
   async enter() {
     this.character.animations.stop()
     this.character.play('talkingHat')
+  }
+}
+
+class VanishState implements CharacterState<BucketheadCharacter> {
+  constructor(public character: BucketheadCharacter) {}
+
+  enter() {
+    this.character.animations.stop()
+    return this.character.play('vanish').onComplete.asPromise()
   }
 }

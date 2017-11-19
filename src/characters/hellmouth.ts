@@ -4,6 +4,7 @@ import CharacterState from './characterState'
 import { ArrayUtils, StringUtils } from '../utils/utils'
 import Scene from '../states/scenes/scene'
 import SpeechHelper from '../utils/speechHelper'
+import { AudioManager } from '../utils/audioManager'
 import { Property } from '../utils/property'
 
 export default class HellmouthCharacter extends Character {
@@ -23,7 +24,8 @@ export default class HellmouthCharacter extends Character {
     this.animations.add('talking', ArrayUtils.range(4, 20), 16, true)
     this.animations.add('open mouth', ArrayUtils.range(4, 13), 16, false)
     this.animations.add('close mouth', ArrayUtils.range(14, 20), 16, false)
-    this.animations.add('close forehead', ArrayUtils.range(21, 80), 16, false)
+
+    this.animations.add('close forehead', ArrayUtils.range(21, 79), 0, false)
 
     const animations = <{ [name: string]: Phaser.Animation }>this.animations['_anims']
     Object.keys(animations)
@@ -91,6 +93,16 @@ class CloseForeheadState implements CharacterState<HellmouthCharacter> {
 
   async enter() {
     this.character.animations.stop()
-    const anim = this.character.play('close forehead')
+
+    this.character.play('close forehead')
+    const clip = AudioManager.instance.tracks.speech.addClip(Assets.Audio.hellmouthCloseForehead001.key)
+
+    const updateListener = this.character.scene.onUpdate.add(() => {
+      this.character.frame = Math.min(21 + Math.floor(75 * clip.sound.currentTime / clip.sound.durationMS), 79)
+    })
+
+    await clip.stopped
+
+    updateListener.detach()
   }
 }

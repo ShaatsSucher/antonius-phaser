@@ -127,7 +127,7 @@ export class StringUtils {
 }
 
 export class ArrayUtils {
-  public static repeat<T>(item: T, amount: number) {
+  public static repeat<T>(item: T, amount: number): T[] {
     const array = []
     for (let i = 0; i < amount; i++) {
       array.push(item)
@@ -135,7 +135,7 @@ export class ArrayUtils {
     return array
   }
 
-  public static range(min: number, max?: number) {
+  public static range(min: number, max?: number): number[] {
     if (!max) {
       max = min - 1
       min = 0
