@@ -46,6 +46,8 @@ export default abstract class Scene extends Phaser.State implements Pausable {
   public inventoryButton: Button
   public helpButton: Button
 
+  public escapeKeyEnabled = true
+
   public onUpdate = new Phaser.Signal()
   public onCreate = new Phaser.Signal()
   public onShutdown = new Phaser.Signal()
@@ -243,6 +245,8 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     })
 
     this.game.input.keyboard.addKey(Phaser.KeyCode.ESC).onDown.add(() => {
+      if (!this.escapeKeyEnabled) return
+
       const visibleOverlays = [Inventory, RestartOverlay, SettingsOverlay, Help]
         .map(x => x.instance)
         .filter(o => o.visible)
