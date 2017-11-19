@@ -534,6 +534,10 @@ class Credits extends SceneStateTransition<HeadScene> {
     swan.scale.x *= -1
     await swallow(swan, 0, 170, 'talking')
     await swallow(new FightCloudCharacter(scene, 0, 0), 0.4, 160)
+
+    await scene.characters.buckethead.setActiveState('vanish')
+
+    await scene.characters.hellmouth.setActiveState('close forehead')
   }
 
   private async showCreditSegment(lines: string[], align: string = 'left') {
