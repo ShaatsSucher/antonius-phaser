@@ -95,7 +95,7 @@ export default class TreeScene extends Scene {
       game,
       Images.backgroundsBG03.key,
       Audio.soundscapesScene7.key,
-      [],
+      Audio.musicTree.key,
       Json.dialogsTree.key
     )
   }
@@ -139,6 +139,7 @@ export default class TreeScene extends Scene {
       new ConditionalStateTransition(
         NewKnowledge,
         TransitionCondition.reachedState(scenes.kitchen.stateManagers.cooks, WaitingForWater)
+          .and(TransitionCondition.reachedState(this.stateManagers.woman, HungryWoman))
       )
     )
   }

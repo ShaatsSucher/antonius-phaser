@@ -63,5 +63,8 @@
     [ "buckethead", [ "Ja, der Hut sieht deutlich",
                       "besser aus!"
                     ], 3 ]
+  ],
+  "waterLooksSalty": [
+    [ "antonius", "Dieses Meerwasser sieht sehr suppig aus", [null, "slsssll"] ]
   ]
 }

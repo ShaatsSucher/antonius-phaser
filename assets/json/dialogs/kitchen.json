@@ -95,7 +95,7 @@
   "kidsTheseDays": [
     [ "antonius",   "Grüß Gott.", [null, "ss"] ],
 
-    [ "eggwoman", [ "Was fällt ihnen eigentlich ein, sich hier",
+    [ "eggwoman", [ "Was fällt Ihnen eigentlich ein, sich hier",
                     "in meine Angelegenheiten einzumischen?"
                   ], 8 ],
 
@@ -110,17 +110,17 @@
     [ "antonius",   "Ich ...", [null, "s"] ],
 
     [ "eggwoman", [ "Sie haben leicht reden. Sie kommen da",
-                    "aus der Wüste mit ihrer Bibel",
-                    "doch haben sie sich noch nie mit echen Dämonen wie",
-                    "dieser Jugend von heute abgeben müssen",
-                    "Damals zu meiner Zeit herrschte noch Zucht und Ordnung"
+                    "aus der Wüste mit Ihrer Bibel,",
+                    "doch haben Sie sich noch nie mit echten Dämonen, wie",
+                    "dieser Jugend von heute abgeben müssen.",
+                    "Damals, zu meiner Zeit, herrschte noch Zucht und Ordnung!"
                   ], 22 ],
 
     [ "antonius",   "Aber ...", [null, "l"] ],
 
-    [ "eggwoman", [ "Kommen sie mir hier nicht mit einem Aber.",
-                    "Gucken sie sich doch nur mal diese Nichtsnutze da drüben an.",
-                    "die machen den ganzen Tag nichts anderes",
+    [ "eggwoman", [ "Kommen Sie mir hier nicht mit einem Aber.",
+                    "Gucken Sie sich doch nur mal diese Nichtsnutze da drüben an!",
+                    "Die machen den ganzen Tag nichts anderes",
                     "als so lächerlich herum zu tanzen ..."
                   ], 22 ],
 

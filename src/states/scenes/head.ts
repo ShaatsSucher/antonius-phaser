@@ -6,7 +6,7 @@ import { SceneStateManager
        , TransitionCondition
        } from '../../utils/stateManager'
 
-import { Audio, CustomWebFonts, Images, Json } from '../../assets'
+import { Audio, CustomWebFonts, Images, Json, Spritesheets } from '../../assets'
 
 import HellmouthCharacter from '../../characters/hellmouth'
 import AntoniusCharacter from '../../characters/antonius'
@@ -66,12 +66,18 @@ export default class HeadScene extends Scene {
       FishHintSpeech,
       Credits
     ]),
+    water: new SceneStateManager<HeadScene>(this, [
+      WaterActive,
+      WaterPassive
+    ], [
+      WaterLooksSalty,
+      ScoopingWater
+    ]),
     painter: new SceneStateManager<HeadScene>(this, [
       PainterBeforeIntro,
       PainterIsAnnoyed,
       PainterIsComplaining,
       PainterNeedsColor,
-      AntoniusBroughtColor,
       PainterIsDoneWithPainting
     ], [
       PainterComplains,
@@ -81,7 +87,6 @@ export default class HeadScene extends Scene {
     buckethead: new SceneStateManager<HeadScene>(this, [
       BucketheadDingDingDing,
       BucketheadIsAnnoying,
-      AntoniusBroughtHat,
       BucketheadIsStealthy
     ], [
       BucketheadAsksForHelp,
@@ -92,11 +97,17 @@ export default class HeadScene extends Scene {
   constructor(game: Phaser.Game) {
     super(
       game,
-      Images.backgroundsBG01.key,
+      Spritesheets.backgroundsBG01.key,
       Audio.soundscapesScene5.key,
       Audio.musicHead.key,
       Json.dialogsHead.key
     )
+  }
+
+  public create() {
+    super.create()
+    this.backgroundImage.animations.add('default', [0, 1], 0.5, true)
+    this.backgroundImage.animations.play('default')
   }
 
   protected registerConditionalStateTransitions(scenes: { [title: string]: Scene }) {
@@ -122,11 +133,6 @@ export default class HeadScene extends Scene {
       new ConditionalStateTransition(
         BucketheadIsAnnoying,
         TransitionCondition.reachedState(this.stateManagers.painter, PainterIsComplaining)
-      ),
-      new ConditionalStateTransition(
-        AntoniusBroughtHat,
-        TransitionCondition.reachedState(this.stateManagers.buckethead, BucketheadIsAnnoying)
-        .and(TransitionCondition.reachedState(scenes.canopy.stateManagers.hat, HatPickedUp))
       )
     )
 
@@ -138,24 +144,14 @@ export default class HeadScene extends Scene {
       new ConditionalStateTransition(
         PainterNeedsColor,
         TransitionCondition.reachedState(this.stateManagers.buckethead, BucketheadIsStealthy)
-      ),
-      new ConditionalStateTransition(
-        AntoniusBroughtColor,
-        TransitionCondition.reachedState(scenes.cave.stateManagers.color, ColorPickedUp)
       )
     )
   }
 
   protected createGameObjects() {
     const seaClickBox = this.interactiveObjects.seaClickBox = new gameObject(this.game, 0, 169, Images.water.key)
-    seaClickBox.interactionEnabled = true
+    seaClickBox.alpha = 0
     this.game.add.existing(seaClickBox)
-    seaClickBox.events.onInputUp.add(() => {
-      if (Inventory.instance.hasItem(Images.cupEmpty.key)) {
-        Inventory.instance.takeItem(Images.cupEmpty.key)
-        Inventory.instance.addItem(Images.cupWater.key)
-      }
-    })
 
     // Add hellmouth
     const hellmouth = this.characters.hellmouth = new HellmouthCharacter(this, 127, 43)
@@ -200,6 +196,54 @@ export default class HeadScene extends Scene {
       arrow2.interactionEnabled = false
       this.fadeTo('fish')
     })
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Water States
+// ---------------------------------------------------------------------------
+
+class WaterActive extends SceneState<HeadScene> {
+  public async show() {
+    const sea = this.scene.interactiveObjects.seaClickBox
+
+    sea.interactionEnabled = true
+
+    this.listeners.push(this.scene.addItemDropHandler(sea, async (key) => {
+      if (key !== Images.cupEmpty.key) return false
+      this.stateManager.trigger(ScoopingWater)
+      return true
+    }))
+
+    this.listeners.push(sea.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(WaterLooksSalty)
+    ))
+  }
+}
+
+class WaterLooksSalty extends SceneStateTransition<HeadScene> {
+  public async enter() {
+    this.scene.playDialogJson('waterLooksSalty')
+
+    return WaterActive
+  }
+}
+
+class ScoopingWater extends SceneStateTransition<HeadScene> {
+  public async enter() {
+    Inventory.instance.takeItem(Images.cupEmpty.key)
+
+    AudioManager.instance.tracks.speech.addClip(Audio.scoopingWater.key)
+    Inventory.instance.addItem(Images.cupWater.key)
+
+    return WaterPassive
+  }
+}
+
+class WaterPassive extends SceneState<HeadScene> {
+  public async show() {
+    this.scene.interactiveObjects.seaClickBox.interactionEnabled = false
+    this.scene.interactiveObjects.seaClickBox.visible = false
   }
 }
 
@@ -308,6 +352,12 @@ class PainterNeedsColor extends SceneState<HeadScene> {
     this.listeners.push(scene.characters.painter.events.onInputUp.add(
       () => this.stateManager.trigger(PainterAsksForColor)
     ))
+
+    this.listeners.push(scene.addItemDropHandler(scene.characters.painter, async (key) => {
+      if (key !== Images.colour.key) return false
+      this.stateManager.trigger(PainterPaints)
+      return true
+    }))
   }
 }
 
@@ -321,20 +371,11 @@ class PainterAsksForColor extends SceneStateTransition<HeadScene> {
   }
 }
 
-class AntoniusBroughtColor extends SceneState<HeadScene> {
-  public async show() {
-    const scene = this.scene
-
-    scene.characters.painter.interactionEnabled = true
-    this.listeners.push(scene.characters.painter.events.onInputUp.add(
-      () => this.stateManager.trigger(PainterPaints)
-    ))
-  }
-}
-
 class PainterPaints extends SceneStateTransition<HeadScene> {
   public async enter() {
     const scene = this.scene
+
+    Inventory.instance.takeItem(Images.colour.key)
 
     await scene.playDialogJson('painterBeforePainting')
 
@@ -374,6 +415,12 @@ class BucketheadIsAnnoying extends SceneState<HeadScene> {
     this.listeners.push(scene.characters.buckethead.events.onInputUp.add(
       () => this.stateManager.trigger(BucketheadAsksForHelp)
     ))
+
+    this.listeners.push(scene.addItemDropHandler(scene.characters.buckethead, async (key) => {
+      if (key !== Images.hat.key) return false
+      this.stateManager.trigger(BucketheadGetsAHat)
+      return true
+    }))
   }
 }
 
@@ -384,17 +431,6 @@ class BucketheadAsksForHelp extends SceneStateTransition<HeadScene> {
     await scene.playDialogJson('bucketheadAsksForHelp')
 
     return BucketheadIsAnnoying
-  }
-}
-
-class AntoniusBroughtHat extends SceneState<HeadScene> {
-  public async show() {
-    const scene = this.scene
-
-    scene.characters.buckethead.interactionEnabled = true
-    this.listeners.push(scene.characters.buckethead.events.onInputUp.add(
-      () => this.stateManager.trigger(BucketheadGetsAHat)
-    ))
   }
 }
 
