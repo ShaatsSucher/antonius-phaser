@@ -16,8 +16,10 @@ import SwanCharacter from '../../characters/swan'
 import MusiciansCharacter from '../../characters/musicians'
 import SnakesCharacter from '../../characters/snakes'
 import EggWomanCharacter from '../../characters/eggwoman'
+import NailGooseCharacter from '../../characters/nailgoose'
 
 import { EggwomanWentOver } from './kitchen'
+import { NailgooseLeavingFish } from './fish'
 
 import Arrow from '../../gameObjects/arrow'
 import GameObject from '../../gameObjects/gameObject'
@@ -30,13 +32,16 @@ export default class ConcertScene extends Scene {
     antonius: AntoniusCharacter,
     swan: SwanCharacter,
     musicians: MusiciansCharacter,
-    eggwoman: EggWomanCharacter
-    // snakes: SnakesCharacter
+    eggwoman: EggWomanCharacter,
+    // snakes: SnakesCharacter,
+    nailgoose: NailGooseCharacter
   } = <any>{}
 
   public interactiveObjects = {
     toKitchenArrow: null,
-    toTreeArrow: null
+    toTreeArrow: null,
+
+    dirt: null
   }
 
   veggieItem: GameObject
@@ -80,6 +85,16 @@ export default class ConcertScene extends Scene {
       EggwomanGone
     ], [
       Fight
+    ]),
+    nailgoose: new SceneStateManager<ConcertScene>(this, [
+      InitialNailgoose,
+      NailPlanted,
+      NailgooseWillEnterScene,
+      NailgooseGone
+    ], [
+      AntoniusInspectingDirt,
+      PlantingNail,
+      NailgooseEnteringScene
     ])
   }
 
@@ -112,6 +127,12 @@ export default class ConcertScene extends Scene {
         TransitionCondition.reachedState(this.stateManagers.eggwoman, EggwomanGone)
       )
     )
+    this.stateManagers.nailgoose.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        NailgooseWillEnterScene,
+        TransitionCondition.reachedState(scenes.fish.stateManagers.nailgoose, NailgooseLeavingFish)
+      )
+    )
   }
 
 
@@ -134,12 +155,16 @@ export default class ConcertScene extends Scene {
       this.fadeTo('tree')
     })
 
+    const dirt = this.interactiveObjects.dirt = new GameObject(this.game, 299, 183, Images.dirt.key)
+    this.game.add.existing(dirt)
+
     const eggwoman = this.characters.eggwoman = new EggWomanCharacter(this, 35, 30)
     eggwoman.scale = new Phaser.Point(2, 2)
     this.game.add.existing(eggwoman)
 
-    const antonius = this.characters.antonius = new AntoniusCharacter(this, 80, 120)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 96, 120)
     antonius.scale = new Phaser.Point(-2, 2)
+    antonius.anchor.x = 0.5
     antonius.setActiveState('idle')
     this.game.add.existing(antonius)
 
@@ -157,6 +182,11 @@ export default class ConcertScene extends Scene {
     // const snakes = this.characters.snakes = new SnakesCharacter(this.game, 60, 180)
     // snakes.scale = new Phaser.Point(0.5, 0.2)
     // this.game.add.existing(snakes)
+
+    const nailgoose = this.characters.nailgoose = new NailGooseCharacter(this, 106, 130)
+    nailgoose.anchor.x = 0.5
+    nailgoose.scale.setTo(-2, 2)
+    this.game.add.existing(nailgoose)
 
     this.caneItem = new GameObject(this.game, 80, 60, Images.hammer.key)
     this.game.add.existing(this.caneItem)
@@ -377,5 +407,113 @@ export class EggwomanGone extends SceneState<ConcertScene> {
     eggwoman.visible = false
 
     this.scene.cloud.visible = false
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Nailgoose States
+// ---------------------------------------------------------------------------
+
+class InitialNailgoose extends SceneState<ConcertScene> {
+  async show() {
+    this.scene.characters.nailgoose.visible = false
+
+    this.scene.interactiveObjects.dirt.interactionEnabled = true
+    this.listeners.push(this.scene.interactiveObjects.dirt.events.onInputUp.addOnce(() => {
+      this.stateManager.trigger(AntoniusInspectingDirt)
+    }))
+
+    this.listeners.push(this.scene.addItemDropHandler(this.scene.interactiveObjects.dirt, async (key) => {
+      if (key !== Images.needle.key) return false
+      this.stateManager.trigger(PlantingNail)
+      return true
+    }))
+  }
+}
+
+class AntoniusInspectingDirt extends SceneStateTransition<ConcertScene> {
+  async enter() {
+    this.scene.characters.nailgoose.visible = false
+
+    this.scene.interactiveObjects.dirt.interactionEnabled = false
+    await this.scene.playDialogJson('antoniusInspectingDirt')
+
+    return InitialNailgoose
+  }
+}
+
+class PlantingNail extends SceneStateTransition<ConcertScene> {
+  async enter() {
+    this.scene.characters.nailgoose.visible = false
+    this.scene.interactiveObjects.dirt.interactionEnabled = false
+
+    Inventory.instance.takeItem(Images.needle.key)
+
+    await this.scene.playDialogJson('antoniusPlantedTree')
+
+    return NailPlanted
+  }
+}
+
+export class NailPlanted extends SceneState<ConcertScene> {
+  async show() {
+    this.scene.characters.nailgoose.visible = false
+    this.scene.interactiveObjects.dirt.interactionEnabled = false
+  }
+}
+
+class NailgooseWillEnterScene extends SceneState<ConcertScene> {
+  async show() {
+  this.scene.interactiveObjects.dirt.interactionEnabled = false
+    this.scene.wait(0).then(() => this.stateManager.trigger(NailgooseEnteringScene))
+  }
+}
+
+class NailgooseEnteringScene extends SceneStateTransition<ConcertScene> {
+  async enter() {
+    this.scene.interactiveObjects.dirt.interactionEnabled = false
+
+    const scene = this.scene
+    const antonius = scene.characters.antonius
+    const nailgoose = scene.characters.nailgoose
+
+    nailgoose.visible = true
+
+    const antoniusTargetX = antonius.position.x
+    const nailgooseTargetX = nailgoose.position.x
+
+    antonius.position.x = -Math.abs(antonius.width / 2)
+    nailgoose.position.x = -Math.abs(nailgoose.width / 2)
+
+    nailgoose.setActiveState('walking')
+    antonius.setActiveState('walking')
+
+    console.log('moving ng from', nailgoose.position.x, 'to', nailgooseTargetX)
+    console.log('moving a from', antonius.position.x, 'to', antoniusTargetX)
+
+    await Promise.all([
+      scene.tweens.create(antonius.position).to({ x: antoniusTargetX }, 2000, Phaser.Easing.Linear.None, true).onComplete.asPromise(),
+      scene.tweens.create(nailgoose.position).to({ x: nailgooseTargetX }, 2000, Phaser.Easing.Linear.None, true).onComplete.asPromise()
+    ])
+
+    nailgoose.setActiveState('idle')
+    antonius.setActiveState('idle')
+
+    console.dir(nailgoose)
+    await scene.playDialogJson('nailgooseNotSeeingTree')
+
+    nailgoose.setActiveState('walking')
+    nailgoose.scale.x *= -1
+    nailgoose.position.x = nailgooseTargetX
+    await scene.tweens.create(nailgoose.position).to({ x: -Math.abs(nailgoose.width / 2)}, 2000, Phaser.Easing.Linear.None, true).onComplete.asPromise()
+
+    return NailgooseGone
+  }
+}
+
+export class NailgooseGone extends SceneState<ConcertScene> {
+  async show() {
+    this.scene.interactiveObjects.dirt.interactionEnabled = false
+    this.scene.characters.nailgoose.visible = false
   }
 }

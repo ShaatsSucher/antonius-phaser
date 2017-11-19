@@ -15,6 +15,7 @@ import AlphaPigCharacter from '../../characters/alphapig'
 import NailGooseCharacter from '../../characters/nailgoose'
 
 import { WaitingForFishOrVeggies, CatInTheWay } from './bard'
+import { NailgooseGone, NailPlanted } from './concert'
 
 import Arrow from '../../gameObjects/arrow'
 
@@ -58,6 +59,17 @@ export default class FishScene extends Scene {
     ], [
       NotWithoutMyRudders,
       AlphaPigJourney
+    ]),
+    nailgoose: new SceneStateManager<FishScene>(this, [
+      InitialNailgoose,
+      NailgooseWaiting,
+      NailtreePlanted,
+      NailgooseLeavingFish,
+      NailgooseLeftFish
+    ], [
+      NailgooseIntro,
+      NailgooseStillWaiting,
+      NailgooseLeavingTowardsConcert
     ])
   }
 
@@ -93,6 +105,16 @@ export default class FishScene extends Scene {
         .and(TransitionCondition.reachedState(this.stateManagers.fish, FishGone))
       )
     )
+    this.stateManagers.nailgoose.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        NailtreePlanted,
+        TransitionCondition.reachedState(scenes.concert.stateManagers.nailgoose, NailPlanted)
+      ),
+      new ConditionalStateTransition(
+        NailgooseLeftFish,
+        TransitionCondition.reachedState(scenes.concert.stateManagers.nailgoose, NailgooseGone)
+      )
+    )
   }
 
   protected createGameObjects() {
@@ -114,9 +136,15 @@ export default class FishScene extends Scene {
       this.fadeTo('kitchen')
     })
 
+    const goose = this.characters.nailgoose = new NailGooseCharacter(this, 208, 80)
+    goose.scale = new Phaser.Point(3, 3)
+    goose.anchor.x = 0.5
+    this.game.add.existing(goose)
+
     // Add antonius
-    const antonius = this.characters.antonius = new AntoniusCharacter(this, 280, 110)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 328, 110)
     antonius.scale = new Phaser.Point(3, 3)
+    antonius.anchor.x = 0.5
     antonius.setActiveState('idle')
     this.game.add.existing(antonius)
 
@@ -127,10 +155,6 @@ export default class FishScene extends Scene {
     const pig = this.characters.alphapig = new AlphaPigCharacter(this, 105, 130)
     pig.scale = new Phaser.Point(3, 3)
     this.game.add.existing(pig)
-
-    const goose = this.characters.nailgoose = new NailGooseCharacter(this, 160, 80)
-    goose.scale = new Phaser.Point(3, 3)
-    this.game.add.existing(goose)
   }
 }
 
@@ -307,5 +331,127 @@ class AlphaPigJourney extends SceneStateTransition<FishScene> {
 class AlphaPigGone extends SceneState<FishScene> {
   public async show() {
     this.scene.characters.alphapig.visible = false
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Nailgoose States
+// ---------------------------------------------------------------------------
+
+class InitialNailgoose extends SceneState<FishScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.characters.nailgoose.interactionEnabled = true
+
+    this.listeners.push(scene.characters.nailgoose.events.onInputDown.addOnce(
+      () => this.stateManager.trigger(NailgooseIntro)
+    ))
+  }
+}
+
+class NailgooseIntro extends SceneStateTransition<FishScene> {
+  public async enter() {
+    const scene = this.scene
+
+    await Promise.race([scene.characters.nailgoose.setActiveState('smelling'), scene.clickedAnywhere()])
+    await scene.playDialogJson('nailgooseIntro1')
+    await Promise.race([scene.characters.nailgoose.setActiveState('smelling'), scene.clickedAnywhere()])
+    await scene.playDialogJson('nailgooseIntro2')
+    await Promise.race([scene.characters.nailgoose.setActiveState('smelling'), scene.clickedAnywhere()])
+    await scene.playDialogJson('nailgooseIntro3')
+
+    await Inventory.instance.addItem(Images.needle.key)
+
+    return NailgooseWaiting
+  }
+}
+
+class NailgooseWaiting extends SceneState<FishScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.characters.nailgoose.interactionEnabled = true
+
+    this.listeners.push(scene.characters.nailgoose.events.onInputDown.addOnce(
+      () => this.stateManager.trigger(NailgooseStillWaiting)
+    ))
+  }
+}
+
+class NailgooseStillWaiting extends SceneStateTransition<FishScene> {
+  public async enter() {
+    const scene = this.scene
+
+    await scene.playDialogJson('nailgooseStillWaiting')
+    await Promise.race([scene.characters.nailgoose.setActiveState('smelling'), scene.clickedAnywhere()])
+
+    return NailgooseWaiting
+  }
+}
+
+class NailtreePlanted extends SceneState<FishScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.characters.nailgoose.interactionEnabled = true
+
+    this.listeners.push(scene.characters.nailgoose.events.onInputDown.addOnce(
+      () => this.stateManager.trigger(NailgooseLeavingTowardsConcert)
+    ))
+  }
+}
+
+class NailgooseLeavingTowardsConcert extends SceneStateTransition<FishScene> {
+  public async enter() {
+    const scene = this.scene
+    const antonius = scene.characters.antonius
+    const nailgoose = scene.characters.nailgoose
+
+    await scene.playDialogJson('nailgooseLeavingTowardsConcert')
+
+    await antonius.setActiveState('walking')
+    await nailgoose.setActiveState('walking')
+
+    antonius.scale.x *= -1
+    nailgoose.scale.x *= -1
+
+    const antoniusOldX = antonius.position.x
+    const nailgooseOldX = nailgoose.position.x
+
+    await Promise.all([
+      scene.tweens.create(nailgoose.position).to({ x: 425 }, 2000, Phaser.Easing.Linear.None, true).onComplete.asPromise(),
+      scene.tweens.create(antonius.position).to({ x: 416 }, 2000, Phaser.Easing.Linear.None, true).onComplete.asPromise()
+    ])
+
+    antonius.visible = false
+    nailgoose.visible = false
+
+    antonius.position.x = antoniusOldX
+    nailgoose.position.x = nailgooseOldX
+
+    antonius.scale.x *= -1
+    nailgoose.scale.x *= -1
+
+    return NailgooseLeavingFish
+  }
+}
+
+export class NailgooseLeavingFish extends SceneState<FishScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.characters.nailgoose.visible = false
+    scene.characters.antonius.visible = false
+
+    scene.fadeTo('concert')
+  }
+}
+
+class NailgooseLeftFish extends SceneState<FishScene> {
+  public async show() {
+    const scene = this.scene
+
+    scene.characters.nailgoose.visible = false
   }
 }
