@@ -6,7 +6,7 @@ import { SceneStateManager
        , TransitionCondition
        } from '../../utils/stateManager'
 
-import { Audio, Images, Json } from '../../assets'
+import { Audio, Images, Json, Spritesheets } from '../../assets'
 
 import HellmouthCharacter from '../../characters/hellmouth'
 import AntoniusCharacter from '../../characters/antonius'
@@ -94,11 +94,17 @@ export default class HeadScene extends Scene {
   constructor(game: Phaser.Game) {
     super(
       game,
-      Images.backgroundsBG01.key,
+      Spritesheets.backgroundsBG01.key,
       Audio.soundscapesScene5.key,
       Audio.musicHead.key,
       Json.dialogsHead.key
     )
+  }
+
+  public create() {
+    super.create()
+    this.backgroundImage.animations.add('default', [0, 1], 0.5, true)
+    this.backgroundImage.animations.play('default')
   }
 
   protected registerConditionalStateTransitions(scenes: { [title: string]: Scene }) {
@@ -150,6 +156,7 @@ export default class HeadScene extends Scene {
 
   protected createGameObjects() {
     const seaClickBox = this.interactiveObjects.seaClickBox = new gameObject(this.game, 0, 169, Images.water.key)
+    seaClickBox.alpha = 0
     this.game.add.existing(seaClickBox)
 
     // Add hellmouth
