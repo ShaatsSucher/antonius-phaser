@@ -139,6 +139,7 @@ export default class TreeScene extends Scene {
       new ConditionalStateTransition(
         NewKnowledge,
         TransitionCondition.reachedState(scenes.kitchen.stateManagers.cooks, WaitingForWater)
+          .and(TransitionCondition.reachedState(this.stateManagers.woman, HungryWoman))
       )
     )
   }
