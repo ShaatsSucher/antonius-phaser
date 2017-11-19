@@ -41,6 +41,7 @@ export default class ConcertScene extends Scene {
     toKitchenArrow: null,
     toTreeArrow: null,
 
+    pond: null,
     dirt: null
   }
 
@@ -95,6 +96,12 @@ export default class ConcertScene extends Scene {
       AntoniusInspectingDirt,
       PlantingNail,
       NailgooseEnteringScene
+    ]),
+    pond: new SceneStateManager<ConcertScene>(this, [
+      InitialPond
+    ], [
+      LookingGood,
+      NotSaltyEnough
     ])
   }
 
@@ -198,12 +205,52 @@ export default class ConcertScene extends Scene {
     this.cloud.setInteractionEnabled(false)
     this.cloud.visible = false
     this.game.add.existing(this.cloud)
+
+    const pond = this.interactiveObjects.pond = new GameObject(this.game, 120, 203, Images.pond.key)
+    this.game.add.existing(pond)
   }
 }
 
 export class Initial extends SceneState<ConcertScene> {
   public async show() {
     const scene = this.scene
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Pond States
+// ---------------------------------------------------------------------------
+
+class InitialPond extends SceneState<ConcertScene> {
+  public async show() {
+    const pond = this.scene.interactiveObjects.pond
+
+    pond.visible = true
+    pond.interactionEnabled = true
+
+    this.listeners.push(pond.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(LookingGood)
+    ))
+    this.listeners.push(this.scene.addItemDropHandler(pond, async (key) => {
+      if (key === Images.cupEmpty.key) this.stateManager.trigger(NotSaltyEnough)
+      return false
+    }))
+  }
+}
+
+class LookingGood extends SceneStateTransition<ConcertScene> {
+  public async enter() {
+    this.scene.playDialogJson('lookingGood')
+
+    return InitialPond
+  }
+}
+
+class NotSaltyEnough extends SceneStateTransition<ConcertScene> {
+  public async enter() {
+    this.scene.playDialogJson('NotSaltyEnough')
+
+    return InitialPond
   }
 }
 
