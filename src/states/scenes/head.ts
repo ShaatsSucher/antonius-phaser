@@ -581,7 +581,7 @@ class Credits extends SceneStateTransition<HeadScene> {
       return fadeIn.onComplete.asPromise()
     }))
 
-    await this.scene.wait(11)
+    await this.scene.wait(6)
 
     await Promise.all(labels.map(label => {
       const fadeIn = this.scene.game.tweens.create(label)
@@ -619,6 +619,8 @@ class Credits extends SceneStateTransition<HeadScene> {
     await this.showCreditSegment(['IN KOOPERATION MIT DER', 'STAATLICHEN KUNSTHALLE KARLSRUHE', 'Tabea Mernberger', 'Sandra Trevisan'])
 
     await this.showCreditSegment(['EIN SPIEL IM RAHMEN DES', 'CODE FOR CULTURE GAME JAMS'], 'right')
+
+    await this.scene.wait(4.5)
 
     await this.showCreditSegment(['VON STUDIERENDEN DER HOCHSCHULEN',
       'Universität Stuttgart',
