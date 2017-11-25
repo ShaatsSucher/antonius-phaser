@@ -182,6 +182,9 @@ export default class HeadScene extends Scene {
   }
 
   protected createGameObjects() {
+    this.sideCharacters.forEach(char => char.destroy())
+    this.sideCharacters = []
+
     const birds = new Phaser.Sprite(this.game, 284, 19, Spritesheets.birds.key)
     birds.animations.add('idle', [0, 1], 2, true)
     birds.animations.play('idle')
