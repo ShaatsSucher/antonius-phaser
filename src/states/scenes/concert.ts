@@ -326,7 +326,7 @@ class InitialMusicans extends SceneState<ConcertScene> {
   }
 }
 
-class MusiciansGone extends SceneState<ConcertScene> {
+export class MusiciansGone extends SceneState<ConcertScene> {
   public async show() {
     this.scene.characters.musicians.visible = false
   }

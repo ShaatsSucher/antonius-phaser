@@ -14,11 +14,15 @@ import Cook1Character from '../../characters/cook1'
 import Cook2Character from '../../characters/cook2'
 import DancingGeeseCharacter from '../../characters/dancingGeese'
 
+import { MusiciansGone } from './concert'
+
 import Arrow from '../../gameObjects/arrow'
 import GameObject from '../../gameObjects/gameObject'
 
 import Inventory from '../../overlays/inventory'
 import { AudioManager } from '../../utils/audioManager'
+import { ArrayUtils, StringUtils } from '../../utils/utils'
+import SpeechHelper from '../../utils/speechHelper'
 
 export default class KitchenScene extends Scene {
   public characters: {
@@ -65,6 +69,10 @@ export default class KitchenScene extends Scene {
     ], [
       KidsTheseDays
     ]),
+    townmusicianNoise: new SceneStateManager(this, [
+      TownMusiciansNoisy,
+      TownMusiciansSilent
+    ], [ ]),
     rock: new SceneStateManager(this, [
       InitialRock
     ], [
@@ -155,6 +163,12 @@ export default class KitchenScene extends Scene {
         DancingGeeseGone,
         TransitionCondition.reachedState(this.stateManagers.eggwoman, EggwomanWentOver)
         .and(TransitionCondition.reachedState(this.stateManagers.cooks, DoneCooking))
+      )
+    )
+    this.stateManagers.townmusicianNoise.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        TownMusiciansSilent,
+        TransitionCondition.reachedState(scenes.concert.stateManagers.musicians, MusiciansGone)
       )
     )
   }
@@ -494,7 +508,6 @@ class InitialRock extends SceneState<KitchenScene> {
 
 class InterestingRock extends SceneStateTransition<KitchenScene> {
   async enter() {
-    // this.scene.interactiveObjects.rock.interactionEnabled = false
     await this.scene.playDialogJson('interestingRock')
 
     return InitialRock
@@ -523,4 +536,38 @@ class DancingGeeseGone extends SceneState<KitchenScene> {
   async show() {
     this.scene.characters.dancingGeese.visible = false
   }
+}
+
+// ---------------------------------------------------------------------------
+// TownMusicianNoise States
+// ---------------------------------------------------------------------------
+
+class TownMusiciansNoisy extends SceneState<KitchenScene> {
+  private readonly sampleGenerator = SpeechHelper.Generators.random(
+    ArrayUtils.range(1, 14).map(i =>
+      Audio[`townmusiciansDistance${StringUtils.intToString(i, 3)}`].key
+    )
+  )
+  private visible = false
+
+  async show() {
+    this.visible = true
+    const sampleGenerator = this.sampleGenerator()
+    const playSound = () => {
+      AudioManager.instance.tracks.atmo.playClip(sampleGenerator()).then(() => {
+        if (this.visible && this.stateManager.getActiveState() === TownMusiciansNoisy) {
+          this.scene.wait(0).then(() => playSound())
+        }
+      })
+    }
+    playSound()
+  }
+
+  async hide() {
+    this.visible = false
+  }
+}
+
+class TownMusiciansSilent extends SceneState<KitchenScene> {
+  async show() { }
 }
