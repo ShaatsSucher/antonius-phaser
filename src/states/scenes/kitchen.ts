@@ -1,5 +1,10 @@
 import Scene from './scene'
-import { SceneStateManager, SceneState, SceneStateTransition } from '../../utils/stateManager'
+import { SceneStateManager,
+         SceneState,
+         SceneStateTransition,
+         ConditionalStateTransition,
+         TransitionCondition
+       } from '../../utils/stateManager'
 
 import { Audio, Images, Json } from '../../assets'
 
@@ -7,6 +12,7 @@ import AntoniusCharacter from '../../characters/antonius'
 import EggWomanCharacter from '../../characters/eggwoman'
 import Cook1Character from '../../characters/cook1'
 import Cook2Character from '../../characters/cook2'
+import DancingGeeseCharacter from '../../characters/dancingGeese'
 
 import Arrow from '../../gameObjects/arrow'
 import GameObject from '../../gameObjects/gameObject'
@@ -15,12 +21,13 @@ import Inventory from '../../overlays/inventory'
 import { AudioManager } from '../../utils/audioManager'
 
 export default class KitchenScene extends Scene {
-  public characters = {
-    antonius: null,
-    eggwoman: null,
-    cook1: null,
-    cook2: null
-  }
+  public characters: {
+    antonius: AntoniusCharacter,
+    eggwoman: EggWomanCharacter,
+    cook1: Cook1Character,
+    cook2: Cook2Character,
+    dancingGeese: DancingGeeseCharacter
+  } = <any>{}
 
   public interactiveObjects = {
     toFishArrow: null,
@@ -34,10 +41,10 @@ export default class KitchenScene extends Scene {
 
   stateManagers: {[name: string]: SceneStateManager<KitchenScene>} = {
     cooks: new SceneStateManager<KitchenScene>(this, [
-      WaitingForVeggies,
       InitialCooks,
       WaitingForWater,
       WaitingForFish,
+      WaitingForVeggies,
       DoneCooking,
       NoSoupLeft
     ], [
@@ -62,6 +69,12 @@ export default class KitchenScene extends Scene {
       InitialRock
     ], [
       InterestingRock
+    ]),
+    dancingGeese: new SceneStateManager(this, [
+      DancingGeeseThere,
+      DancingGeeseGone
+    ], [
+      DancingGeeseVanishing
     ])
   }
 
@@ -130,6 +143,20 @@ export default class KitchenScene extends Scene {
     cook2.anchor.x = 0.5
     cook2.scale.setTo(2)
     this.game.add.existing(cook2)
+
+    const dancingGeese = this.characters.dancingGeese = new DancingGeeseCharacter(this, 69, 25)
+    dancingGeese.scale.setTo(2)
+    this.game.add.existing(dancingGeese)
+  }
+
+  protected registerConditionalStateTransitions(scenes: { [title: string]: Scene }) {
+    this.stateManagers.dancingGeese.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        DancingGeeseGone,
+        TransitionCondition.reachedState(this.stateManagers.eggwoman, EggwomanWentOver)
+        .and(TransitionCondition.reachedState(this.stateManagers.cooks, DoneCooking))
+      )
+    )
   }
 }
 
@@ -451,6 +478,10 @@ export class EggwomanWentOver extends SceneState<KitchenScene> {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Rock States
+// ---------------------------------------------------------------------------
+
 class InitialRock extends SceneState<KitchenScene> {
   async show() {
     this.scene.interactiveObjects.rock.interactionEnabled = true
@@ -467,5 +498,29 @@ class InterestingRock extends SceneStateTransition<KitchenScene> {
     await this.scene.playDialogJson('interestingRock')
 
     return InitialRock
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DancingGeese States
+// ---------------------------------------------------------------------------
+
+class DancingGeeseThere extends SceneState<KitchenScene> {
+  async show() {
+    this.scene.characters.dancingGeese.visible = true
+  }
+}
+
+class DancingGeeseVanishing extends SceneStateTransition<KitchenScene> {
+  async enter() {
+    AudioManager.instance.tracks.speech.playClip(Audio.characterPlop.key)
+    this.scene.characters.dancingGeese.visible = false
+    return DancingGeeseGone
+  }
+}
+
+class DancingGeeseGone extends SceneState<KitchenScene> {
+  async show() {
+    this.scene.characters.dancingGeese.visible = false
   }
 }
