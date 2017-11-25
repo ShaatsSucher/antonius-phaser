@@ -6,7 +6,7 @@ import Scene from '../states/scenes/scene'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class BardCharacter extends Character {
-  public readonly speech = new SpeechHelper(this, 0, -40, SpeechHelper.Generators.combine({
+  public readonly speech = new SpeechHelper(this, -16, 0, SpeechHelper.Generators.combine({
     default: SpeechHelper.Generators.alternating((<[string, number][]>[
       ['Do', 6], ['Re', 6], ['Mi', 6], ['Fa', 6], ['So', 5], ['La', 5], ['Ti', 6]
     ]).map(item =>

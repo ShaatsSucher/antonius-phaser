@@ -6,7 +6,7 @@ import Scene from '../states/scenes/scene'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class CatCharacter extends Character {
-  public readonly speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.combine({
+  public readonly speech = new SpeechHelper(this, 1, 0, SpeechHelper.Generators.combine({
     default: SpeechHelper.Generators.random(
       ArrayUtils.range(1, 3).map(i =>
         Assets.Audio[`catDenial${StringUtils.intToString(i, 3)}`].key
