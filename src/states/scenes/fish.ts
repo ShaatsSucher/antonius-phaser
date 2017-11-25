@@ -224,7 +224,7 @@ class TakingRudder extends SceneStateTransition<FishScene> {
   public async enter() {
     const rudder = this.scene.interactiveObjects.rudder
 
-    Inventory.instance.pickupItem(rudder, this.scene, Images.rudderIcon.key)
+    await Inventory.instance.pickupItem(rudder, this.scene, Images.rudderIcon.key)
 
     return RudderGone
   }
@@ -351,7 +351,7 @@ export class InitialAlphaPig extends SceneState<FishScene> {
       () => this.stateManager.trigger(NotWithoutMyRudders)
     ))
     this.listeners.push(this.scene.addItemDropHandler(alphapig, async (key) => {
-      if (key !== Images.rudder.key) return false
+      if (key !== Images.rudderIcon.key) return false
       this.stateManager.trigger(AlphaPigJourney)
       return true
     }))
@@ -372,7 +372,7 @@ class AlphaPigJourney extends SceneStateTransition<FishScene> {
   public async enter() {
     const scene = this.scene
 
-    Inventory.instance.takeItem(Images.rudder.key)
+    Inventory.instance.takeItem(Images.rudderIcon.key)
 
     await scene.playDialogJson('pigLeaves')
 
