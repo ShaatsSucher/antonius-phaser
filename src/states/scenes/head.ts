@@ -29,6 +29,7 @@ import WomanCharacter from '../../characters/woman'
 import PainterCharacter from '../../characters/painter'
 import BucketheadCharacter from '../../characters/buckethead'
 import FightCloudCharacter from '../../characters/fightcloud'
+import BreedingGeeseCharacter from '../../characters/breedingGeese'
 
 import { HatPickedUp } from './canopy'
 import { ColorPickedUp } from './cave'
@@ -43,12 +44,13 @@ import { AudioManager } from '../../utils/audioManager'
 import { ArrayUtils, StringUtils } from '../../utils/utils'
 
 export default class HeadScene extends Scene {
-  public characters = {
-    hellmouth: null,
-    antonius: null,
-    painter: null,
-    buckethead: null
-  }
+  public characters: {
+    hellmouth: HellmouthCharacter,
+    antonius: AntoniusCharacter,
+    painter: PainterCharacter,
+    buckethead: BucketheadCharacter,
+    breedingGeese: BreedingGeeseCharacter
+  } = <any>{}
 
   public interactiveObjects = {
     toBardArrow: null,
@@ -69,6 +71,7 @@ export default class HeadScene extends Scene {
       Credits
     ]),
     water: new SceneStateManager<HeadScene>(this, [
+      WaterBeforeIntro,
       WaterActive,
       WaterPassive
     ], [
@@ -93,6 +96,14 @@ export default class HeadScene extends Scene {
     ], [
       BucketheadAsksForHelp,
       BucketheadGetsAHat
+    ]),
+    breedingGeese: new SceneStateManager(this, [
+      GeeseBeforeIntro,
+      GeeseIdle,
+      GeeseHatched
+    ], [
+      GeeseNotYetHatching,
+      GeeseHatching
     ])
   }
 
@@ -151,8 +162,19 @@ export default class HeadScene extends Scene {
 
     this.stateManagers.water.registerConditionalTransitions(
       new ConditionalStateTransition(
+        WaterActive,
+        TransitionCondition.reachedState(this.stateManagers.head, Silent)
+      ),
+      new ConditionalStateTransition(
         WaterPassive,
         TransitionCondition.reachedState(scenes.fish.stateManagers.water, FishScene.WaterPassive)
+      )
+    )
+
+    this.stateManagers.breedingGeese.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        GeeseIdle,
+        TransitionCondition.reachedState(this.stateManagers.head, Silent)
       )
     )
   }
@@ -171,6 +193,9 @@ export default class HeadScene extends Scene {
     antonius.scale.setTo(2)
     this.game.add.existing(antonius)
 
+    const breedingGeese = this.characters.breedingGeese = new BreedingGeeseCharacter(this, 163, 18)
+    this.game.add.existing(breedingGeese)
+
     const painter = this.characters.painter = new PainterCharacter(this, 165, 56)
     // painter.scale.setTo(1)
     this.game.add.existing(painter)
@@ -185,6 +210,7 @@ export default class HeadScene extends Scene {
     hellmouth.currentFrame.onValueChanged
       .map(frame => offsets[frame - 4] || 0)
       .add(offset => {
+        breedingGeese.y = 18 - Math.round(offset / 3 * 2)
         painter.y = 56 - offset
         bucket.y = 51 - offset
       })
@@ -211,6 +237,12 @@ export default class HeadScene extends Scene {
 // ---------------------------------------------------------------------------
 // Water States
 // ---------------------------------------------------------------------------
+
+class WaterBeforeIntro extends SceneState<HeadScene> {
+  public async show() {
+    this.scene.interactiveObjects.seaClickBox.interactionEnabled = false
+  }
+}
 
 class WaterActive extends SceneState<HeadScene> {
   public async show() {
@@ -677,5 +709,54 @@ export class TheEnd extends SceneState<HeadScene> {
   public async show() {
     this.scene.allInteractiveObjects.forEach(obj => obj.visible = false)
     this.scene.fadeTo('end')
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Credits States
+// ---------------------------------------------------------------------------
+
+class GeeseBeforeIntro extends SceneState<HeadScene> {
+  public async show() {
+    this.scene.characters.breedingGeese.interactionEnabled = false
+    this.scene.characters.breedingGeese.setActiveState('idle')
+  }
+}
+
+class GeeseIdle extends SceneState<HeadScene> {
+  public async show() {
+    this.scene.characters.breedingGeese.interactionEnabled = true
+
+    this.scene.characters.breedingGeese.setActiveState('idle')
+
+    this.clearListeners()
+    this.listeners.push(this.scene.characters.breedingGeese.events.onInputUp.addOnce(() =>
+      this.stateManager.trigger(GeeseNotYetHatching)
+    ))
+    console.warn('now there are', this.listeners.length, 'listeners')
+  }
+}
+
+class GeeseNotYetHatching extends SceneStateTransition<HeadScene> {
+  public async enter() {
+    await this.scene.playDialogJson('hatchlingsNotYetHatching')
+    return GeeseIdle
+  }
+}
+
+class GeeseHatching extends SceneStateTransition<HeadScene> {
+  public async enter() {
+    await this.scene.characters.breedingGeese.setActiveState('hatching')
+
+    AudioManager.instance.tracks.speech.playClip(Audio.hatchlings.key)
+
+    return GeeseHatched
+  }
+}
+
+class GeeseHatched extends SceneState<HeadScene> {
+  public async show() {
+    this.scene.characters.breedingGeese.interactionEnabled = false
+    this.scene.characters.breedingGeese.setActiveState('talking with children')
   }
 }
