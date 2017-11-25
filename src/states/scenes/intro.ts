@@ -65,9 +65,6 @@ export default class IntroScene extends Scene {
 
     Inventory.instance.visible = false
 
-    this.settingsButton.visible = false
-    Inventory.instance.visible = false
-
     this.label = this.game.add.text(this.game.world.centerX + 0.5, this.game.world.centerY, 'Zum Spielen klicken', {
         font: `8px ${CustomWebFonts.pixelOperator8Bold.family}`,
         fill: '#fff',
@@ -82,6 +79,7 @@ export default class IntroScene extends Scene {
     super.shutdown()
 
     this.settingsButton.visible = true
+    this.helpButton.visible = true
     this.inventoryButton.visible = true
 
     RestartOverlay.instance.timeoutEnabled = true
@@ -91,6 +89,7 @@ export default class IntroScene extends Scene {
 class AwaitingInteraction extends SceneState<IntroScene> {
   public async show() {
     this.scene.settingsButton.visible = false
+    this.scene.helpButton.visible = false
     this.scene.inventoryButton.visible = false
 
     this.scene.image.tint = 0xaaaaaa
@@ -111,6 +110,7 @@ class AwaitingInteraction extends SceneState<IntroScene> {
   public async hide() {
     await super.hide()
     this.scene.settingsButton.visible = true
+    this.scene.helpButton.visible = true
     this.scene.inventoryButton.visible = true
   }
 }
@@ -200,6 +200,7 @@ class IntroDone extends SceneState<IntroScene> {
     this.scene.label.visible = false
 
     this.scene.settingsButton.visible = false
+    this.scene.helpButton.visible = false
     this.scene.inventoryButton.visible = false
 
     this.scene.fadeTo('head')
@@ -208,6 +209,7 @@ class IntroDone extends SceneState<IntroScene> {
   public async hide() {
     await super.hide()
     this.scene.settingsButton.visible = true
+    this.scene.helpButton.visible = true
     this.scene.inventoryButton.visible = true
   }
 }
