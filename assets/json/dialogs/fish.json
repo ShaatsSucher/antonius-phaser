@@ -97,5 +97,10 @@
     [ "antonius", "Die Nadel ist eingepflanzt.", [null, "sslsssl"] ],
 
     [ "nailgoose", "Ehrlich? Das will ich sehen!", 3 ]
+  ],
+  "waterLooksSalty": [
+    [ "antonius", [ "Dieses Meerwasser sieht",
+                    "sehr suppig aus"
+                  ], [null, "slsssll"] ]
   ]
 }

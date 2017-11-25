@@ -65,6 +65,8 @@
                     ], 3 ]
   ],
   "waterLooksSalty": [
-    [ "antonius", "Dieses Meerwasser sieht sehr suppig aus", [null, "slsssll"] ]
+    [ "antonius",   [ "Dieses Meerwasser sieht",
+                      "sehr suppig aus"
+                    ], [null, "slsssll"] ]
   ]
 }

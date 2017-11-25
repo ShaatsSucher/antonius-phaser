@@ -16,6 +16,7 @@ import NailGooseCharacter from '../../characters/nailgoose'
 
 import { WaitingForFishOrVeggies, CatInTheWay } from './bard'
 import { NailgooseGone, NailPlanted } from './concert'
+import * as HeadScene from './head'
 
 import Arrow from '../../gameObjects/arrow'
 import GameObject from '../../gameObjects/gameObject'
@@ -35,7 +36,8 @@ export default class FishScene extends Scene {
   interactiveObjects = {
     toHeadArrow: null,
     toKitchenArrow: null,
-    rudder: null
+    rudder: null,
+    seaClickBox: null
   }
 
   readonly stateManagers: {
@@ -77,6 +79,13 @@ export default class FishScene extends Scene {
       NailgooseIntro,
       NailgooseStillWaiting,
       NailgooseLeavingTowardsConcert
+    ]),
+    water: new SceneStateManager<FishScene>(this, [
+      WaterActive,
+      WaterPassive
+    ], [
+      WaterLooksSalty,
+      ScoopingWater
     ])
   }
 
@@ -121,9 +130,19 @@ export default class FishScene extends Scene {
         TransitionCondition.reachedState(scenes.concert.stateManagers.nailgoose, NailgooseGone)
       )
     )
+    this.stateManagers.water.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        WaterPassive,
+        TransitionCondition.reachedState(scenes.head.stateManagers.water, HeadScene.WaterPassive)
+      )
+    )
   }
 
   protected createGameObjects() {
+    const seaClickBox = this.interactiveObjects.seaClickBox = new GameObject(this.game, 0, 0, Images.water2.key)
+    seaClickBox.alpha = 0
+    this.game.add.existing(seaClickBox)
+
     // Add navigation arrows
     const toHeadArrow = this.interactiveObjects.toHeadArrow = new Arrow(this.game, 190, 20)
     toHeadArrow.rotation = - Math.PI / 2
@@ -334,7 +353,7 @@ export class InitialAlphaPig extends SceneState<FishScene> {
       () => this.stateManager.trigger(NotWithoutMyRudders)
     ))
     this.listeners.push(this.scene.addItemDropHandler(alphapig, async (key) => {
-      if (key !== Images.rudderIcon.key) return false
+      if (key !== Images.rudder.key) return false
       this.stateManager.trigger(AlphaPigJourney)
       return true
     }))
@@ -355,7 +374,7 @@ class AlphaPigJourney extends SceneStateTransition<FishScene> {
   public async enter() {
     const scene = this.scene
 
-    Inventory.instance.takeItem(Images.rudderIcon.key)
+    Inventory.instance.takeItem(Images.rudder.key)
 
     await scene.playDialogJson('pigLeaves')
 
@@ -494,5 +513,53 @@ class NailgooseLeftFish extends SceneState<FishScene> {
     const scene = this.scene
 
     scene.characters.nailgoose.visible = false
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Water States
+// ---------------------------------------------------------------------------
+
+class WaterActive extends SceneState<FishScene> {
+  public async show() {
+    const sea = this.scene.interactiveObjects.seaClickBox
+
+    sea.interactionEnabled = true
+
+    this.listeners.push(this.scene.addItemDropHandler(sea, async (key) => {
+      if (key !== Images.cupEmpty.key) return false
+      this.stateManager.trigger(ScoopingWater)
+      return true
+    }))
+
+    this.listeners.push(sea.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(WaterLooksSalty)
+    ))
+  }
+}
+
+class WaterLooksSalty extends SceneStateTransition<FishScene> {
+  public async enter() {
+    await this.scene.playDialogJson('waterLooksSalty')
+
+    return WaterActive
+  }
+}
+
+class ScoopingWater extends SceneStateTransition<FishScene> {
+  public async enter() {
+    Inventory.instance.takeItem(Images.cupEmpty.key)
+
+    AudioManager.instance.tracks.speech.addClip(Audio.scoopingWater.key)
+    Inventory.instance.addItem(Images.cupWater.key)
+
+    return WaterPassive
+  }
+}
+
+export class WaterPassive extends SceneState<FishScene> {
+  public async show() {
+    this.scene.interactiveObjects.seaClickBox.interactionEnabled = false
+    this.scene.interactiveObjects.seaClickBox.visible = false
   }
 }

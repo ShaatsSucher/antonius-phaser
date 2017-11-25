@@ -13,6 +13,7 @@ import AntoniusCharacter from '../../characters/antonius'
 
 import { FishDead } from './fish'
 import { CatInTheWay, BardGone, MeckieGone } from './bard'
+import * as FishScene from './fish'
 
 import Character from '../../characters/character'
 import AlphapigCharacter from '../../characters/alphapig'
@@ -147,6 +148,13 @@ export default class HeadScene extends Scene {
         TransitionCondition.reachedState(this.stateManagers.buckethead, BucketheadIsStealthy)
       )
     )
+
+    this.stateManagers.water.registerConditionalTransitions(
+      new ConditionalStateTransition(
+        WaterPassive,
+        TransitionCondition.reachedState(scenes.fish.stateManagers.water, FishScene.WaterPassive)
+      )
+    )
   }
 
   protected createGameObjects() {
@@ -241,7 +249,7 @@ class ScoopingWater extends SceneStateTransition<HeadScene> {
   }
 }
 
-class WaterPassive extends SceneState<HeadScene> {
+export class WaterPassive extends SceneState<HeadScene> {
   public async show() {
     this.scene.interactiveObjects.seaClickBox.interactionEnabled = false
     this.scene.interactiveObjects.seaClickBox.visible = false
