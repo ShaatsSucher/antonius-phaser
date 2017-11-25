@@ -292,6 +292,8 @@ class GettingSmashed extends SceneStateTransition<ConcertScene> {
   public async enter() {
     const swan = this.scene.characters.swan
 
+    swan.setActiveState('idle free')
+
     await AudioManager.instance.tracks.atmo.playClip(Audio.jarBreaks.key)
 
     swan.setActiveState('talking')
@@ -422,9 +424,6 @@ class Fight extends SceneStateTransition<ConcertScene> {
   async enter() {
     const chars = this.scene.characters
     const cloud = this.scene.cloud
-    // this.scene.stateManagers.cane.setActiveState(CaneThere)
-    // this.scene.stateManagers.musicians.setActiveState(MusiciansGone)
-
 
     await this.scene.playDialogJson('eggwomanIsPissed')
 

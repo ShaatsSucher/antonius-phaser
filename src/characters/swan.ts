@@ -10,7 +10,7 @@ export default class SwanCharacter extends Character {
     ArrayUtils.range(1, 19).map(i =>
       Assets.Audio[`stuckswan${StringUtils.intToString(i, 3)}`].key
     )
-  ), undefined, undefined, 'talking')
+  ), '#fff', false, 'idle free')
 
   constructor(scene: Scene, x: number, y: number) {
     super(scene, x, y, Assets.Spritesheets.stuckswan.key)
@@ -18,11 +18,13 @@ export default class SwanCharacter extends Character {
     // TODO: correct animations?
     this.animations.add('idle', [0], 0, false)
     this.animations.add('pulling', ArrayUtils.range(0, 8), 8, false)
+    this.animations.add('idle free', [9], 0, false)
     this.animations.add('talking', [9, 10], 8, true)
     this.animations.add('walking', ArrayUtils.range(11, 22), 8, true)
 
     this.addCharacterState('idle', new IdleState(this))
     this.addCharacterState('pulling', new PullingState(this))
+    this.addCharacterState('idle free', new IdleFreeState(this))
     this.addCharacterState('talking', new TalkingState(this))
     this.addCharacterState('walking', new WalkingState(this))
 
@@ -44,6 +46,14 @@ class PullingState implements CharacterState<SwanCharacter> {
   async enter() {
     this.character.animations.stop()
     this.character.play('pulling')
+  }
+}
+
+class IdleFreeState implements CharacterState<SwanCharacter> {
+  constructor(public character: SwanCharacter) {}
+
+  async enter() {
+    this.character.animations.play('idle free')
   }
 }
 
