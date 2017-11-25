@@ -237,8 +237,6 @@ export class CatInTheWay extends SceneState<BardScene> {
     this.listeners.push(scene.characters.bard.events.onInputUp.addOnce(
       () => scene.stateManagers.bard.trigger(SadBard)
     ))
-
-    Inventory.instance.addItem(Images.filet.key)
   }
 }
 
