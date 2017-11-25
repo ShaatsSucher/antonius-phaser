@@ -58,6 +58,8 @@ export default class HeadScene extends Scene {
     seaClickBox: null
   }
 
+  public sideCharacters: Phaser.Sprite[] = []
+
   stateManagers: { [name: string]: SceneStateManager<HeadScene> } = {
     head: new SceneStateManager<HeadScene>(this, [
       Introduction,
@@ -180,6 +182,23 @@ export default class HeadScene extends Scene {
   }
 
   protected createGameObjects() {
+    const birds = new Phaser.Sprite(this.game, 284, 19, Spritesheets.birds.key)
+    birds.animations.add('idle', [0, 1], 2, true)
+    birds.animations.play('idle')
+    this.sideCharacters.push(birds)
+
+    const gobbler1 = new Phaser.Sprite(this.game, 248, 178, Spritesheets.gobbler1.key)
+    gobbler1.animations.add('idle', ArrayUtils.range(0, 6), 8, true)
+    gobbler1.animations.play('idle')
+    this.sideCharacters.push(gobbler1)
+
+    const gobbler2 = new Phaser.Sprite(this.game, 292, 78, Spritesheets.gobbler2.key)
+    gobbler2.animations.add('idle', [0, 1], 1.5, true)
+    gobbler2.animations.play('idle')
+    this.sideCharacters.push(gobbler2)
+
+    this.sideCharacters.forEach(char => this.add.existing(char))
+
     const seaClickBox = this.interactiveObjects.seaClickBox = new GameObject(this.game, 0, 169, Images.water.key)
     seaClickBox.alpha = 0
     this.game.add.existing(seaClickBox)
@@ -295,6 +314,7 @@ export class WaterPassive extends SceneState<HeadScene> {
 
 export class Introduction extends SceneState<HeadScene> {
   public async show() {
+    this.scene.sideCharacters.forEach(char => char.visible = true)
     this.scene.allInteractiveObjects.forEach(obj => obj.visible = false)
 
     this.scene.characters.hellmouth.interactionEnabled = true
@@ -319,12 +339,14 @@ class IntroductionSpeech extends SceneStateTransition<HeadScene> {
 
 export class Silent extends SceneState<HeadScene> {
   public async show() {
+    this.scene.sideCharacters.forEach(char => char.visible = true)
     this.scene.allInteractiveObjects.forEach(obj => obj.visible = true)
   }
 }
 
 export class FishHintAvailable extends SceneState<HeadScene> {
   public async show() {
+    this.scene.sideCharacters.forEach(char => char.visible = true)
     this.scene.allInteractiveObjects.forEach(obj => obj.visible = true)
     this.scene.characters.hellmouth.interactionEnabled = true
     this.listeners.push(this.scene.characters.hellmouth.events.onInputUp.addOnce(
@@ -501,6 +523,7 @@ export class BucketheadIsStealthy extends SceneState<HeadScene> {
 
 export class Suction extends SceneState<HeadScene> {
   public async show() {
+    this.scene.sideCharacters.forEach(char => char.visible = true)
     this.scene.allInteractiveObjects.forEach(obj => obj.visible = false)
     this.stateManager.trigger(Credits)
   }
@@ -551,6 +574,16 @@ class Credits extends SceneStateTransition<HeadScene> {
       await scene.characters.hellmouth.setActiveState('close mouth')
     }
 
+    await scene.wait(2)
+
+    let startTime = 2
+    for (const char of this.scene.sideCharacters) {
+      AudioManager.instance.tracks.speech.playClip(Audio.characterPlop.key)
+      console.log('plop')
+      char.visible = false
+      await scene.wait(startTime /= 2)
+    }
+
     await swallow(new MeckieCharacter(scene, 0, 0), 0.3)
     await swallow(new CatCharacter(scene, 0, 0), 0)
     const bard = new BardCharacter(scene, 0, 0)
@@ -586,9 +619,9 @@ class Credits extends SceneStateTransition<HeadScene> {
       scene.tweens.create(scene.characters.breedingGeese).to({ rotation: Math.PI * 10 }, 5000, Phaser.Easing.Cubic.In, true).onComplete.asPromise(),
       scene.tweens.create(scene.characters.breedingGeese.scale).to({ x: 0, y: 0}, 5000, Phaser.Easing.Cubic.In, true).onComplete.asPromise()
     ])
-    // scene.characters.breedingGeese.visible = false
-    // scene.characters.breedingGeese.rotation = 0
-    // scene.characters.breedingGeese.scale.setTo(1)
+    scene.characters.breedingGeese.visible = false
+    scene.characters.breedingGeese.rotation = 0
+    scene.characters.breedingGeese.scale.setTo(1)
     await scene.characters.hellmouth.setActiveState('close mouth')
 
     await Promise.all([
@@ -747,7 +780,6 @@ class GeeseIdle extends SceneState<HeadScene> {
     this.listeners.push(this.scene.characters.breedingGeese.events.onInputUp.addOnce(() =>
       this.stateManager.trigger(GeeseNotYetHatching)
     ))
-    console.warn('now there are', this.listeners.length, 'listeners')
   }
 }
 
