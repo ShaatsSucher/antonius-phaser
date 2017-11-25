@@ -203,9 +203,7 @@ class RudderInacsessible extends SceneState<FishScene> {
 class RudderGone extends SceneState<FishScene> {
   public async show() {
     const rudder = this.scene.interactiveObjects.rudder
-
-    rudder.interactionEnabled = false
-    rudder.visible = true
+    rudder.visible = false
   }
 }
 
