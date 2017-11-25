@@ -292,18 +292,17 @@ class GettingSmashed extends SceneStateTransition<ConcertScene> {
   public async enter() {
     const swan = this.scene.characters.swan
 
-      const breakSound = AudioManager.instance.tracks.atmo.addClip(Audio.jarBreaks.key)
-      await breakSound.stopped
+    await AudioManager.instance.tracks.atmo.playClip(Audio.jarBreaks.key)
 
-      swan.setActiveState('talking')
+    swan.setActiveState('talking')
 
-      await this.scene.playDialogJson('gettingSmashed')
+    await this.scene.playDialogJson('gettingSmashed')
 
-      swan.setActiveState('walking')
+    swan.setActiveState('walking')
 
-      await this.scene.tweens.create(swan).to({
-        x: -200, y: 0
-      }, 3000).start().onComplete.asPromise()
+    await this.scene.tweens.create(swan).to({
+      x: -200, y: 0
+    }, 3000).start().onComplete.asPromise()
 
     return SwanGone
   }
