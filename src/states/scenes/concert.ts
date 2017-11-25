@@ -9,7 +9,8 @@ import { SceneStateManager,
 import { Audio, Images, Spritesheets, Json } from '../../assets'
 import { AudioManager } from '../../utils/audioManager'
 
-import { ArrayUtils } from '../../utils/utils'
+import { ArrayUtils, StringUtils } from '../../utils/utils'
+import SpeechHelper from '../../utils/speechHelper'
 
 import AntoniusCharacter from '../../characters/antonius'
 import SwanCharacter from '../../characters/swan'
@@ -321,8 +322,35 @@ export class SwanGone extends SceneState<ConcertScene> {
 // ---------------------------------------------------------------------------
 
 class InitialMusicans extends SceneState<ConcertScene> {
-  public async show() {
+  private readonly sampleGenerator = SpeechHelper.Generators.random(
+    ArrayUtils.range(1, 14).map(i =>
+      Audio[`townmusicians${StringUtils.intToString(i, 3)}`].key
+    )
+  )
+  public noisy
+
+  async show() {
+    this.noisy = true
+    const sampleGenerator = this.sampleGenerator()
+    const playSound = () => {
+      this.scene.wait(0).then(() => {
+        console.warn('playing noise')
+        if (this.noisy && this.stateManager.getActiveState() === InitialMusicans) {
+          AudioManager.instance.tracks.speech.playClip(sampleGenerator()).then(() => {
+            playSound()
+          })
+        } else {
+          console.warn('silencing town musicians')
+        }
+      })
+    }
+
     this.scene.characters.musicians.visible = true
+    this.scene.wait(1).then(() => playSound())
+  }
+
+  async hide() {
+    this.noisy = false
   }
 }
 
@@ -429,6 +457,24 @@ class Fight extends SceneStateTransition<ConcertScene> {
 
     cloud.visible = true
 
+    // Silence the town musicians
+    ; (<InitialMusicans>this.scene.stateManagers.musicians.activeStateInstance).noisy = false
+
+    const nextFightSample = SpeechHelper.Generators.random(
+      ArrayUtils.range(1, 4).map(i =>
+        Audio[`townmusiciansCombat${StringUtils.intToString(i, 3)}`].key
+      )
+    )()
+    let fighting = true
+    const playSound = () => {
+      AudioManager.instance.tracks.atmo.playClip(nextFightSample()).then(() => {
+        if (fighting) {
+          this.scene.wait(0).then(() => playSound())
+        }
+      })
+    }
+    playSound()
+
     this.scene.characters.musicians.speech.say('', 5.5)
     await this.scene.cloud.play('start').onComplete.asPromise()
 
@@ -442,6 +488,7 @@ class Fight extends SceneStateTransition<ConcertScene> {
     await this.scene.tweens.create(cloud).to({
       x: -200, y: 0
     }, 3000).start().onComplete.asPromise()
+    fighting = false
 
     return EggwomanGone
   }

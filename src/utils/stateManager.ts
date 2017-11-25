@@ -174,6 +174,10 @@ export class SceneStateManager<T extends Scene> {
     scene.onShutdown.add(() => this.onSceneShutDown())
   }
 
+  public get activeStateInstance(): SceneState<T> {
+    return this.activeState
+  }
+
   public resetStates(): Promise<void> {
     this.conditionalTransitions.forEach(transition => transition.reset())
 
