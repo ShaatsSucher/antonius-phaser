@@ -189,7 +189,7 @@ class InventorySlot {
   clear() {
     if (this.isOccupied) {
       this.inventory.remove(this.item, true)
-      this.inventory.remove(this.label, true)
+      this.inventory.remove(this.label, false)
       this.item = null
     }
   }
