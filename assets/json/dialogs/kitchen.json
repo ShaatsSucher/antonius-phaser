@@ -127,5 +127,10 @@
     [ "eggwoman", [ "Sie haben Recht, ich werde hier für Ordnung sorgen.",
                     "Ab sofort weht hier ein ganz anderer Wind."
                   ], 8 ]
+  ],
+  "interestingRock": [
+    [ "antonius", [ "Hm... Wofür CB wohl",
+                    "stehen könnte?"
+                  ] , [null, "lsssslsssl"] ]
   ]
 }

@@ -24,7 +24,9 @@ export default class KitchenScene extends Scene {
   public interactiveObjects = {
     toFishArrow: null,
     toBardArrow: null,
-    toConcertArrow: null
+    toConcertArrow: null,
+
+    rock: null
   }
 
   stateManagers: {[name: string]: SceneStateManager<KitchenScene>} = {
@@ -49,6 +51,11 @@ export default class KitchenScene extends Scene {
       EggwomanWentOver
     ], [
       KidsTheseDays
+    ]),
+    rock: new SceneStateManager(this, [
+      InitialRock
+    ], [
+      InterestingRock
     ])
   }
 
@@ -89,6 +96,9 @@ export default class KitchenScene extends Scene {
       toConcertArrow.interactionEnabled = false
       this.fadeTo('concert')
     })
+
+    const rock = this.interactiveObjects.rock = new GameObject(this.game, 216, 94, Images.rock.key)
+    this.game.add.existing(rock)
 
     const eggwoman = this.characters.eggwoman = new EggWomanCharacter(this, 200, 100)
     eggwoman.scale.setTo(2)
@@ -365,5 +375,24 @@ export class EggwomanWentOver extends SceneState<KitchenScene> {
 
     eggwoman.visible = false
     eggwoman.interactionEnabled = false
+  }
+}
+
+class InitialRock extends SceneState<KitchenScene> {
+  async show() {
+    this.scene.interactiveObjects.rock.interactionEnabled = true
+
+    this.listeners.push(this.scene.interactiveObjects.rock.events.onInputUp.addOnce(
+      () => this.stateManager.trigger(InterestingRock)
+    ))
+  }
+}
+
+class InterestingRock extends SceneStateTransition<KitchenScene> {
+  async enter() {
+    // this.scene.interactiveObjects.rock.interactionEnabled = false
+    await this.scene.playDialogJson('interestingRock')
+
+    return InitialRock
   }
 }
