@@ -1,5 +1,5 @@
 import { Button } from '../../gameObjects/button'
-import { Atlases, Json } from '../../assets'
+import { Atlases, Audio, Json } from '../../assets'
 import Character from '../../characters/character'
 import GameObject from '../../gameObjects/gameObject'
 
@@ -169,6 +169,8 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     this.add.existing(this.inventoryButton)
 
     this.inventoryButton.events.onInputDown.add(() => {
+      AudioManager.instance.tracks.speech.playClip(Audio.inventoryOpen.key)
+
       this.isPaused.value = true
       let alreadyWasClosed = false
       this.clickedAnywhere(true).then(() => {
@@ -189,6 +191,8 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     this.add.existing(this.helpButton)
 
     this.helpButton.events.onInputDown.add(() => {
+      AudioManager.instance.tracks.speech.playClip(Audio.helpOpen.key)
+
       this.isPaused.value = true
       let alreadyWasClosed = false
       this.clickedAnywhere(true).then(() => {
