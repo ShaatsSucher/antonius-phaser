@@ -211,18 +211,18 @@ export class WaitingForWater extends SceneState<KitchenScene> {
     c.cook1.interactionEnabled = true
     c.cook2.interactionEnabled = true
 
-    // Inventory.instance.addItem(Images.cupWater.key)
-
     this.listeners.push(this.scene.addItemDropHandler(c.cook1, async (key) => {
       if (key !== Images.cupWater.key) return false
       this.stateManager.trigger(WeNeedFish)
       Inventory.instance.takeItem(Images.cupWater.key)
+      Inventory.instance.addItem(Images.cupEmpty.key)
       return true
     }))
     this.listeners.push(this.scene.addItemDropHandler(c.cook2, async (key) => {
       if (key !== Images.cupWater.key) return false
       this.stateManager.trigger(WeNeedFish)
       Inventory.instance.takeItem(Images.cupWater.key)
+      Inventory.instance.addItem(Images.cupEmpty.key)
       return true
     }))
 
