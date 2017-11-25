@@ -334,13 +334,10 @@ class InitialMusicans extends SceneState<ConcertScene> {
     const sampleGenerator = this.sampleGenerator()
     const playSound = () => {
       this.scene.wait(0).then(() => {
-        console.warn('playing noise')
         if (this.noisy && this.stateManager.getActiveState() === InitialMusicans) {
           AudioManager.instance.tracks.speech.playClip(sampleGenerator()).then(() => {
             playSound()
           })
-        } else {
-          console.warn('silencing town musicians')
         }
       })
     }
