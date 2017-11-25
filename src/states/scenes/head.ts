@@ -32,7 +32,7 @@ import FightCloudCharacter from '../../characters/fightcloud'
 import { HatPickedUp } from './canopy'
 import { ColorPickedUp } from './cave'
 
-import gameObject from '../../gameObjects/gameObject'
+import GameObject from '../../gameObjects/gameObject'
 import Arrow from '../../gameObjects/arrow'
 import Inventory from '../../overlays/inventory'
 import Settings from '../../overlays/settings'
@@ -150,7 +150,7 @@ export default class HeadScene extends Scene {
   }
 
   protected createGameObjects() {
-    const seaClickBox = this.interactiveObjects.seaClickBox = new gameObject(this.game, 0, 169, Images.water.key)
+    const seaClickBox = this.interactiveObjects.seaClickBox = new GameObject(this.game, 0, 169, Images.water.key)
     seaClickBox.alpha = 0
     this.game.add.existing(seaClickBox)
 
@@ -224,7 +224,7 @@ class WaterActive extends SceneState<HeadScene> {
 
 class WaterLooksSalty extends SceneStateTransition<HeadScene> {
   public async enter() {
-    this.scene.playDialogJson('waterLooksSalty')
+    await this.scene.playDialogJson('waterLooksSalty')
 
     return WaterActive
   }
