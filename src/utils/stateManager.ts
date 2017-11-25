@@ -297,7 +297,7 @@ export class SceneStateManager<T extends Scene> {
 
   private onSceneCreated() {
     if (this.activeState) {
-      this.activeState.show() // TODO: check if we should `await` this
+      this.activeState.show()
     } else {
       this._setActiveState(this.defaultState)
     }
@@ -305,7 +305,7 @@ export class SceneStateManager<T extends Scene> {
 
   private onSceneShutDown() {
     if (this.activeState) {
-      this.activeState.hide() // TODO: check if we should `await` this
+      this.activeState.hide()
     }
   }
 

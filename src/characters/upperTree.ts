@@ -6,12 +6,7 @@ import Scene from '../states/scenes/scene'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class UpperTreeCharacter extends Character {
-  public readonly speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.random(
-    ArrayUtils.range(1, 14).map(i =>
-      // TODO: replace with correct sounds
-      Assets.Audio[`goose${StringUtils.intToString(i, 3)}`].key
-    )
-  ))
+  public readonly speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.mute())
 
   constructor(scene: Scene, x: number, y: number) {
     super(scene, x, y, Assets.Spritesheets.treeUp.key)

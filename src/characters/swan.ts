@@ -15,7 +15,6 @@ export default class SwanCharacter extends Character {
   constructor(scene: Scene, x: number, y: number) {
     super(scene, x, y, Assets.Spritesheets.stuckswan.key)
 
-    // TODO: correct animations?
     this.animations.add('idle', [0], 0, false)
     this.animations.add('pulling', ArrayUtils.range(0, 8), 8, false)
     this.animations.add('idle free', [9], 0, false)

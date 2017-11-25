@@ -108,8 +108,8 @@ export default class ConcertScene extends Scene {
   constructor(game: Phaser.Game) {
     super(
       game,
-      Images.backgroundsBG06.key, // same as bard ???
-      Audio.soundscapesScene3.key, // TODO: replace with correct soundscape
+      Images.backgroundsBG06.key,
+      Audio.soundscapesScene10.key,
       Audio.musicBard.key,
       Json.dialogsConcert.key
     )

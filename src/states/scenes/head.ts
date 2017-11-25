@@ -630,7 +630,6 @@ class Credits extends SceneStateTransition<HeadScene> {
       'Staatliche Hochschule für Gestaltung Karlsruhe'
     ], 'center')
 
-    // TODO: fade to black (or original image?)
     await this.showCreditSegment(['SPEZIELLEN DANK AN',
       'Yasi Schneidt',
       'Die Organisatoren des Game Jams',

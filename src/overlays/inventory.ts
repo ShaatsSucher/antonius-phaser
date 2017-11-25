@@ -135,8 +135,6 @@ export default class Inventory extends Phaser.Group {
       const slot = emptySlots.splice(slotId, 1)[0]
       slot.itemKey = key
     }
-
-    // TODO: add a little animation when adding the items (if the inventory is visible)
   }
 
   public async takeItem(key: string, amount: number = 1): Promise<void> {
