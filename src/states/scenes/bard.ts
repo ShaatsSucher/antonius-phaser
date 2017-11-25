@@ -81,6 +81,12 @@ export default class BardScene extends Scene {
   }
 
   protected createGameObjects() {
+    const meckie = this.characters.meckie = new MeckieCharacter(this, 78, 120)
+    meckie.scale.setTo(2)
+    meckie.anchor.setTo(0.5, 0)
+    meckie.setActiveState('idle')
+    this.add.existing(meckie)
+
     const goose = this.characters.goose = new GooseCharacter(this, 200, 60)
     goose.scale.setTo(2)
     goose.anchor.setTo(0.5, 0)
@@ -99,12 +105,6 @@ export default class BardScene extends Scene {
     cat.anchor.setTo(0.5, 0)
     cat.setActiveState('idle')
     this.add.existing(cat)
-
-    const meckie = this.characters.meckie = new MeckieCharacter(this, 78, 120)
-    meckie.scale.setTo(2)
-    meckie.anchor.setTo(0.5, 0)
-    meckie.setActiveState('idle')
-    this.add.existing(meckie)
 
     const antonius = this.characters.antonius = new AntoniusCharacter(this, 292, 120)
     antonius.scale.setTo(2)
@@ -195,7 +195,15 @@ class BardConversation extends SceneStateTransition<BardScene> {
       }
     })
 
-    await bardSong.stopped
+    if (DEBUG) {
+      await Promise.race([bardSong.stopped, scene.clickedAnywhere()])
+      if (bardSong.sound.isPlaying) {
+        bardSong.stop()
+      }
+    } else {
+      await bardSong.stopped
+    }
+
     updateHandler.detach()
 
     await scene.clickedAnywhere()
@@ -229,6 +237,8 @@ export class CatInTheWay extends SceneState<BardScene> {
     this.listeners.push(scene.characters.bard.events.onInputUp.addOnce(
       () => scene.stateManagers.bard.trigger(SadBard)
     ))
+
+    Inventory.instance.addItem(Images.filet.key)
   }
 }
 
@@ -264,12 +274,22 @@ class CatFeast extends SceneStateTransition<BardScene> {
 
     await scene.playDialogJson('catFeastAfterAccepted')
 
-    await scene.tweens.create(scene.characters.cat).to({
-      y: 150
-    }, 500, i => (1 + 2 / 3) * i * i - (2 / 3) * i).start().onComplete.asPromise()
+    scene.characters.cat.visible = false
+
+    const catJump = new Phaser.Sprite(scene.game, 266, 60, Spritesheets.catJump.key)
+    catJump.animations.add('jump', ArrayUtils.range(1, 7), 8)
+    catJump.scale.setTo(-2, 2)
+    scene.add.existing(catJump)
+    await catJump.animations.play('jump').onComplete.asPromise()
+    catJump.kill()
 
     scene.characters.cat.scale.x *= -1
     scene.characters.cat.setActiveState('walking')
+    scene.characters.cat.position.x -= 42
+    scene.characters.cat.position.y += 56
+    scene.characters.cat.visible = true
+
+
     await scene.tweens.create(scene.characters.cat).to({
       x: -Math.abs(scene.characters.cat.width * scene.characters.cat.anchor.x)
     }, 3000).start().onComplete.asPromise()
