@@ -235,6 +235,7 @@ class InventorySlot {
       const scene = Scene.getActiveScene(this.inventory.game)
 
       scene.itemDropped(pointer.x, pointer.y, value).then(async (success) => {
+        AudioManager.instance.tracks.speech.playClip(success ? Audio.characterPlop.key : Audio.itemPickup.key)
         if (!success) {
           const invCenterX = scene.inventoryButton.x
           const invCenterY = scene.inventoryButton.y
