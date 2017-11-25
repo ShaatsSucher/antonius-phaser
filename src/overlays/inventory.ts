@@ -1,7 +1,8 @@
 import { Button, ButtonState } from '../gameObjects/button'
-import { Atlases, CustomWebFonts, Images, Json } from '../assets'
+import { Atlases, Audio, CustomWebFonts, Images, Json } from '../assets'
 import Slider from '../gameObjects/slider'
 import GameObject from '../gameObjects/gameObject'
+import { AudioManager } from '../utils/audioManager'
 
 import Scene from '../states/scenes/scene'
 
@@ -92,6 +93,8 @@ export default class Inventory extends Phaser.Group {
     if (!scene) {
       scene = Scene.getActiveScene(this.game)
     }
+
+    AudioManager.instance.tracks.speech.playClip(Audio.itemPickup.key)
 
     // Animate the item using the scene's tween manager to the scene's inventoryButton
     const invCenterX = scene.inventoryButton.x
