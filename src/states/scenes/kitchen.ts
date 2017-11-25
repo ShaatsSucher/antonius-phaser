@@ -12,6 +12,7 @@ import Arrow from '../../gameObjects/arrow'
 import GameObject from '../../gameObjects/gameObject'
 
 import Inventory from '../../overlays/inventory'
+import { AudioManager } from '../../utils/audioManager'
 
 export default class KitchenScene extends Scene {
   public characters = {
@@ -26,16 +27,19 @@ export default class KitchenScene extends Scene {
     toBardArrow: null,
     toConcertArrow: null,
 
+    bowl: null,
     rock: null
   }
+  emptyBowl: GameObject
 
   stateManagers: {[name: string]: SceneStateManager<KitchenScene>} = {
     cooks: new SceneStateManager<KitchenScene>(this, [
+      WaitingForVeggies,
       InitialCooks,
       WaitingForWater,
       WaitingForFish,
-      WaitingForVeggies,
-      DoneCooking
+      DoneCooking,
+      NoSoupLeft
     ], [
       WeNeedWater,
       StillNeedWater,
@@ -44,7 +48,9 @@ export default class KitchenScene extends Scene {
       WeNeedVeggies,
       StillNeedVeggies,
       VeggiesNotCut,
-      FinishCooking
+      FinishCooking,
+      LeftoverSoup,
+      ScoopingSoup
     ]),
     eggwoman: new SceneStateManager<KitchenScene>(this, [
       InitialEggwoman,
@@ -100,6 +106,12 @@ export default class KitchenScene extends Scene {
     const rock = this.interactiveObjects.rock = new GameObject(this.game, 216, 94, Images.rock.key)
     this.game.add.existing(rock)
 
+    this.emptyBowl = new GameObject(this.game, 43, 115, Images.bowlEmpty.key)
+    this.game.add.existing(this.emptyBowl)
+
+    const bowl = this.interactiveObjects.bowl = new GameObject(this.game, 43, 115, Images.bowl.key)
+    this.game.add.existing(bowl)
+
     const eggwoman = this.characters.eggwoman = new EggWomanCharacter(this, 200, 100)
     eggwoman.scale.setTo(2)
     this.game.add.existing(eggwoman)
@@ -109,11 +121,13 @@ export default class KitchenScene extends Scene {
     antonius.setActiveState('idle')
     this.game.add.existing(antonius)
 
-    const cook1 = this.characters.cook1 = new Cook1Character(this, 50, 96)
+    const cook1 = this.characters.cook1 = new Cook1Character(this, 82, 96)
+    cook1.anchor.x = 0.5
     cook1.scale.setTo(2)
     this.game.add.existing(cook1)
 
-    const cook2 = this.characters.cook2 = new Cook2Character(this, 85, 110)
+    const cook2 = this.characters.cook2 = new Cook2Character(this, 117, 110)
+    cook2.anchor.x = 0.5
     cook2.scale.setTo(2)
     this.game.add.existing(cook2)
   }
@@ -122,6 +136,7 @@ export default class KitchenScene extends Scene {
 export class InitialCooks extends SceneState<KitchenScene> {
   public async show() {
     const scene = this.scene
+    scene.interactiveObjects.bowl.visible = true
 
     scene.characters.cook1.interactionEnabled = true
     scene.characters.cook2.interactionEnabled = true
@@ -139,6 +154,7 @@ export class InitialCooks extends SceneState<KitchenScene> {
 class WeNeedWater extends SceneStateTransition<KitchenScene> {
   public async enter() {
     const scene = this.scene
+    scene.interactiveObjects.bowl.visible = true
 
     await scene.playDialogJson('cooksNeedWater')
 
@@ -148,6 +164,7 @@ class WeNeedWater extends SceneStateTransition<KitchenScene> {
 
 export class WaitingForWater extends SceneState<KitchenScene> {
   public async show() {
+    this.scene.interactiveObjects.bowl.visible = true
     const c = this.scene.characters
 
     c.cook1.interactionEnabled = true
@@ -180,6 +197,7 @@ export class WaitingForWater extends SceneState<KitchenScene> {
 class StillNeedWater extends SceneStateTransition<KitchenScene> {
   async enter() {
     const scene = this.scene
+    scene.interactiveObjects.bowl.visible = true
 
     await scene.playDialogJson('cooksWaitingForWater')
 
@@ -190,6 +208,7 @@ class StillNeedWater extends SceneStateTransition<KitchenScene> {
 class WeNeedFish extends SceneStateTransition<KitchenScene> {
   async enter() {
     const scene = this.scene
+    scene.interactiveObjects.bowl.visible = true
 
     await scene.playDialogJson('cooksNeedFish')
 
@@ -199,6 +218,7 @@ class WeNeedFish extends SceneStateTransition<KitchenScene> {
 
 export class WaitingForFish extends SceneState<KitchenScene> {
   public async show() {
+    this.scene.interactiveObjects.bowl.visible = true
     const c = this.scene.characters
 
     c.cook1.interactionEnabled = true
@@ -231,6 +251,7 @@ export class WaitingForFish extends SceneState<KitchenScene> {
 class StillNeedFish extends SceneStateTransition<KitchenScene> {
   async enter() {
     const scene = this.scene
+    scene.interactiveObjects.bowl.visible = true
 
     await scene.playDialogJson('cooksWaitingForFish')
 
@@ -241,6 +262,7 @@ class StillNeedFish extends SceneStateTransition<KitchenScene> {
 class WeNeedVeggies extends SceneStateTransition<KitchenScene> {
   async enter() {
     const scene = this.scene
+    scene.interactiveObjects.bowl.visible = true
 
     await scene.playDialogJson('cooksNeedVeggies')
 
@@ -250,6 +272,8 @@ class WeNeedVeggies extends SceneStateTransition<KitchenScene> {
 
 export class WaitingForVeggies extends SceneState<KitchenScene> {
   async show() {
+    this.scene.interactiveObjects.bowl.visible = true
+
     const c = this.scene.characters
 
     c.cook1.interactionEnabled = true
@@ -290,6 +314,7 @@ export class WaitingForVeggies extends SceneState<KitchenScene> {
 class StillNeedVeggies extends SceneStateTransition<KitchenScene> {
   async enter() {
     const scene = this.scene
+    scene.interactiveObjects.bowl.visible = true
 
     await scene.playDialogJson('cooksWaitingForVeggies')
 
@@ -300,6 +325,7 @@ class StillNeedVeggies extends SceneStateTransition<KitchenScene> {
 class VeggiesNotCut extends SceneStateTransition<KitchenScene> {
   async enter() {
     const scene = this.scene
+    scene.interactiveObjects.bowl.visible = true
 
     await scene.playDialogJson('cooksWantVeggiesCut')
 
@@ -311,6 +337,7 @@ class FinishCooking extends SceneStateTransition<KitchenScene> {
   async enter() {
     const scene = this.scene
     const c = scene.characters
+    scene.interactiveObjects.bowl.visible = true
 
     await scene.playDialogJson('cooksCooking')
 
@@ -324,19 +351,65 @@ class FinishCooking extends SceneStateTransition<KitchenScene> {
       scene.tweens.create(c.cook2).to({x: xmin}, 3000).start().onComplete.asPromise()
     ])
 
-    // TODO: make it so you have to click the soup pot, to obtain soup
-    Inventory.instance.addItem(Images.cupSoup.key)
-
     return DoneCooking
   }
 }
 
-export class DoneCooking extends SceneState<KitchenScene> {
+class DoneCooking extends SceneState<KitchenScene> {
   async show() {
     const c = this.scene.characters
 
     c.cook1.visible = false
     c.cook2.visible = false
+    this.scene.interactiveObjects.bowl.visible = true
+
+    this.scene.interactiveObjects.bowl.visible = true
+
+    this.listeners.push(this.scene.interactiveObjects.bowl.events.onInputUp.addOnce(() =>
+      this.stateManager.trigger(LeftoverSoup)
+    ))
+
+    this.listeners.push(this.scene.addItemDropHandler(this.scene.interactiveObjects.bowl, async (key) => {
+      if (key !== Images.cupEmpty.key) return false
+      Inventory.instance.takeItem(Images.cupEmpty.key)
+      this.stateManager.trigger(ScoopingSoup)
+      return true
+    }))
+  }
+}
+
+class LeftoverSoup extends SceneStateTransition<KitchenScene> {
+  async enter() {
+    this.scene.interactiveObjects.bowl.visible = true
+
+    this.scene.characters.cook1.visible = false
+    this.scene.characters.cook2.visible = false
+
+    await this.scene.playDialogJson('leftoverSoup')
+    return DoneCooking
+  }
+}
+
+class ScoopingSoup extends SceneStateTransition<KitchenScene> {
+  async enter() {
+    this.scene.characters.cook1.visible = false
+    this.scene.characters.cook2.visible = false
+    this.scene.interactiveObjects.bowl.visible = false
+
+    AudioManager.instance.tracks.speech.playClip(Audio.scoopingWater.key)
+    Inventory.instance.addItem(Images.cupSoup.key)
+
+    return NoSoupLeft
+  }
+}
+
+export class NoSoupLeft extends SceneState<KitchenScene> {
+  async show() {
+    this.scene.characters.cook1.visible = false
+    this.scene.characters.cook2.visible = false
+    this.scene.interactiveObjects.bowl.visible = false
+
+    this.scene.interactiveObjects.bowl.interactionEnabled = false
   }
 }
 

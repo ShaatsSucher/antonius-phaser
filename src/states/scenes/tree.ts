@@ -18,7 +18,7 @@ import GoatCharacter from '../../characters/goat'
 
 import { BardGone, MeckieGone } from './bard'
 import { OwlPeeingInBucket } from './canopy'
-import { DoneCooking } from './kitchen'
+import { NoSoupLeft } from './kitchen'
 
 import Arrow from '../../gameObjects/arrow'
 
@@ -105,7 +105,7 @@ export default class TreeScene extends Scene {
       TransitionCondition.reachedState(scenes.bard.stateManagers.meckie, MeckieGone)
         .and(TransitionCondition.reachedState(scenes.bard.stateManagers.bard, BardGone))
         .and(TransitionCondition.reachedState(scenes.tree.stateManagers.woman, SatisfiedWoman))
-        .and(TransitionCondition.reachedState(scenes.kitchen.stateManagers.cooks, DoneCooking))
+        .and(TransitionCondition.reachedState(scenes.kitchen.stateManagers.cooks, NoSoupLeft))
         // TODO: add all *Gone-states (except the ones for people on the forehead)
 
     this.stateManagers.tree.registerConditionalTransitions(

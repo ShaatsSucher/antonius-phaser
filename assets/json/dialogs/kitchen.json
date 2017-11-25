@@ -91,6 +91,11 @@
 
     [ "cook2",      "Unsere Aufgabe ist erledigt.", 5 ]
   ],
+  "leftoverSoup": [
+    [ "antonius", [ "Sieht so aus, als wäre noch",
+                    "ein wenig Suppe übrig!"
+                  ], [null, "lslsslslsssslsl"] ]
+  ],
 
   "kidsTheseDays": [
     [ "antonius",   "Grüß Gott.", [null, "ss"] ],
