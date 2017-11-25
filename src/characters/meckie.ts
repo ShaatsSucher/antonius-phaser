@@ -4,6 +4,7 @@ import CharacterState from './characterState'
 import { ArrayUtils, StringUtils } from '../utils/utils'
 import Scene from '../states/scenes/scene'
 import SpeechHelper from '../utils/speechHelper'
+import { AudioManager } from '../utils/audioManager'
 
 export default class MeckieCharacter extends Character {
   public readonly speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.pattern(
@@ -66,10 +67,21 @@ class WalkingState implements CharacterState<MeckieCharacter> {
   }
 }
 
+const nextSwingSample = SpeechHelper.Generators.random(
+  ArrayUtils.range(1, 7).map(i =>
+    Assets.Audio[`knifeguyKnifeSwing${StringUtils.intToString(i, 3)}`].key
+  )
+)()
+
 class SwingingState implements CharacterState<MeckieCharacter> {
   constructor(public character: MeckieCharacter) { }
 
+  public async playSwingSound() {
+    await AudioManager.instance.tracks.speech.playClip(nextSwingSample())
+  }
+
   async enter() {
+    this.playSwingSound()
     this.character.animations.stop() // reset animation if necessary
     const anim = this.character.play('swinging')
   }

@@ -426,7 +426,7 @@ class CutFishFirst extends SceneStateTransition<BardScene> {
     Inventory.instance.takeItem(Images.fish.key)
 
     scene.characters.meckie.setActiveState('swinging')
-    await scene.wait(1)
+    await scene.wait(0.5)
 
     await scene.playDialogJson('cutFishAfterCutting')
 
@@ -447,7 +447,7 @@ class CutVeggiesFirst extends SceneStateTransition<BardScene> {
     Inventory.instance.takeItem(Images.carrot.key)
 
     scene.characters.meckie.setActiveState('swinging')
-    await scene.wait(1)
+    await scene.wait(0.5)
 
     Inventory.instance.addItem(Images.carrotSliced.key)
 
@@ -498,7 +498,7 @@ class CutFish extends SceneStateTransition<BardScene> {
     Inventory.instance.takeItem(Images.fish.key)
 
     scene.characters.meckie.setActiveState('swinging')
-    await scene.wait(1)
+    await scene.wait(0.5)
     scene.characters.meckie.setActiveState('idle')
 
     await scene.playDialogJson('cutFishAfterCutting')
@@ -552,7 +552,7 @@ class CuttingVeggies extends SceneStateTransition<BardScene> {
     Inventory.instance.takeItem(Images.carrot.key)
 
     scene.characters.meckie.setActiveState('swinging')
-    await scene.wait(1)
+    await scene.wait(0.5)
 
     Inventory.instance.addItem(Images.carrotSliced.key)
 
