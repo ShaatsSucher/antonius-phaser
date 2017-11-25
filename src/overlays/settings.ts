@@ -165,6 +165,7 @@ export default class SettingsOverlay extends Phaser.Group {
       this.speechVolumeSlider.value = this.oldState.speechVolume
     }
 
+    this.oldState = undefined
     this.visible = false
     this.onMenuClosed.dispatch()
   }
