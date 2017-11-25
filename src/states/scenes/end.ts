@@ -38,7 +38,7 @@ export default class EndScene extends Scene {
   }
 
   constructor(game: Phaser.Game) {
-    super(game, '')
+    super(game, '', [], Audio.musicCredits.key)
   }
 
   protected createGameObjects() {
