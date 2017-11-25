@@ -16,8 +16,9 @@
                   ], [5, "scared"] ],
     [ "tree",     [ "Er wird bestimmt mit einer",
                     "Liebesbotschaft meinen schönen Teint ruinieren!"
-                  ], [5, "scared"] ],
-
+                  ], [5, "scared"] ]
+  ],
+  "antoniusAdmiringKnife": [
     [ "antonius", [ "Ja, das hat schon eine stattliche",
                     "Größe, dieses Messer!"
                   ], [null, "lssslsl"] ]

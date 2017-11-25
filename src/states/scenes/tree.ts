@@ -158,7 +158,9 @@ export default class TreeScene extends Scene {
     this.game.add.existing(woman)
 
     const antonius = this.characters.antonius = new AntoniusCharacter(this, 160, 115)
+    antonius.anchor.x = 0.5
     antonius.scale = new Phaser.Point(-2, 2)
+    antonius.position.x -= Math.abs(antonius.width) / 2
     this.game.add.existing(antonius)
 
     const toBardArrow = this.interactiveObjects.toBardArrow = new Arrow(this.game, 20, 95)
@@ -222,6 +224,10 @@ class TreeScaredOfMeckie extends SceneStateTransition<TreeScene> {
     const scene = this.scene
 
     await scene.playDialogJson('treeScaredOfMeckie')
+    scene.characters.antonius.scale.x *= -1
+    await scene.wait(0.2)
+    await scene.playDialogJson('antoniusAdmiringKnife')
+    scene.characters.antonius.scale.x *= -1
 
     return TreeWaitingForMeckieGone
   }
