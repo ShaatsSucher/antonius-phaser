@@ -209,11 +209,9 @@ export default class HeadScene extends Scene {
       0, 0, 10, 10, 10, 10, 11, 11, 11, 11, 9, 9, 9, 0, 0, -1, -1
     ]
     hellmouth.currentFrame.onValueChanged
-      .map(frame => { console.log(frame); return frame })
       .map(frame => offsets[frame - 4] || 0)
       .add(offset => {
         breedingGeese.y = 153 - Math.round(offset / 3 * 2)
-        // console.log(breedingGeese.y)
         painter.y = 56 - offset
         bucket.y = 51 - offset
       })
@@ -585,9 +583,12 @@ class Credits extends SceneStateTransition<HeadScene> {
     scene.characters.hellmouth.setActiveState('open mouth')
 
     await Promise.all([
-      scene.tweens.create(this.scene.characters.breedingGeese).to({ rotation: Math.PI * 10 }, 5000, Phaser.Easing.Cubic.In, true).onComplete.asPromise(),
-      scene.tweens.create(this.scene.characters.breedingGeese.scale).to({ x: 0, y: 0}, 5000, Phaser.Easing.Cubic.In, true).onComplete.asPromise()
+      scene.tweens.create(scene.characters.breedingGeese).to({ rotation: Math.PI * 10 }, 5000, Phaser.Easing.Cubic.In, true).onComplete.asPromise(),
+      scene.tweens.create(scene.characters.breedingGeese.scale).to({ x: 0, y: 0}, 5000, Phaser.Easing.Cubic.In, true).onComplete.asPromise()
     ])
+    // scene.characters.breedingGeese.visible = false
+    // scene.characters.breedingGeese.rotation = 0
+    // scene.characters.breedingGeese.scale.setTo(1)
     await scene.characters.hellmouth.setActiveState('close mouth')
 
     await Promise.all([
