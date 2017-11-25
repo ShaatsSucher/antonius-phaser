@@ -69,6 +69,7 @@ class OpenMouthState implements CharacterState<HellmouthCharacter> {
   async enter() {
     this.character.animations.stop()
     const anim = this.character.play('open mouth')
+    anim.restart()
     let animDoneCb
     const animDone = new Promise(resolve => { animDoneCb = resolve })
     anim.onComplete.addOnce(animDoneCb)
@@ -82,6 +83,7 @@ class CloseMouthState implements CharacterState<HellmouthCharacter> {
   async enter() {
     this.character.animations.stop()
     const anim = this.character.play('close mouth')
+    anim.restart()
     anim.onComplete.addOnce(() => {
       this.character.setActiveState('idle')
     })

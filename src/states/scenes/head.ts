@@ -193,7 +193,8 @@ export default class HeadScene extends Scene {
     antonius.scale.setTo(2)
     this.game.add.existing(antonius)
 
-    const breedingGeese = this.characters.breedingGeese = new BreedingGeeseCharacter(this, 163, 18)
+    const breedingGeese = this.characters.breedingGeese = new BreedingGeeseCharacter(this, 190, 153)
+    breedingGeese.anchor.setTo(0.421875, 2.121875)
     this.game.add.existing(breedingGeese)
 
     const painter = this.characters.painter = new PainterCharacter(this, 165, 56)
@@ -208,9 +209,11 @@ export default class HeadScene extends Scene {
       0, 0, 10, 10, 10, 10, 11, 11, 11, 11, 9, 9, 9, 0, 0, -1, -1
     ]
     hellmouth.currentFrame.onValueChanged
+      .map(frame => { console.log(frame); return frame })
       .map(frame => offsets[frame - 4] || 0)
       .add(offset => {
-        breedingGeese.y = 18 - Math.round(offset / 3 * 2)
+        breedingGeese.y = 153 - Math.round(offset / 3 * 2)
+        // console.log(breedingGeese.y)
         painter.y = 56 - offset
         bucket.y = 51 - offset
       })
@@ -575,6 +578,18 @@ class Credits extends SceneStateTransition<HeadScene> {
     await swallow(swan, 0, 170, 'talking')
     await swallow(new FightCloudCharacter(scene, 0, 0), 0.4, 160)
 
+    AudioManager.instance.tracks.speech.playClip(Audio.hatchlings.key)
+    await this.scene.characters.breedingGeese.setActiveState('hatching')
+    this.scene.characters.breedingGeese.setActiveState('hatched')
+    AudioManager.instance.tracks.speech.playClip(Audio.hellmouthWhirlwind001.key)
+    scene.characters.hellmouth.setActiveState('open mouth')
+
+    await Promise.all([
+      scene.tweens.create(this.scene.characters.breedingGeese).to({ rotation: Math.PI * 10 }, 5000, Phaser.Easing.Cubic.In, true).onComplete.asPromise(),
+      scene.tweens.create(this.scene.characters.breedingGeese.scale).to({ x: 0, y: 0}, 5000, Phaser.Easing.Cubic.In, true).onComplete.asPromise()
+    ])
+    await scene.characters.hellmouth.setActiveState('close mouth')
+
     await Promise.all([
       scene.characters.buckethead.setActiveState('vanish'),
       scene.characters.painter.setActiveState('vanish')
@@ -659,27 +674,6 @@ class Credits extends SceneStateTransition<HeadScene> {
     await this.showCreditSegment(['IN KOOPERATION MIT DER', 'STAATLICHEN KUNSTHALLE KARLSRUHE', 'Tabea Mernberger', 'Sandra Trevisan'])
 
     await this.showCreditSegment(['EIN SPIEL IM RAHMEN DES', 'CODE FOR CULTURE GAME JAMS'], 'right')
-
-    await this.scene.wait(4.5)
-
-    await this.showCreditSegment(['VON STUDIERENDEN DER HOCHSCHULEN',
-      'Universität Stuttgart',
-      'Hochschule der Medien Stuttgart',
-      'Eberhard Karls Universität Tübingen',
-      'Staatliche Hochschule für Musik Trossingen',
-      'Staatliche Hochschule für Gestaltung Karlsruhe'
-    ], 'center')
-
-    await this.showCreditSegment(['SPEZIELLEN DANK AN',
-      'Yasi Schneidt',
-      'Die Organisatoren des Game Jams',
-      'Staatliche Kunsthalle Karlsruhe',
-      'Gamelab Karlsruhe',
-      'Shackspace Stuttgart',
-      'Die Schülerinnen und Schüler beim Test-Nachmittag',
-      'Joos van Craesbeeck',
-      'Den heiligen Antonius'
-    ], 'center')
   }
 
   public async enter(visible: boolean) {
@@ -699,6 +693,25 @@ class Credits extends SceneStateTransition<HeadScene> {
         this.swallowCharacters(),
         this.rollCredits()
       ])
+
+      await this.showCreditSegment(['VON STUDIERENDEN DER HOCHSCHULEN',
+        'Universität Stuttgart',
+        'Hochschule der Medien Stuttgart',
+        'Eberhard Karls Universität Tübingen',
+        'Staatliche Hochschule für Musik Trossingen',
+        'Staatliche Hochschule für Gestaltung Karlsruhe'
+      ], 'center')
+
+      await this.showCreditSegment(['SPEZIELLEN DANK AN',
+        'Yasi Schneidt',
+        'Die Organisatoren des Game Jams',
+        'Staatliche Kunsthalle Karlsruhe',
+        'Gamelab Karlsruhe',
+        'Shackspace Stuttgart',
+        'Die Schülerinnen und Schüler beim Test-Nachmittag',
+        'Joos van Craesbeeck',
+        'Den heiligen Antonius'
+      ], 'center')
 
       return TheEnd
     }
