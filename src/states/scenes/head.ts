@@ -703,7 +703,7 @@ class Credits extends SceneStateTransition<HeadScene> {
     await this.showCreditSegment(['PROGRAMMIERUNG', jonas, valentin], 'right')
     await this.showCreditSegment(['ANIMATION', nabil, kay, mathilde])
     await this.showCreditSegment(['HINTERGRÜNDE', kay, marina], 'right')
-    await this.showCreditSegment(['SPRITES', marina, mathilde, nabil, kay])
+    await this.showCreditSegment(['SPRITES', nabil, kay, mathilde, marina])
     await this.showCreditSegment(['MUSIK UND SOUND DESIGN', mathilde], 'right')
     await this.showCreditSegment(['VOICE ACTING', nabil, 'Felix Barbarino', mathilde, valentin])
     await this.showCreditSegment(['MENTORIN', 'Greta Hoffmann'], 'right')
