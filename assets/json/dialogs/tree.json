@@ -28,7 +28,7 @@
                     "Messermann verschwindet."
                   ], [3, "scared"] ]
   ],
-  "treeAllowingAscend": [
+  "treeAllowingAscent": [
     [ "tree",       "Endlich ist der Verrückte mit dem Messer weg!", [3, "scared"] ],
     [ "tree",       "Ich hatte solche Angst um meine Rinde!", [3, "scared"] ],
 
@@ -92,10 +92,6 @@
                   ], [null, "ssllslssslsssl"] ]
   ],
   "treeOpeningUp": [
-    [ "antonius", [ "Dürfte ich jetzt vielleicht",
-                    "deine Baumhöhle betreten?"
-                  ], [null, "ssllslssslsssl"] ],
-
     [ "tree",       "Wenn du das unbedingt möchtest...", [2, "shy"] ],
     [ "tree",       "Aber ich habe nicht aufgeräumt!", [2, "shy"] ],
 

@@ -56,7 +56,7 @@ export default class ConcertScene extends Scene {
     ], [
 
     ]),
-    Swan: new SceneStateManager<ConcertScene>(this, [
+    swan: new SceneStateManager<ConcertScene>(this, [
       InitialSwan,
       SwanGone
     ], [

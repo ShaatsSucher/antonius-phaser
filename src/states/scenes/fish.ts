@@ -386,7 +386,7 @@ class AlphaPigJourney extends SceneStateTransition<FishScene> {
   }
 }
 
-class AlphaPigGone extends SceneState<FishScene> {
+export class AlphaPigGone extends SceneState<FishScene> {
   public async show() {
     this.scene.characters.alphapig.visible = false
   }

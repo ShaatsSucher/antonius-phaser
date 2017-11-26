@@ -19,6 +19,8 @@ import GoatCharacter from '../../characters/goat'
 import { BardGone, MeckieGone } from './bard'
 import { OwlPeeingInBucket } from './canopy'
 import { NoSoupLeft } from './kitchen'
+import { AlphaPigGone } from './fish'
+import { NailgooseGone, SwanGone } from './concert'
 
 import Arrow from '../../gameObjects/arrow'
 
@@ -46,18 +48,17 @@ export default class TreeScene extends Scene {
       TreeReadyToTalk,
       TreeWaitingForOwlGone,
       TreeWaitingForAllGone,
-      AntoniusRequestedEntryForTheFirstTime,
       TreeDeniedEntry,
-      TreeWillAllowEntry,
       TreeAllowedEntry
     ], [
       TreeScaredOfMeckie,
       TreeStillWaitingForMeckieGone,
-      TreeAllowingAscend,
+      TreeAllowingAscent,
       TreeStillWaitingForOwlGone,
       AntoniusRequestsEntryForTheFirstTime,
-      TreeDeniesEntry,
       AntoniusRequestsEntry,
+      TreeCheckAllGone,
+      TreeDeniesEntry,
       TreeOpeningUp
     ]),
     woman: new SceneStateManager(this, [
@@ -100,13 +101,15 @@ export default class TreeScene extends Scene {
     )
   }
 
+  public allGoneExceptTreeAndAntonius: TransitionCondition
+
   protected registerConditionalStateTransitions(scenes: { [title: string]: Scene }) {
-    const allGoneExceptTreeAndAntonius =
+    this.allGoneExceptTreeAndAntonius =
       TransitionCondition.reachedState(scenes.bard.stateManagers.meckie, MeckieGone)
-        .and(TransitionCondition.reachedState(scenes.bard.stateManagers.bard, BardGone))
         .and(TransitionCondition.reachedState(scenes.tree.stateManagers.woman, SatisfiedWoman))
-        .and(TransitionCondition.reachedState(scenes.kitchen.stateManagers.cooks, NoSoupLeft))
-        // TODO: add all *Gone-states (except the ones for people on the forehead)
+        .and(TransitionCondition.reachedState(scenes.fish.stateManagers.alphapig, AlphaPigGone))
+        .and(TransitionCondition.reachedState(scenes.concert.stateManagers.swan, SwanGone))
+        .and(TransitionCondition.reachedState(scenes.concert.stateManagers.nailgoose, NailgooseGone))
 
     this.stateManagers.tree.registerConditionalTransitions(
       new ConditionalStateTransition(
@@ -116,22 +119,6 @@ export default class TreeScene extends Scene {
       new ConditionalStateTransition(
         TreeWaitingForAllGone,
         TransitionCondition.reachedState(scenes.canopy.stateManagers.owl, OwlPeeingInBucket)
-      ),
-      new ConditionalStateTransition(
-        TreeDeniesEntry,
-        TransitionCondition.reachedState(this.stateManagers.tree, AntoniusRequestedEntryForTheFirstTime)
-          .and(allGoneExceptTreeAndAntonius.not()) // TODO: make sure this only triggers <= 1 times
-      ),
-      new ConditionalStateTransition(
-        TreeOpeningUp,
-        TransitionCondition.reachedState(this.stateManagers.tree, AntoniusRequestedEntryForTheFirstTime)
-          .and(allGoneExceptTreeAndAntonius) // TODO: make sure this only triggers <= 1 times
-          .and(TransitionCondition.reachedState(this.stateManagers.tree, TreeDeniedEntry).not())
-      ),
-      new ConditionalStateTransition(
-        TreeWillAllowEntry,
-        TransitionCondition.reachedState(this.stateManagers.tree, TreeDeniedEntry)
-          .and(allGoneExceptTreeAndAntonius)
       )
     )
 
@@ -264,16 +251,16 @@ class TreeReadyToTalk extends SceneState<TreeScene> {
 
     this.scene.characters.tree.interactionEnabled = true
     this.listeners.push(this.scene.characters.tree.events.onInputUp.addOnce(
-      () => this.stateManager.trigger(TreeAllowingAscend)
+      () => this.stateManager.trigger(TreeAllowingAscent)
     ))
   }
 }
 
-class TreeAllowingAscend extends SceneStateTransition<TreeScene> {
+class TreeAllowingAscent extends SceneStateTransition<TreeScene> {
   public async enter() {
     const scene = this.scene
 
-    await scene.playDialogJson('treeAllowingAscend')
+    await scene.playDialogJson('treeAllowingAscent')
 
     return TreeStillWaitingForOwlGone
   }
@@ -316,20 +303,28 @@ class AntoniusRequestsEntryForTheFirstTime extends SceneStateTransition<TreeScen
     const scene = this.scene
 
     await scene.playDialogJson('antoniusRequestsEntryForTheFirstTime')
-    await scene.playDialogJson('treeDeniesEntry')
 
-    return AntoniusRequestedEntryForTheFirstTime
+    return TreeCheckAllGone
   }
 }
 
-class AntoniusRequestedEntryForTheFirstTime extends SceneState<TreeScene> {
+class AntoniusRequestsEntry extends SceneStateTransition<TreeScene> {
   public async enter() {
-    this.scene.interactiveObjects.toCaveArrow.visible = false
+    const scene = this.scene
 
-    this.scene.characters.tree.interactionEnabled = true
-    this.listeners.push(this.scene.characters.tree.events.onInputUp.add(
-      () => this.stateManager.trigger(AntoniusRequestsEntry)
-    ))
+    await scene.playDialogJson('antoniusRequestsEntry')
+
+    return TreeCheckAllGone
+  }
+}
+
+class TreeCheckAllGone extends SceneStateTransition<TreeScene> {
+  public async enter() {
+    if (this.scene.allGoneExceptTreeAndAntonius.isSatisfied) {
+      return TreeOpeningUp
+    } else {
+      return TreeDeniesEntry
+    }
   }
 }
 
@@ -354,27 +349,6 @@ class TreeDeniedEntry extends SceneState<TreeScene> {
   }
 }
 
-class AntoniusRequestsEntry extends SceneStateTransition<TreeScene> {
-  public async enter() {
-    const scene = this.scene
-
-    await scene.playDialogJson('antoniusRequestsEntry')
-
-    return TreeDeniesEntry
-  }
-}
-
-class TreeWillAllowEntry extends SceneState<TreeScene> {
-  public async show() {
-    this.scene.interactiveObjects.toCaveArrow.visible = false
-
-    this.scene.characters.tree.interactionEnabled = true
-    this.listeners.push(this.scene.characters.tree.events.onInputUp.add(
-      () => this.stateManager.trigger(TreeOpeningUp)
-    ))
-  }
-}
-
 class TreeOpeningUp extends SceneStateTransition<TreeScene> {
   public async enter() {
     const scene = this.scene
@@ -388,8 +362,10 @@ class TreeOpeningUp extends SceneStateTransition<TreeScene> {
   }
 }
 
-class TreeAllowedEntry extends SceneState<TreeScene> {
+class TreeAllowedEntry extends SceneState<TreeScene> {TreeDeniesEntry
   public async show() {
+    this.scene.interactiveObjects.toCaveArrow.visible = true
+
     await this.scene.characters.tree.setActiveState('idleOpen')
   }
 }
@@ -448,7 +424,7 @@ export class NewKnowledge extends SceneState<TreeScene> {
   public async show() {
     const c = this.scene.characters
 
-    console.log('KNEW KNOWLEDGE ACQUIRED!')
+    console.log('NEW KNOWLEDGE ACQUIRED!')
 
     c.woman.interactionEnabled = true
 
