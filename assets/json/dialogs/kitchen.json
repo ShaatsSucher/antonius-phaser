@@ -115,23 +115,30 @@
     [ "antonius",   "Ich ...", [null, "s"] ],
 
     [ "eggwoman", [ "Sie haben leicht reden. Sie kommen da",
-                    "aus der Wüste mit Ihrer Bibel,",
-                    "doch haben Sie sich noch nie mit echten Dämonen, wie",
-                    "dieser Jugend von heute abgeben müssen.",
-                    "Damals, zu meiner Zeit, herrschte noch Zucht und Ordnung!"
+                    "aus der Wüste mit Ihrer Bibel, doch",
+                    "haben Sie sich noch nie mit echten Dämonen",
+                    "wie dieser Jugend von heute abgeben müssen."
                   ], 22 ],
+    [ "eggwoman", [ "Damals, zu meiner Zeit, herrschte",
+                    "noch Zucht und Ordnung!"
+                  ], 8],
 
     [ "antonius",   "Aber ...", [null, "l"] ],
 
     [ "eggwoman", [ "Kommen Sie mir hier nicht mit einem Aber.",
-                    "Gucken Sie sich doch nur mal diese Nichtsnutze da drüben an!",
-                    "Die machen den ganzen Tag nichts anderes",
-                    "als so lächerlich herum zu tanzen ..."
-                  ], 22 ],
-
-    [ "eggwoman", [ "Sie haben Recht, ich werde hier für Ordnung sorgen.",
-                    "Ab sofort weht hier ein ganz anderer Wind."
-                  ], 8 ]
+                    "Gucken Sie sich doch nur mal",
+                    "diese Nichtsnutze da drüben an!"
+                  ], 18 ],
+    [ "eggwoman", [ "Die machen den ganzen Tag nichts anderes",
+                    "als so lächerlich herum zu tanzen..."
+                  ], 10 ],
+    [ "eggwoman", [ "Und dieses alberne Geschrei von rechts",
+                    "macht mich wahnsinnig!"
+                  ], 8 ],
+    [ "eggwoman", [ "Sie haben Recht, ich werde hier für",
+                    "Ordnung sorgen. Ab sofort weht hier",
+                    "ein ganz anderer Wind."
+                  ], 10 ]
   ],
   "interestingRock": [
     [ "antonius", [ "Hm... Wofür CB wohl",
