@@ -513,7 +513,8 @@ class GoatState extends SceneState<TreeScene> {
   public constructor(
     scene: TreeScene,
     stateManager: SceneStateManager<TreeScene>,
-    private targetTransition: Extending<SceneStateTransition<TreeScene>>
+    private targetTransition: Extending<SceneStateTransition<TreeScene>>,
+    private waitPeriod = 10
   ) {
     super(scene, stateManager)
   }
@@ -533,7 +534,7 @@ class GoatState extends SceneState<TreeScene> {
 
     const peekGoat = () => {
       this.listeners.push(() => console.log('listeners cleared'))
-      const tick = this.timer.add(30 * Phaser.Timer.SECOND, () => {
+      const tick = this.timer.add(this.waitPeriod * Phaser.Timer.SECOND, () => {
         const tween = this.scene.tweens.create(goat.position).to({ x: 260 }, 1000, Phaser.Easing.Quadratic.In, true)
         this.listeners.push(() => tween.stop())
         this.listeners.push(tween.onComplete.addOnce(() => {
@@ -586,7 +587,7 @@ class GoatTransition extends SceneStateTransition<TreeScene> {
 
 class Goat1 extends GoatState {
   constructor(scene: TreeScene, stateManager: SceneStateManager<TreeScene>) {
-    super(scene, stateManager, GoatTransition1)
+    super(scene, stateManager, GoatTransition1, 30)
   }
 }
 
