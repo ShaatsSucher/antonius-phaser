@@ -468,10 +468,6 @@ class BucketheadIsAnnoying extends SceneState<HeadScene> {
   public async show() {
     const scene = this.scene
 
-    if (!Inventory.instance.hasItem(Images.hat.key)) {
-      Inventory.instance.addItem(Images.hat.key)
-    }
-
     scene.characters.buckethead.interactionEnabled = true
     this.listeners.push(scene.characters.buckethead.events.onInputUp.add(
       () => this.stateManager.trigger(BucketheadAsksForHelp)
