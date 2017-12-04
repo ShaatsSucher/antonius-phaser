@@ -184,7 +184,11 @@ export class PlayIntro extends SceneStateTransition<IntroScene> {
     })
 
     await Promise.race([
-      this.scene.image.events.onInputDown.asPromise(),
+      (async () => {
+        for (let i = 0; i < (DEBUG ? 1 : 5); i++) {
+          await this.scene.image.events.onInputDown.asPromise()
+        }
+      })(),
       clip.stopped
     ])
 
