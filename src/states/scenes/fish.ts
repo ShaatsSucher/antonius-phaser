@@ -16,6 +16,7 @@ import NailGooseCharacter from '../../characters/nailgoose'
 
 import { WaitingForFishOrVeggies, CatInTheWay } from './bard'
 import { NailgooseGone, NailPlanted } from './concert'
+import { WaitingForWater } from './kitchen'
 import * as HeadScene from './head'
 
 import Arrow from '../../gameObjects/arrow'
@@ -36,9 +37,9 @@ export default class FishScene extends Scene {
   interactiveObjects = {
     toHeadArrow: null,
     toKitchenArrow: null,
-    rudder: null,
-    seaClickBox: null
+    rudder: null
   }
+  public seaClickBox: GameObject
 
   readonly stateManagers: {
     [name: string]: SceneStateManager<FishScene>
@@ -81,8 +82,8 @@ export default class FishScene extends Scene {
       NailgooseLeavingTowardsConcert
     ]),
     water: new SceneStateManager<FishScene>(this, [
-      WaterActive,
-      WaterPassive
+      WaterPassive,
+      WaterActive
     ], [
       WaterLooksSalty,
       ScoopingWater
@@ -132,14 +133,18 @@ export default class FishScene extends Scene {
     )
     this.stateManagers.water.registerConditionalTransitions(
       new ConditionalStateTransition(
+        WaterActive,
+        TransitionCondition.reachedState(scenes.kitchen.stateManagers.cooks, WaitingForWater)
+      ),
+      new ConditionalStateTransition(
         WaterPassive,
-        TransitionCondition.reachedState(scenes.head.stateManagers.water, HeadScene.WaterPassive)
+        TransitionCondition.isState(scenes.head.stateManagers.water, HeadScene.WaterPassive)
       )
     )
   }
 
   protected createGameObjects() {
-    const seaClickBox = this.interactiveObjects.seaClickBox = new GameObject(this.game, 0, 0, Images.water2.key)
+    const seaClickBox = this.seaClickBox = new GameObject(this.game, 0, 0, Images.water2.key)
     seaClickBox.alpha = 0
     this.game.add.existing(seaClickBox)
 
@@ -520,7 +525,7 @@ class NailgooseLeftFish extends SceneState<FishScene> {
 
 class WaterActive extends SceneState<FishScene> {
   public async show() {
-    const sea = this.scene.interactiveObjects.seaClickBox
+    const sea = this.scene.seaClickBox
 
     sea.interactionEnabled = true
 
@@ -557,7 +562,6 @@ class ScoopingWater extends SceneStateTransition<FishScene> {
 
 export class WaterPassive extends SceneState<FishScene> {
   public async show() {
-    this.scene.interactiveObjects.seaClickBox.interactionEnabled = false
-    this.scene.interactiveObjects.seaClickBox.visible = false
+    this.scene.seaClickBox.interactionEnabled = false
   }
 }

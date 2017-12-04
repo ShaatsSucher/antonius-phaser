@@ -13,6 +13,7 @@ import AntoniusCharacter from '../../characters/antonius'
 
 import { FishDead } from './fish'
 import { CatInTheWay, BardGone, MeckieGone } from './bard'
+import { WaitingForWater } from './kitchen'
 import * as FishScene from './fish'
 
 import Character from '../../characters/character'
@@ -54,9 +55,9 @@ export default class HeadScene extends Scene {
 
   public interactiveObjects = {
     toBardArrow: null,
-    toFishArrow: null,
-    seaClickBox: null
+    toFishArrow: null
   }
+  public seaClickBox: GameObject
 
   public sideCharacters: Phaser.Sprite[] = []
 
@@ -73,9 +74,8 @@ export default class HeadScene extends Scene {
       Credits
     ]),
     water: new SceneStateManager<HeadScene>(this, [
-      WaterBeforeIntro,
-      WaterActive,
-      WaterPassive
+      WaterPassive,
+      WaterActive
     ], [
       WaterLooksSalty,
       ScoopingWater
@@ -162,11 +162,11 @@ export default class HeadScene extends Scene {
     this.stateManagers.water.registerConditionalTransitions(
       new ConditionalStateTransition(
         WaterActive,
-        TransitionCondition.reachedState(this.stateManagers.head, Silent)
+        TransitionCondition.reachedState(scenes.kitchen.stateManagers.cooks, WaitingForWater)
       ),
       new ConditionalStateTransition(
         WaterPassive,
-        TransitionCondition.reachedState(scenes.fish.stateManagers.water, FishScene.WaterPassive)
+        TransitionCondition.isState(scenes.fish.stateManagers.water, FishScene.WaterPassive)
       )
     )
 
@@ -199,7 +199,7 @@ export default class HeadScene extends Scene {
 
     this.sideCharacters.forEach(char => this.add.existing(char))
 
-    const seaClickBox = this.interactiveObjects.seaClickBox = new GameObject(this.game, 0, 169, Images.water.key)
+    const seaClickBox = this.seaClickBox = new GameObject(this.game, 0, 169, Images.water.key)
     seaClickBox.alpha = 0
     this.game.add.existing(seaClickBox)
 
@@ -258,15 +258,15 @@ export default class HeadScene extends Scene {
 // Water States
 // ---------------------------------------------------------------------------
 
-class WaterBeforeIntro extends SceneState<HeadScene> {
+export class WaterPassive extends SceneState<HeadScene> {
   public async show() {
-    this.scene.interactiveObjects.seaClickBox.interactionEnabled = false
+    this.scene.seaClickBox.interactionEnabled = false
   }
 }
 
 class WaterActive extends SceneState<HeadScene> {
   public async show() {
-    const sea = this.scene.interactiveObjects.seaClickBox
+    const sea = this.scene.seaClickBox
 
     sea.interactionEnabled = true
 
@@ -298,13 +298,6 @@ class ScoopingWater extends SceneStateTransition<HeadScene> {
     Inventory.instance.addItem(Images.cupWater.key)
 
     return WaterPassive
-  }
-}
-
-export class WaterPassive extends SceneState<HeadScene> {
-  public async show() {
-    this.scene.interactiveObjects.seaClickBox.interactionEnabled = false
-    this.scene.interactiveObjects.seaClickBox.visible = false
   }
 }
 
