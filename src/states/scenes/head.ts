@@ -468,6 +468,10 @@ class BucketheadIsAnnoying extends SceneState<HeadScene> {
   public async show() {
     const scene = this.scene
 
+    if (!Inventory.instance.hasItem(Images.hat.key)) {
+      Inventory.instance.addItem(Images.hat.key)
+    }
+
     scene.characters.buckethead.interactionEnabled = true
     this.listeners.push(scene.characters.buckethead.events.onInputUp.add(
       () => this.stateManager.trigger(BucketheadAsksForHelp)
@@ -498,7 +502,16 @@ class BucketheadGetsAHat extends SceneStateTransition<HeadScene> {
     await scene.playDialogJson('antoniusBringsHat')
     Inventory.instance.takeItem(Images.hat.key)
     await scene.playDialogJson('bucketheadTakesHat')
-    Inventory.instance.addItem(Images.bucket.key)
+
+    const bucket = new GameObject(
+      scene.game,
+      scene.characters.buckethead.x + scene.characters.buckethead.width / 2,
+      scene.characters.buckethead.y + scene.characters.buckethead.height / 4,
+      Images.bucket.key
+    )
+    scene.add.existing(bucket)
+    await Inventory.instance.pickupItem(bucket)
+    bucket.destroy()
 
     return BucketheadIsStealthy
   }
