@@ -88,11 +88,11 @@ export default class Inventory extends Phaser.Group {
   }
 
   public async pickupItem(item: GameObject, scene: Scene = null, key: string = null): Promise<void> {
-    const enableInteraction = scene.disableInteraction()
-
     if (!scene) {
       scene = Scene.getActiveScene(this.game)
     }
+
+    const enableInteraction = scene.disableInteraction()
 
     AudioManager.instance.tracks.speech.playClip(Audio.itemPickup.key)
 
