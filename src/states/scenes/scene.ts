@@ -35,7 +35,9 @@ export default abstract class Scene extends Phaser.State implements Pausable {
   }
   private lastInteractiveObjects: GameObject[] = []
 
+  private initialAtmoKeys: string[]
   private atmoKeys: string[]
+  private initialMusicKeys: string[]
   private musicKeys: string[]
 
   private dialogs: { [name: string]: [string, string | string[] | string[][], any | any[], string, string][] } = {}
@@ -65,8 +67,10 @@ export default abstract class Scene extends Phaser.State implements Pausable {
 
     this.tweens = new Phaser.TweenManager(game)
 
-    this.atmoKeys = Array.isArray(atmoKeys) ? atmoKeys : [atmoKeys]
-    this.musicKeys = Array.isArray(musicKeys) ? musicKeys : [musicKeys]
+    this.initialAtmoKeys = Array.isArray(atmoKeys) ? atmoKeys : [atmoKeys]
+    this.atmoKeys = this.initialAtmoKeys
+    this.initialMusicKeys = Array.isArray(musicKeys) ? musicKeys : [musicKeys]
+    this.musicKeys = this.initialMusicKeys
 
     this.isPaused.onValueChanged.add(isPaused => {
       if (isPaused) {
@@ -289,6 +293,9 @@ export default abstract class Scene extends Phaser.State implements Pausable {
       Object.keys(this.stateManagers)
         .map(key => this.stateManagers[key])
         .map(sm => sm.resetStates()))
+
+    await this.setMusicClips(this.initialMusicKeys)
+    await this.setAtmoClips(this.initialAtmoKeys)
   }
 
   public async playDialogJson(key: string) {
