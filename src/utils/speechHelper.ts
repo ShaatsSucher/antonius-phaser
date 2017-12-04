@@ -17,8 +17,8 @@ export default class SpeechHelper implements Pausable {
               private sampleGenerator: SampleGenerator,
               private textColor = '#fff',
               private resetCharacterStateBeforePlaying = true,
-              private idleState = 'idle',
-              private talkingState = 'talking') {
+              public idleState = 'idle',
+              public talkingState = 'talking') {
     this.textAnchor = new Phaser.Point(anchorX, anchorY)
   }
 

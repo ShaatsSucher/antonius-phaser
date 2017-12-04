@@ -15,15 +15,15 @@
     [ "antonius",   "Die Nadel wird hier sicherlich gut wachsen.", [null, "lslslssllsl"] ]
   ],
   "nailgooseNotSeeingTree": [
-    [ "nailgoose",  "Ja aber ich sehe noch gar keinen Baum.", 4 ],
+    [ "nailgoose",  "Ja aber ich sehe noch gar keinen Baum.", 4, "idle full", "talking full" ],
 
     [ "antonius", [ "Ein Baum braucht viele Jahre zum Wachsen.",
                     "Wenn du in 25 Jahren wieder kommst, steht",
                     "da bestimmt eine prächtige Tanne."
                   ], [null, "lslslssllsl"] ],
 
-    [ "nailgoose",  "Na gut, dann komm ich später wieder." , 3 ],
-    [ "nailgoose",  "Tschüss!" , 1 ]
+    [ "nailgoose",  "Na gut, dann komm ich später wieder." , 3, "idle full", "talking full" ],
+    [ "nailgoose",  "Tschüss!" , 1, "idle full", "talking full" ]
   ],
   "lookingGood": [
     [ "antonius", "Dieses Wasser sieht sehr rein aus.", [null, "sslss"] ]

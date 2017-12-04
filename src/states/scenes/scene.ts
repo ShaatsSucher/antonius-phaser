@@ -38,7 +38,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
   private atmoKeys: string[]
   private musicKeys: string[]
 
-  private dialogs: { [name: string]: [string, string | string[] | string[][], any | any[]][] } = {}
+  private dialogs: { [name: string]: [string, string | string[] | string[][], any | any[], string, string][] } = {}
 
   protected backgroundImage: Phaser.Sprite
 
@@ -333,7 +333,7 @@ export default abstract class Scene extends Phaser.State implements Pausable {
     return results.reduce((l, r) => l || r, false)
   }
 
-  public async playDialog(...lines: [string, string | string[] | string[][], any | any[]][]) {
+  public async playDialog(...lines: [string, string | string[] | string[][], any | any[], string, string][]) {
     for (const line of lines) {
       const character = this.characters[line[0]]
 
@@ -353,7 +353,18 @@ export default abstract class Scene extends Phaser.State implements Pausable {
       }
       const text = lines.join('\n')
 
+      const previousIdleState = character.speech.idleState
+      const idleState = line.length > 3 ? line[3] || previousIdleState : previousIdleState
+      character.speech.idleState = idleState
+
+      const previousTalkState = character.speech.talkingState
+      const talkState = line.length > 4 ? line[4] || previousTalkState : previousTalkState
+      character.speech.talkingState = talkState
+
       await character.speech.say.apply(character.speech, [text].concat(speechParams))
+
+      character.speech.idleState = previousIdleState
+      character.speech.talkingState = talkState
     }
   }
 

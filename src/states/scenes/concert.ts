@@ -598,10 +598,9 @@ class NailgooseEnteringScene extends SceneStateTransition<ConcertScene> {
       scene.tweens.create(nailgoose.position).to({ x: nailgooseTargetX }, 2000, Phaser.Easing.Linear.None, true).onComplete.asPromise()
     ])
 
-    nailgoose.setActiveState('idle')
+    nailgoose.setActiveState('idle full')
     antonius.setActiveState('idle')
 
-    console.dir(nailgoose)
     await scene.playDialogJson('nailgooseNotSeeingTree')
 
     nailgoose.setActiveState('walking')
