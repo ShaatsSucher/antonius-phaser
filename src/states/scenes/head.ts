@@ -138,9 +138,6 @@ export default class HeadScene extends Scene {
       new ConditionalStateTransition(
         Suction,
         TransitionCondition.reachedState(this.stateManagers.painter, PainterIsDoneWithPainting)
-        // TODO: add conditions for minor parallel storylines
-        // TransitionCondition.reachedState(scenes.bard.stateManagers.bard, BardGone)
-        // .and(TransitionCondition.reachedState(scenes.bard.stateManagers.meckie, MeckieGone))
       )
     )
 
