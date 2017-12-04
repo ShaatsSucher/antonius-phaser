@@ -52,7 +52,7 @@
     ["cat",         "...", [1, "silent"] ]
   ],
   "catFeastAfterAccepted": [
-    ["cat",         "... Angemessen.", [1, "silent", "audioCatCatAccepts"] ],
+    ["cat",         "... Angemessen.", [0.5, "silent", "audioCatCatAccepts"] ],
 
     ["antonius",    "...", [null, ""] ],
     ["antonius",    "Was?", [null, "l"] ]
