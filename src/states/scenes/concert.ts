@@ -43,12 +43,13 @@ export default class ConcertScene extends Scene {
     toTreeArrow: null,
 
     pond: null,
-    dirt: null
   }
 
+  dirt: GameObject
   veggieItem: GameObject
   cloud: GameObject
   caneItem: GameObject
+  needlePlant: GameObject
 
   stateManagers: { [name: string]: SceneStateManager<ConcertScene> } = {
     default: new SceneStateManager<ConcertScene>(this, [
@@ -163,8 +164,11 @@ export default class ConcertScene extends Scene {
       this.fadeTo('tree')
     })
 
-    const dirt = this.interactiveObjects.dirt = new GameObject(this.game, 299, 183, Images.dirt.key)
+    const dirt = this.dirt = new GameObject(this.game, 299, 183, Images.dirt.key)
     this.game.add.existing(dirt)
+
+    const needlePlant = this.needlePlant = new GameObject(this.game, 316, 178, Images.needlePlanted.key)
+    this.game.add.existing(needlePlant)
 
     const eggwoman = this.characters.eggwoman = new EggWomanCharacter(this, 35, 30)
     eggwoman.scale = new Phaser.Point(2, 2)
@@ -509,13 +513,14 @@ export class EggwomanGone extends SceneState<ConcertScene> {
 class InitialNailgoose extends SceneState<ConcertScene> {
   async show() {
     this.scene.characters.nailgoose.visible = false
+    this.scene.needlePlant.visible = false
 
-    this.scene.interactiveObjects.dirt.interactionEnabled = true
-    this.listeners.push(this.scene.interactiveObjects.dirt.events.onInputUp.addOnce(() => {
+    this.scene.dirt.interactionEnabled = true
+    this.listeners.push(this.scene.dirt.events.onInputUp.addOnce(() => {
       this.stateManager.trigger(AntoniusInspectingDirt)
     }))
 
-    this.listeners.push(this.scene.addItemDropHandler(this.scene.interactiveObjects.dirt, async (key) => {
+    this.listeners.push(this.scene.addItemDropHandler(this.scene.dirt, async (key) => {
       if (key !== Images.needle.key) return false
       this.stateManager.trigger(PlantingNail)
       return true
@@ -526,8 +531,9 @@ class InitialNailgoose extends SceneState<ConcertScene> {
 class AntoniusInspectingDirt extends SceneStateTransition<ConcertScene> {
   async enter() {
     this.scene.characters.nailgoose.visible = false
+    this.scene.needlePlant.visible = false
 
-    this.scene.interactiveObjects.dirt.interactionEnabled = false
+    this.scene.dirt.interactionEnabled = false
     await this.scene.playDialogJson('antoniusInspectingDirt')
 
     return InitialNailgoose
@@ -537,9 +543,10 @@ class AntoniusInspectingDirt extends SceneStateTransition<ConcertScene> {
 class PlantingNail extends SceneStateTransition<ConcertScene> {
   async enter() {
     this.scene.characters.nailgoose.visible = false
-    this.scene.interactiveObjects.dirt.interactionEnabled = false
+    this.scene.dirt.interactionEnabled = false
 
     Inventory.instance.takeItem(Images.needle.key)
+    this.scene.needlePlant.visible = true
 
     await this.scene.playDialogJson('antoniusPlantedTree')
 
@@ -550,20 +557,23 @@ class PlantingNail extends SceneStateTransition<ConcertScene> {
 export class NailPlanted extends SceneState<ConcertScene> {
   async show() {
     this.scene.characters.nailgoose.visible = false
-    this.scene.interactiveObjects.dirt.interactionEnabled = false
+    this.scene.needlePlant.visible = true
+    this.scene.dirt.interactionEnabled = false
   }
 }
 
 class NailgooseWillEnterScene extends SceneState<ConcertScene> {
   async show() {
-  this.scene.interactiveObjects.dirt.interactionEnabled = false
+    this.scene.dirt.interactionEnabled = false
+    this.scene.needlePlant.visible = true
     this.scene.wait(0).then(() => this.stateManager.trigger(NailgooseEnteringScene))
   }
 }
 
 class NailgooseEnteringScene extends SceneStateTransition<ConcertScene> {
   async enter() {
-    this.scene.interactiveObjects.dirt.interactionEnabled = false
+    this.scene.dirt.interactionEnabled = false
+    this.scene.needlePlant.visible = true
 
     const scene = this.scene
     const antonius = scene.characters.antonius
@@ -605,7 +615,8 @@ class NailgooseEnteringScene extends SceneStateTransition<ConcertScene> {
 
 export class NailgooseGone extends SceneState<ConcertScene> {
   async show() {
-    this.scene.interactiveObjects.dirt.interactionEnabled = false
+    this.scene.needlePlant.visible = true
+    this.scene.dirt.interactionEnabled = false
     this.scene.characters.nailgoose.visible = false
   }
 }
