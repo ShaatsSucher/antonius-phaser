@@ -15,7 +15,7 @@ export default class Cook2Character extends Character {
   constructor(scene: Scene, x: number, y: number) {
     super(scene, x, y, Assets.Spritesheets.cook2.key)
 
-    this.animations.add('idle', ArrayUtils.range(1, 14), 8, true)
+    this.animations.add('idle', ArrayUtils.range(1, 14).concat(ArrayUtils.repeat(14, 30)), 8, true)
     this.animations.add('talking', [0, 1], 8, true)
     this.animations.add('walking', ArrayUtils.range(15, 20), 8, true)
 
