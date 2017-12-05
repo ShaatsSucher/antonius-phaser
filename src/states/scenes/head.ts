@@ -619,7 +619,7 @@ class Credits extends SceneStateTransition<HeadScene> {
     const swan = new SwanCharacter(scene, 0, 0)
     swan.scale.x *= -1
     await swallow(swan, 0, 170, 'talking')
-    await swallow(new FightCloudCharacter(scene, 0, 0), 0.4, 160, 'idle', Audio.townmusiciansCombat003.key)
+    await swallow(new FightCloudCharacter(scene, 0, 0), 0.4, 160, 'idle', Audio.townmusiciansCombat001.key)
 
     AudioManager.instance.tracks.speech.playClip(Audio.hatchlings.key)
     await this.scene.characters.breedingGeese.setActiveState('hatching')

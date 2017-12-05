@@ -469,7 +469,7 @@ class Fight extends SceneStateTransition<ConcertScene> {
     InitialMusicans.shouldPlayNoise.value = false
 
     const nextFightSample = SpeechHelper.Generators.random(
-      ArrayUtils.range(1, 4).map(i =>
+      ArrayUtils.range(1, 1).map(i =>
         Audio[`townmusiciansCombat${StringUtils.intToString(i, 3)}`].key
       )
     )()
