@@ -79,8 +79,8 @@
     [ "breedingGeese", [ "Es ist jeden Moment so weit!",
                          "Ich bin so aufgeregt.",
                          "Schlüpfen sie bald?"
-                       ], 6, null, "talking g1" ],
-    [ "breedingGeese",   "Nein.", 1, null, "talking g2" ],
+                       ], [6, "default"], null, "talking g1" ],
+    [ "breedingGeese",   "Nein.", [null, "no"], null, "talking g2" ],
 
     [ "antonius",      [ "Möchtet ihr nicht zum Brüten",
                          "in die Hölle zurückkehren? Dort",
@@ -90,12 +90,12 @@
     [ "breedingGeese", [ "Wir bleiben, bis unsere Küken",
                          "da sind. Schließlich ist es",
                          "jeden Moment so weit!"
-                       ], 6, null, "talking g1" ],
-    [ "breedingGeese",   "Ist es denn schon so weit?", 2, null, "talking g1" ],
-    [ "breedingGeese",   "Nein.", 1, null, "talking g2" ]
+                       ], [6, "default"], null, "talking g1" ],
+    [ "breedingGeese",   "Ist es denn schon so weit?", [2, "default"], null, "talking g1" ],
+    [ "breedingGeese",   "Nein.", [null, "no"], null, "talking g2" ]
   ],
   "hatchlingsStillNotHatching": [
-    [ "breedingGeese", "Schlüpfen sie schon?", 3, null, "talking g1" ],
-    [ "breedingGeese", "Nein.", 1, null, "talking g2" ]
+    [ "breedingGeese", "Schlüpfen sie schon?", [3, "default"], null, "talking g1" ],
+    [ "breedingGeese", "Nein.", [null, "no"], null, "talking g2" ]
   ]
 }

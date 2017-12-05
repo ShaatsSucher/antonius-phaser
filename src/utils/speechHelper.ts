@@ -154,6 +154,16 @@ export default class SpeechHelper implements Pausable {
     combine: (generators: { [title: string]: SampleGenerator }) => (generator = 'default', ...params: any[]) => {
       return generators[generator](...params)
     },
+    singleton: (sample: string) => () => {
+      let hasPlayed = false
+      return () => {
+        if (!hasPlayed) {
+          hasPlayed = true
+          return sample
+        }
+        return null
+      }
+    },
     sequential: (samples: string[]) => () => {
       let lastIndex = samples.length - 1
       return () => {

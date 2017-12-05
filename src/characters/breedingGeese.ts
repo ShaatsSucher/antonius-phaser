@@ -6,11 +6,14 @@ import Scene from '../states/scenes/scene'
 import SpeechHelper from '../utils/speechHelper'
 
 export default class BreedingGeeseCharacter extends Character {
-  public readonly speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.random(
-    ArrayUtils.range(1, 14).map(i =>
-      Assets.Audio[`breedinggoose${StringUtils.intToString(i, 3)}`].key
-    )
-  ))
+  public readonly speech = new SpeechHelper(this, 0, 0, SpeechHelper.Generators.combine({
+    default: SpeechHelper.Generators.random(
+      ArrayUtils.range(1, 14).map(i =>
+        Assets.Audio[`breedinggoose${StringUtils.intToString(i, 3)}`].key
+      )
+    ),
+    no: SpeechHelper.Generators.singleton(Assets.Audio.breedinggooseNope.key)
+  }))
 
   constructor(scene: Scene, x: number, y: number) {
     super(scene, x, y, Assets.Spritesheets.breedinggoose.key)
