@@ -498,6 +498,7 @@ class BucketheadGetsAHat extends SceneStateTransition<HeadScene> {
     await scene.playDialogJson('antoniusBringsHat')
     Inventory.instance.takeItem(Images.hat.key)
     await scene.playDialogJson('bucketheadTakesHat')
+    this.scene.characters.buckethead.setActiveState('idleHat')
 
     const bucket = new GameObject(
       scene.game,

@@ -9,9 +9,14 @@ import { Property } from '../utils/property'
 
 export default class BucketheadCharacter extends Character {
   public readonly speech = new SpeechHelper(this, 0, 0,
-    SpeechHelper.Generators.random(ArrayUtils.range(1, 29).map(i =>
-      Assets.Audio[`bucketmanWithBucket${StringUtils.intToString(i, 3)}`].key
-    )), '#fff', false, 'idleBucket', 'talkingBucket'
+    SpeechHelper.Generators.combine({
+      bucket: SpeechHelper.Generators.random(ArrayUtils.range(1, 29).map(i =>
+        Assets.Audio[`bucketmanWithBucket${StringUtils.intToString(i, 3)}`].key
+      )),
+      hat: SpeechHelper.Generators.random(ArrayUtils.range(1, 29).map(i =>
+        Assets.Audio[`bucketmanNoBucket${StringUtils.intToString(i, 3)}`].key
+      ))
+    }), '#fff', false, 'idleBucket', 'talkingBucket'
   )
 
   public readonly hatSpeech = new SpeechHelper(this, 0, 0,

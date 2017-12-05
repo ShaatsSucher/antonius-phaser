@@ -54,15 +54,17 @@
 
     [ "buckethead", [ "Ja, aber ich habe nichts anderes,",
                       "um mich vor dem Löffel zu schützen!"
-                    ], 5]
+                    ], [5, "bucket"] ]
   ],
   "antoniusBringsHat": [
-    [ "antonius",     "Wie wäre es denn hiermit?", [null, "slssssl"] ]
+    [ "antonius",     "Wie wäre es denn hiermit?", [null, "slssssl"] ],
+
+    [ "buckethead",   "Lass mich mal probieren...", [3, "bucket"] ]
   ],
   "bucketheadTakesHat": [
-    [ "buckethead", [ "Ja, der Hut sieht deutlich",
-                      "besser aus!"
-                    ], 3 ]
+    [ "buckethead", [ "Ja, der Hut schützt",
+                      "deutlich besser!"
+                    ], [3, "hat"], "idleHat", "talkingHat" ]
   ],
   "waterLooksSalty": [
     [ "antonius",   [ "Dieses Meerwasser sieht",
