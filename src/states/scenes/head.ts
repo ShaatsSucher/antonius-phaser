@@ -40,7 +40,7 @@ import Arrow from '../../gameObjects/arrow'
 import Inventory from '../../overlays/inventory'
 import Settings from '../../overlays/settings'
 import Help from '../../overlays/help'
-import { AudioManager } from '../../utils/audioManager'
+import { AudioManager, Clip } from '../../utils/audioManager'
 
 import { ArrayUtils, StringUtils } from '../../utils/utils'
 
@@ -527,7 +527,7 @@ export class Suction extends SceneState<HeadScene> {
   public async show() {
     this.scene.sideCharacters.forEach(char => char.visible = true)
     this.scene.allInteractiveObjects.forEach(obj => obj.visible = false)
-    this.stateManager.trigger(Credits)
+    this.scene.wait(0).then(() => this.stateManager.trigger(Credits))
   }
 }
 
@@ -537,8 +537,14 @@ class Credits extends SceneStateTransition<HeadScene> {
 
     scene.setMusicClips(Audio.musicCredits.key)
 
-    const swallow = async (characters: Character[] | Character, anchorY: number, walkStartY = 170, idleState = 'idle') => {
+    const swallow = async (characters: Character[] | Character, anchorY: number, walkStartY = 170, idleState = 'idle', soundKey?: string) => {
       let chars = characters instanceof Character ? [characters] : characters
+
+      let sound: Clip
+      if (soundKey) {
+        sound = AudioManager.instance.tracks.speech.addClip(soundKey, 0.5)
+        sound.play()
+      }
 
       await Promise.all(chars.map(async character => {
         // Flip  + scale characters
@@ -567,11 +573,14 @@ class Credits extends SceneStateTransition<HeadScene> {
       AudioManager.instance.tracks.speech.playClip(Audio.hellmouthWhirlwind001.key)
 
       await Promise.all(chars.map(async character => {
+        sound ? sound.fadeTo(0, 5000) : Promise.resolve(),
         await Promise.all([
           scene.tweens.create(character).to({ rotation: Math.PI * 10 }, 5000, Phaser.Easing.Cubic.In, true).onComplete.asPromise(),
           scene.tweens.create(character.scale).to({ x: 0, y: 0}, 5000, Phaser.Easing.Cubic.In, true).onComplete.asPromise()
         ])
       }))
+
+      sound && sound.stop()
 
       await scene.characters.hellmouth.setActiveState('close mouth')
     }
@@ -609,7 +618,7 @@ class Credits extends SceneStateTransition<HeadScene> {
     const swan = new SwanCharacter(scene, 0, 0)
     swan.scale.x *= -1
     await swallow(swan, 0, 170, 'talking')
-    await swallow(new FightCloudCharacter(scene, 0, 0), 0.4, 160)
+    await swallow(new FightCloudCharacter(scene, 0, 0), 0.4, 160, 'idle', Audio.townmusiciansCombat003.key)
 
     AudioManager.instance.tracks.speech.playClip(Audio.hatchlings.key)
     await this.scene.characters.breedingGeese.setActiveState('hatching')
