@@ -598,6 +598,12 @@ class GoatTransition1 extends GoatTransition {
   constructor(scene: TreeScene) {
     super(scene, 'goat1', Goat2)
   }
+
+  public async enter() {
+    const next = await super.enter()
+    await this.scene.playDialogJson('goat1post')
+    return next
+  }
 }
 
 class Goat2 extends GoatState {

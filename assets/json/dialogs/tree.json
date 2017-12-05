@@ -170,7 +170,10 @@
   ],
   "goat1": [
     [ "goat", "Mäh", [3.5, "human", "audioGoat001"] ],
-    [ "goat", "Mäh", [7.1, "human", "audioGoat002"]]
+    [ "goat", "Mäh", [7.1, "human", "audioGoat002"] ]
+  ],
+  "goat1post": [
+    [ "antonius", "...?", [null, ""] ]
   ],
   "goat2": [
     [ "antonius", "Und wer bist du?", [null, "ssl"] ],
