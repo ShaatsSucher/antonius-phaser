@@ -99,7 +99,11 @@ export default abstract class Scene extends Phaser.State implements Pausable {
   }
   public setAtmoClips(keys: string | string[]): Promise<void> {
     this.atmoKeys = Array.isArray(keys) ? keys : [keys]
-    return AudioManager.instance.tracks.atmo.crossFadeAll(this.atmoKeys, 1, 1, true)
+    if (this._isVisible) {
+      return AudioManager.instance.tracks.atmo.crossFadeAll(this.atmoKeys, 1, 1, true)
+    } else {
+      return Promise.resolve()
+    }
   }
 
   public get musicClips(): string[] {
@@ -107,7 +111,11 @@ export default abstract class Scene extends Phaser.State implements Pausable {
   }
   public setMusicClips(keys: string | string[]): Promise<void> {
     this.musicKeys = Array.isArray(keys) ? keys : [keys]
-    return AudioManager.instance.tracks.music.crossFadeAll(this.musicKeys, 1, 1, true)
+    if (this._isVisible) {
+      return AudioManager.instance.tracks.music.crossFadeAll(this.musicKeys, 1, 1, true)
+    } else {
+      return Promise.resolve()
+    }
   }
 
   public async fadeTo(nextScene: string): Promise<void> {
