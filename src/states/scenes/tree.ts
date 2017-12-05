@@ -10,6 +10,7 @@ import { SceneStateManager
 import { WaitingForWater } from './kitchen'
 
 import { Audio, Images, Spritesheets, Json } from '../../assets'
+import { AudioManager } from '../../utils/audioManager'
 
 import AntoniusCharacter from '../../characters/antonius'
 import TreeCharacter from '../../characters/tree'
@@ -355,8 +356,10 @@ class TreeOpeningUp extends SceneStateTransition<TreeScene> {
 
     await scene.playDialogJson('treeOpeningUp')
 
-    await scene.characters.tree.setActiveState('opening')
-    await scene.wait(1)
+    await Promise.all([
+      scene.characters.tree.setActiveState('opening'),
+      AudioManager.instance.tracks.speech.playClip(Audio.treeOpenCave.key)
+    ])
 
     return TreeAllowedEntry
   }
