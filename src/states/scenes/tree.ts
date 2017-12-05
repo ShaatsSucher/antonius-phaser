@@ -178,7 +178,7 @@ export default class TreeScene extends Scene {
       this.fadeTo('canopy')
     })
 
-    const toCaveArrow = this.interactiveObjects.toCaveArrow = new Arrow(this.game, 364, 95)
+    const toCaveArrow = this.interactiveObjects.toCaveArrow = new Arrow(this.game, 308, 115)
     toCaveArrow.interactionEnabled = true
     this.game.add.existing(toCaveArrow)
     toCaveArrow.events.onInputDown.addOnce(() => {
