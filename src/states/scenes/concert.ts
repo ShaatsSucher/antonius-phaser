@@ -10,6 +10,7 @@ import { Audio, Images, Spritesheets, Json } from '../../assets'
 import { AudioManager } from '../../utils/audioManager'
 
 import { ArrayUtils, StringUtils } from '../../utils/utils'
+import { Property } from '../../utils/property'
 import SpeechHelper from '../../utils/speechHelper'
 
 import AntoniusCharacter from '../../characters/antonius'
@@ -326,32 +327,38 @@ export class SwanGone extends SceneState<ConcertScene> {
 // ---------------------------------------------------------------------------
 
 class InitialMusicans extends SceneState<ConcertScene> {
-  private readonly sampleGenerator = SpeechHelper.Generators.random(
+  public static readonly shouldPlayNoise = new Property(false)
+  private static noiseHandler: Phaser.SignalBinding
+  private static readonly sampleGenerator = SpeechHelper.Generators.random(
     ArrayUtils.range(1, 14).map(i =>
       Audio[`townmusicians${StringUtils.intToString(i, 3)}`].key
     )
-  )
-  public noisy
-
-  async show() {
-    this.noisy = true
-    const sampleGenerator = this.sampleGenerator()
-    const playSound = () => {
-      this.scene.wait(0).then(() => {
-        if (this.noisy && this.stateManager.getActiveState() === InitialMusicans) {
-          AudioManager.instance.tracks.speech.playClip(sampleGenerator()).then(() => {
-            playSound()
-          })
-        }
+  )()
+  private static playNoise() {
+    if (InitialMusicans.shouldPlayNoise.value) {
+      AudioManager.instance.tracks.speech.playClip(InitialMusicans.sampleGenerator()).then(() => {
+        InitialMusicans.playNoise()
       })
     }
+  }
 
+  public constructor(scene: ConcertScene, stateManager: SceneStateManager<ConcertScene>) {
+    super(scene, stateManager)
+
+    if (!InitialMusicans.noiseHandler) {
+      InitialMusicans.noiseHandler = InitialMusicans.shouldPlayNoise.onValueChanged.add((value) => {
+        InitialMusicans.playNoise()
+      })
+    }
+  }
+
+  async show() {
     this.scene.characters.musicians.visible = true
-    this.scene.wait(1).then(() => playSound())
+    InitialMusicans.shouldPlayNoise.value = true
   }
 
   async hide() {
-    this.noisy = false
+    InitialMusicans.shouldPlayNoise.value = false
   }
 }
 
@@ -459,7 +466,7 @@ class Fight extends SceneStateTransition<ConcertScene> {
     cloud.visible = true
 
     // Silence the town musicians
-    ; (<InitialMusicans>this.scene.stateManagers.musicians.activeStateInstance).noisy = false
+    InitialMusicans.shouldPlayNoise.value = false
 
     const nextFightSample = SpeechHelper.Generators.random(
       ArrayUtils.range(1, 4).map(i =>
@@ -468,7 +475,7 @@ class Fight extends SceneStateTransition<ConcertScene> {
     )()
     let fighting = true
     const playSound = () => {
-      AudioManager.instance.tracks.atmo.playClip(nextFightSample()).then(() => {
+      AudioManager.instance.tracks.speech.playClip(nextFightSample()).then(() => {
         if (fighting) {
           this.scene.wait(0).then(() => playSound())
         }
@@ -476,7 +483,6 @@ class Fight extends SceneStateTransition<ConcertScene> {
     }
     playSound()
 
-    this.scene.characters.musicians.speech.say('', 5.5)
     await this.scene.cloud.play('start').onComplete.asPromise()
 
     chars.eggwoman.visible = false
