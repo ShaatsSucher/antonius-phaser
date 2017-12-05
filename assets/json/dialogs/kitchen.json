@@ -53,6 +53,11 @@
 
     [ "cook2",      "Kein Fisch, keine Suppe.", 5 ]
   ],
+  "cooksWantFishCut": [
+    [ "cook1",      "Der ist ja noch gar nicht geschnitten!", 5 ],
+
+    [ "cook2",      "Damit können wir keine Suppe machen.", 5 ]
+  ],
   "cooksNeedVeggies": [
     [ "cook1",      "Jetzt fehlt nur noch Gemüse!", 4 ],
 

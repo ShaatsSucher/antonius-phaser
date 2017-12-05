@@ -56,6 +56,7 @@ export default class KitchenScene extends Scene {
       StillNeedWater,
       WeNeedFish,
       StillNeedFish,
+      FishNotCut,
       WeNeedVeggies,
       StillNeedVeggies,
       VeggiesNotCut,
@@ -265,20 +266,20 @@ export class WaitingForFish extends SceneState<KitchenScene> {
     c.cook1.interactionEnabled = true
     c.cook2.interactionEnabled = true
 
-    // Inventory.instance.addItem(Images.filet.key)
+    const dropListener = async (key) => {
+      console.log('dropped', key)
+      if (key === Images.filet.key) {
+        this.stateManager.trigger(WeNeedVeggies)
+        Inventory.instance.takeItem(Images.filet.key)
+        return true
+      } else if (key === Images.fish.key) {
+        this.stateManager.trigger(FishNotCut)
+        return false
+      } else return false
+    }
 
-    this.listeners.push(this.scene.addItemDropHandler(c.cook1, async (key) => {
-      if (key !== Images.filet.key) return false
-      this.stateManager.trigger(WeNeedVeggies)
-      Inventory.instance.takeItem(Images.filet.key)
-      return true
-    }))
-    this.listeners.push(this.scene.addItemDropHandler(c.cook2, async (key) => {
-      if (key !== Images.filet.key) return false
-      this.stateManager.trigger(WeNeedVeggies)
-      Inventory.instance.takeItem(Images.filet.key)
-      return true
-    }))
+    this.listeners.push(this.scene.addItemDropHandler(c.cook1, dropListener))
+    this.listeners.push(this.scene.addItemDropHandler(c.cook2, dropListener))
 
     this.listeners.push(c.cook1.events.onInputUp.addOnce(
       () => this.stateManager.trigger(StillNeedFish)
@@ -295,6 +296,17 @@ class StillNeedFish extends SceneStateTransition<KitchenScene> {
     scene.interactiveObjects.bowl.visible = true
 
     await scene.playDialogJson('cooksWaitingForFish')
+
+    return WaitingForFish
+  }
+}
+
+class FishNotCut extends SceneStateTransition<KitchenScene> {
+  async enter() {
+    const scene = this.scene
+    scene.interactiveObjects.bowl.visible = true
+
+    await scene.playDialogJson('cooksWantFishCut')
 
     return WaitingForFish
   }
