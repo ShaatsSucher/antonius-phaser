@@ -72,7 +72,30 @@
                     ], [null, "slsssll"] ]
   ],
   "hatchlingsNotYetHatching": [
-    [ "antonius", "Schlüpfen sie jetzt?", [null, "sssl"] ],
-    [ "breedingGeese", "Nein.", 1 ]
+    [ "antonius",      [ "Ihr habt euch aber einen",
+                         "besonderen Nistplatz ausgesucht!"
+                       ], [null, "lllssslslssssssl"] ],
+
+    [ "breedingGeese", [ "Es ist jeden Moment so weit!",
+                         "Ich bin so aufgeregt.",
+                         "Schlüpfen sie bald?"
+                       ], 6, null, "talking g1" ],
+    [ "breedingGeese",   "Nein.", 1, null, "talking g2" ],
+
+    [ "antonius",      [ "Möchtet ihr nicht zum Brüten",
+                         "in die Hölle zurückkehren? Dort",
+                         "ist es sicherlich viel wärmer."
+                       ], [null, "sssllllssslsssslllsssslsl"] ],
+
+    [ "breedingGeese", [ "Wir bleiben, bis unsere Küken",
+                         "da sind. Schließlich ist es",
+                         "jeden Moment so weit!"
+                       ], 6, null, "talking g1" ],
+    [ "breedingGeese",   "Ist es denn schon so weit?", 2, null, "talking g1" ],
+    [ "breedingGeese",   "Nein.", 1, null, "talking g2" ]
+  ],
+  "hatchlingsStillNotHatching": [
+    [ "breedingGeese", "Schlüpfen sie schon?", 3, null, "talking g1" ],
+    [ "breedingGeese", "Nein.", 1, null, "talking g2" ]
   ]
 }

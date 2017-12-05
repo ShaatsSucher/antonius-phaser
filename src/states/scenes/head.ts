@@ -101,10 +101,12 @@ export default class HeadScene extends Scene {
     ]),
     breedingGeese: new SceneStateManager(this, [
       GeeseBeforeIntro,
+      GeeseIntro,
       GeeseIdle,
       GeeseHatched
     ], [
       GeeseNotYetHatching,
+      GeeseStillNotHatching,
       GeeseHatching
     ])
   }
@@ -172,7 +174,7 @@ export default class HeadScene extends Scene {
 
     this.stateManagers.breedingGeese.registerConditionalTransitions(
       new ConditionalStateTransition(
-        GeeseIdle,
+        GeeseIntro,
         TransitionCondition.reachedState(this.stateManagers.head, Silent)
       )
     )
@@ -781,7 +783,7 @@ class GeeseBeforeIntro extends SceneState<HeadScene> {
   }
 }
 
-class GeeseIdle extends SceneState<HeadScene> {
+class GeeseIntro extends SceneState<HeadScene> {
   public async show() {
     this.scene.characters.breedingGeese.interactionEnabled = true
 
@@ -797,6 +799,26 @@ class GeeseIdle extends SceneState<HeadScene> {
 class GeeseNotYetHatching extends SceneStateTransition<HeadScene> {
   public async enter() {
     await this.scene.playDialogJson('hatchlingsNotYetHatching')
+    return GeeseIdle
+  }
+}
+
+class GeeseIdle extends SceneState<HeadScene> {
+  public async show() {
+    this.scene.characters.breedingGeese.interactionEnabled = true
+
+    this.scene.characters.breedingGeese.setActiveState('idle')
+
+    this.clearListeners()
+    this.listeners.push(this.scene.characters.breedingGeese.events.onInputUp.addOnce(() =>
+      this.stateManager.trigger(GeeseStillNotHatching)
+    ))
+  }
+}
+
+class GeeseStillNotHatching extends SceneStateTransition<HeadScene> {
+  public async enter() {
+    await this.scene.playDialogJson('hatchlingsStillNotHatching')
     return GeeseIdle
   }
 }
