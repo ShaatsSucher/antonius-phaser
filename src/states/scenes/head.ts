@@ -588,12 +588,11 @@ class Credits extends SceneStateTransition<HeadScene> {
 
     await scene.wait(2)
 
-    let startTime = 2
     for (const char of this.scene.sideCharacters) {
       AudioManager.instance.tracks.speech.playClip(Audio.characterPlop.key)
       console.log('plop')
       char.visible = false
-      await scene.wait(startTime /= 2)
+      await scene.wait(1)
     }
 
     await swallow(new MeckieCharacter(scene, 0, 0), 0.3)
