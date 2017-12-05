@@ -182,17 +182,17 @@ export default class HeadScene extends Scene {
     this.sideCharacters.forEach(char => char.destroy())
     this.sideCharacters = []
 
-    const birds = new Phaser.Sprite(this.game, 284, 19, Spritesheets.birds.key)
+    const birds = new Phaser.Sprite(this.game, 295, 29, Spritesheets.birds.key)
     birds.animations.add('idle', [0, 1], 2, true)
     birds.animations.play('idle')
     this.sideCharacters.push(birds)
 
-    const gobbler1 = new Phaser.Sprite(this.game, 248, 178, Spritesheets.gobbler1.key)
+    const gobbler1 = new Phaser.Sprite(this.game, 298, 101, Spritesheets.gobbler1.key)
     gobbler1.animations.add('idle', ArrayUtils.range(0, 6), 8, true)
     gobbler1.animations.play('idle')
     this.sideCharacters.push(gobbler1)
 
-    const gobbler2 = new Phaser.Sprite(this.game, 292, 78, Spritesheets.gobbler2.key)
+    const gobbler2 = new Phaser.Sprite(this.game, 323, 80, Spritesheets.gobbler2.key)
     gobbler2.animations.add('idle', [0, 1], 1.5, true)
     gobbler2.animations.play('idle')
     this.sideCharacters.push(gobbler2)
@@ -208,7 +208,7 @@ export default class HeadScene extends Scene {
     this.game.add.existing(hellmouth)
 
     // Add antonius
-    const antonius = this.characters.antonius = new AntoniusCharacter(this, 258, 120)
+    const antonius = this.characters.antonius = new AntoniusCharacter(this, 257, 132)
     antonius.scale.setTo(2)
     this.game.add.existing(antonius)
 
