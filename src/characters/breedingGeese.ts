@@ -15,7 +15,7 @@ export default class BreedingGeeseCharacter extends Character {
   constructor(scene: Scene, x: number, y: number) {
     super(scene, x, y, Assets.Spritesheets.breedinggoose.key)
 
-    this.animations.add('idle', ArrayUtils.range(2, 20), 8, true)
+    this.animations.add('idle', ArrayUtils.range(2, 20).concat(ArrayUtils.repeat(2, 30)), 8, true)
     this.animations.add('talking', [0, 1], 8, true)
     this.animations.add('hatching', ArrayUtils.range(21, 45), 8, false)
     this.animations.add('hatched', ArrayUtils.range(33, 45), 8, true)
