@@ -107,6 +107,7 @@ export default class TreeScene extends Scene {
   protected registerConditionalStateTransitions(scenes: { [title: string]: Scene }) {
     this.allGoneExceptTreeAndAntonius =
       TransitionCondition.reachedState(scenes.bard.stateManagers.meckie, MeckieGone)
+        .and(TransitionCondition.reachedState(scenes.bard.stateManagers.bard, BardGone))
         .and(TransitionCondition.reachedState(scenes.tree.stateManagers.woman, SatisfiedWoman))
         .and(TransitionCondition.reachedState(scenes.fish.stateManagers.alphapig, AlphaPigGone))
         .and(TransitionCondition.reachedState(scenes.concert.stateManagers.swan, SwanGone))
