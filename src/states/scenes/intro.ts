@@ -33,13 +33,13 @@ export default class IntroScene extends Scene {
 
   public readonly text: [{ time: number, text: string }] = [
     { time: 1375, text: 'Mein Mund ist das Tor zur Hölle.' },
-    { time: 7500, text: 'Meine Aufgabe ist es, die Menschheit\nvor den Dämonen zu schützen...' },
-    { time: 16750, text: 'Doch...\nDiesmal ist etwas gewaltig schief gelaufen.' },
-    { time: 24625, text: 'Da habe ich einmal versehentlich gegähnt\nund schon sind alle Dämonen ausgerissen!' },
-    { time: 37500, text: 'Tu etwas, Antonius!' },
-    { time: 41000, text: 'Du, als frommer Christ, wirst sicher einen Weg\nfinden, die Dämonen zurück in die Hölle zu treiben!' },
-    { time:  60750, text: 'Gelingt es dir nicht, wird dir und der\ngesamten Menschheit ÜBLES widerfahren!!!' },
-    { time: 80000, text: '' }
+    { time: 6700, text: 'Meine Aufgabe ist es, die Menschheit\nvor den Dämonen zu schützen...' },
+    { time: 14500, text: 'Doch...\nDiesmal ist etwas gewaltig schief gelaufen.' },
+    { time: 22700, text: 'Da habe ich einmal versehentlich gegähnt\nund schon sind alle Dämonen ausgerissen!' },
+    { time: 32400, text: 'Tu etwas, Antonius!' },
+    { time: 36500, text: 'Du, als frommer Christ, wirst sicher einen Weg\nfinden, die Dämonen zurück in die Hölle zu treiben!' },
+    { time:  46000, text: 'Gelingt es dir nicht, wird dir und der\ngesamten Menschheit ÜBLES widerfahren!!!' },
+    { time: 67000, text: '' }
   ]
 
   public create() {
