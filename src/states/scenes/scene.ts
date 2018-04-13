@@ -381,6 +381,13 @@ export default abstract class Scene extends Phaser.State implements Pausable {
       character.speech.idleState = previousIdleState
       character.speech.talkingState = talkState
     }
+    // Reset the cursor to the default pointy one to work around an issue with
+    // phaser where the cursor would keep displaying a hand icon even though
+    // there is nothing clickable below the pointer.
+    // The pointer would only change back to the default after hovering
+    // something actually clickable and then leaving the clickable's hitbox
+    // again, which was highly confusing for players.
+    this.game.canvas.style.cursor = 'default'
   }
 
   public clickedAnywhere(ignorePause: boolean = false): Promise<void> {
