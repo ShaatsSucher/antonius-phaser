@@ -146,7 +146,7 @@ export default class HeadScene extends Scene {
     this.stateManagers.buckethead.registerConditionalTransitions(
       new ConditionalStateTransition(
         BucketheadIsAnnoying,
-        TransitionCondition.reachedState(this.stateManagers.painter, PainterIsComplaining)
+        TransitionCondition.reachedState(this.stateManagers.head, Silent)
       )
     )
 
