@@ -110,6 +110,12 @@ class OwlPeeingOnTree extends SceneState<CanopyScene> {
       this.stateManager.trigger(BucketBeingPutUnderOwl)
       return true
     }))
+    scene.characters.tree.interactionEnabled = true
+    this.listeners.push(this.scene.addItemDropHandler(this.scene.characters.tree, async (key) => {
+      if (key !== Images.bucket.key) return false
+      this.stateManager.trigger(BucketBeingPutUnderOwl)
+      return true
+    }))
   }
 }
 
