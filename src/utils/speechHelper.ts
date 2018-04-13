@@ -62,7 +62,16 @@ export default class SpeechHelper implements Pausable {
     }
 
     await this.character.setActiveState(this.idleState)
-    await characterClicked
+
+    const timedOut = await Promise.race([
+      characterClicked.then(() => false),
+      this.character.scene.wait(5).then(() => true)
+    ])
+
+    if (timedOut) {
+      this.displayHelpText(characterClicked)
+      await characterClicked
+    }
   }
 
   private registerClickListener(): Promise<void> {
@@ -76,6 +85,25 @@ export default class SpeechHelper implements Pausable {
       stroke: '#000',
       strokeThickness: 2
     }
+  }
+
+  private displayHelpText(shouldHide: Promise<void>) {
+    const frameMargin = 5
+
+    const line = 'zum Fortfahren klicken'
+    const style = this.textStyle
+    style.fill = '#bbb'
+    const label = new Phaser.Text(this.character.game, 0, 0, line, style)
+    label.anchor.setTo(0.5, 1)
+    label.position.x = this.character.game.width / 2
+    label.position.y = this.character.game.height - frameMargin
+    if (label.width % 2 === 1) {
+      label.position.x += 0.5
+    }
+
+    this.character.game.add.existing(label)
+
+    shouldHide.then(() => label.destroy())
   }
 
   private displayText(text: string, shouldHide: Promise<void>) {
