@@ -433,8 +433,9 @@ class CutFishFirst extends SceneStateTransition<BardScene> {
     Inventory.instance.addItem(Images.filet.key, 2)
 
     await scene.playDialogJson('cutFishAfterPickup')
+    await scene.playDialogJson('notEnough')
 
-    return RequestingVeggies
+    return WaitingForVeggies
   }
 }
 
@@ -452,8 +453,9 @@ class CutVeggiesFirst extends SceneStateTransition<BardScene> {
     Inventory.instance.addItem(Images.carrotSliced.key)
 
     await scene.playDialogJson('cuttingVeggiesAfterCutting')
+    await scene.playDialogJson('notEnough')
 
-    return RequestingFish
+    return WaitingForFish
   }
 }
 

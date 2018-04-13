@@ -35,9 +35,9 @@
   "sadBard": [
     [ "bard",       "*seufz*", [2, "practice"] ],
 
-    [ "goose",    [["Oh Mann..."],
-                   ["Wann hört das auf?"],
-                   ["Meine Nerven!"]
+    [ "goose",    [ ["Oh Mann..."],
+                    ["Wann hört das auf?"],
+                    ["Meine Nerven!"]
                   ], 2]
   ],
   "catFeastBeforeAccepted": [
@@ -61,10 +61,10 @@
     [ "bard",       "Oh! Was für ein sonderbares Gefühl!", 3],
     [ "bard",     [ "Als hätte sich eine Blockade",
                     "von meinem Rücken gelöst!"
-                 ], 5],
+                  ], 5],
     [ "bard",     [ "Was war das für eine schreckliche Last,",
                     "die soeben verschwunden ist?"
-                 ], 5]
+                  ], 5]
   ],
   "catGoneAfterReversal": [
     [ "bard",       "Ach, da bist du ja, Reitgans!", 3],
@@ -131,13 +131,14 @@
 
     [ "antonius",   "Praktisch!", [null, "s"] ]
   ],
-  "requestingVeggies": [
+  "notEnough": [
     [ "meckie",   [ "Doch glaubst du, dass mir das schon reicht?",
                     "Ich spiel dir einen Klingen-Streich!"
                   ], [null, "lllslslsslssslslh"] ],
 
-    [ "antonius",   "Ohje ohje, ich geh ja schon!", [null, "llssss"] ],
-
+    [ "antonius",   "Ohje ohje, ich geh ja schon!", [null, "llssss"] ]
+  ],
+  "requestingVeggies": [
     [ "meckie",   [ "Kommst du mit Händen leer zurück,",
                     "so gibts dich bald nicht mehr am Stück! Hähähä"
                   ], [null, "isslisslh"] ]
